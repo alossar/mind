@@ -1,11 +1,11 @@
 package co.mind.management.maestro.client.temas;
 
 import co.mind.management.maestro.client.Maestro;
-import co.mind.management.shared.bo.CategoriaUsuarioBO;
 import co.mind.management.shared.bo.PreguntaUsuarioBO;
-import co.mind.management.shared.records.CategoriaListGridRecord;
+import co.mind.management.shared.bo.PruebaUsuarioBO;
 import co.mind.management.shared.records.ImagenRecord;
 import co.mind.management.shared.records.PreguntaCategoriaTileRecord;
+import co.mind.management.shared.records.PruebaListGridRecord;
 
 import com.google.gwt.event.shared.UmbrellaException;
 import com.smartgwt.client.types.SelectionStyle;
@@ -36,9 +36,9 @@ import com.smartgwt.client.widgets.toolbar.ToolStrip;
 import com.smartgwt.client.widgets.toolbar.ToolStripButton;
 import com.smartgwt.client.widgets.viewer.DetailViewerField;
 
-public class PanelCategorias extends HLayout {
+public class PanelPruebas extends HLayout {
 
-	private ListGrid listGridCategorias;
+	private ListGrid listGridPruebas;
 	private DynamicForm formNuevaCategoria;
 	private TextItem textNombreCategoriaNueva;
 	private TextAreaItem textAreaDescripcionCategoriaNueva;
@@ -51,22 +51,21 @@ public class PanelCategorias extends HLayout {
 	private IntegerItem integerTiempoPregunta;
 	private IntegerItem integerCaracteresPregunta;
 	private boolean enCategoria = true;
-	private PanelEditarLaminas panelEdicionLaminas;
 	private PanelAgregarLaminas panelAgregarLaminas;
-	private CategoriaListGridRecord categoriaSeleccionada;
+	private PruebaListGridRecord pruebaSeleccionada;
 
-	public PanelCategorias() {
+	public PanelPruebas() {
 		setWidth("100%");
 		setHeight("80%%");
 		setBackgroundColor("white");
 		setPadding(15);
 
-		listGridCategorias = new ListGrid();
-		listGridCategorias.setWidth100();
-		listGridCategorias.setHeight100();
-		listGridCategorias.setShowAllRecords(true);
-		listGridCategorias.setSelectionType(SelectionStyle.SINGLE);
-		listGridCategorias.setTitle("Categor\u00EDas");
+		listGridPruebas = new ListGrid();
+		listGridPruebas.setWidth100();
+		listGridPruebas.setHeight100();
+		listGridPruebas.setShowAllRecords(true);
+		listGridPruebas.setSelectionType(SelectionStyle.SINGLE);
+		listGridPruebas.setTitle("Categor\u00EDas");
 
 		ListGridField nombreField = new ListGridField("nombre", "Nombre");
 		ListGridField apellidosField = new ListGridField("descripcion",
@@ -75,24 +74,24 @@ public class PanelCategorias extends HLayout {
 				"Preguntas");
 		ListGridField tiempoField = new ListGridField("tiempo",
 				"Tiempo (Segundos)");
-		listGridCategorias.setFields(nombreField, apellidosField,
-				preguntasField, tiempoField);
-		listGridCategorias.setCanResizeFields(true);
-		listGridCategorias.addDoubleClickHandler(new DoubleClickHandler() {
+		listGridPruebas.setFields(nombreField, apellidosField, preguntasField,
+				tiempoField);
+		listGridPruebas.setCanResizeFields(true);
+		listGridPruebas.addDoubleClickHandler(new DoubleClickHandler() {
 
 			@Override
 			public void onDoubleClick(DoubleClickEvent event) {
 				botonRegresar.enable();
-				categoriaSeleccionada = (CategoriaListGridRecord) listGridCategorias
+				pruebaSeleccionada = (PruebaListGridRecord) listGridPruebas
 						.getSelectedRecord();
-				listGridCategorias.setVisible(false);
+				listGridPruebas.setVisible(false);
 				tileGridImagenesUsuario.setVisible(true);
 				formularioLamina.setVisible(true);
 				enCategoria = false;
 				// limpiarFormularioLamina();
 				botonNuevoBasico.setTitle("Nueva L\u00E1mina");
 				botonEliminarBasico.setTitle("Eliminar L\u00E1mina");
-				Maestro.obtenerPreguntasPorCategoria(categoriaSeleccionada
+				Maestro.obtenerPreguntasPorPrueba(pruebaSeleccionada
 						.getAttributeAsInt("id"));
 			}
 		});
@@ -172,13 +171,13 @@ public class PanelCategorias extends HLayout {
 					public void onClick(
 							com.smartgwt.client.widgets.events.ClickEvent event) {
 						botonRegresar.disable();
-						listGridCategorias.setVisible(true);
+						listGridPruebas.setVisible(true);
 						tileGridImagenesUsuario.setVisible(false);
 						formularioLamina.setVisible(false);
 						enCategoria = true;
 						botonNuevoBasico.setTitle("Nueva Categor\u00EDa");
 						botonEliminarBasico.setTitle("Eliminar Categor\u00EDa");
-						Maestro.setListaCategorias();
+						Maestro.setListaPruebas();
 					}
 
 				});
@@ -209,10 +208,10 @@ public class PanelCategorias extends HLayout {
 					public void onClick(
 							com.smartgwt.client.widgets.events.ClickEvent event) {
 						if (enCategoria) {
-							CategoriaListGridRecord record = (CategoriaListGridRecord) listGridCategorias
+							PruebaListGridRecord record = (PruebaListGridRecord) listGridPruebas
 									.getSelectedRecord();
 							if (record != null) {
-								CategoriaUsuarioBO categoria = new CategoriaUsuarioBO();
+								PruebaUsuarioBO categoria = new PruebaUsuarioBO();
 								categoria.setDescripcion(record
 										.getAttribute("descripcion"));
 								categoria.setIdentificador(record
@@ -221,7 +220,7 @@ public class PanelCategorias extends HLayout {
 										.getAttribute("nombre"));
 								categoria.setUsuarioAdministradorID(record
 										.getAttributeAsInt("usuarioID"));
-								Maestro.eliminarCategoria(categoria);
+								Maestro.eliminarPrueba(categoria);
 							} else {
 								SC.warn("Debe seleccionar la categor\u00EDa que desea eliminar");
 							}
@@ -253,7 +252,7 @@ public class PanelCategorias extends HLayout {
 		vl1.setWidth100();
 		vl1.setHeight100();
 
-		vl1.addMember(listGridCategorias);
+		vl1.addMember(listGridPruebas);
 		vl1.addMember(tileGridImagenesUsuario);
 		vl1.addMember(formularioLamina);
 		vl1.addMember(menuBarUsuarioBasico);
@@ -310,12 +309,12 @@ public class PanelCategorias extends HLayout {
 					e.printStackTrace();
 				}
 				if (t) {
-					CategoriaUsuarioBO categoria = new CategoriaUsuarioBO();
-					categoria.setNombre(textNombreCategoriaNueva
+					PruebaUsuarioBO prueba = new PruebaUsuarioBO();
+					prueba.setNombre(textNombreCategoriaNueva
 							.getValueAsString());
-					categoria.setDescripcion(textAreaDescripcionCategoriaNueva
+					prueba.setDescripcion(textAreaDescripcionCategoriaNueva
 							.getValueAsString());
-					Maestro.agregarCategoria(categoria);
+					Maestro.agregarPrueba(prueba);
 					winModal.destroy();
 				}
 
@@ -349,18 +348,13 @@ public class PanelCategorias extends HLayout {
 			panelAgregarLaminas = new PanelAgregarLaminas(this);
 			Maestro.obtenerImagenesUsuario();
 			winModal.addItem(panelAgregarLaminas);
-		} else {
-			panelEdicionLaminas = new PanelEditarLaminas(this,
-					preguntaCategoriaTileRecord);
-			Maestro.obtenerImagenesUsuario();
-			winModal.addItem(panelEdicionLaminas);
 		}
 
 		winModal.show();
 	}
 
-	public void actualizarCategorias(CategoriaListGridRecord[] records) {
-		listGridCategorias.setData(records);
+	public void actualizarPruebas(PruebaListGridRecord[] records) {
+		listGridPruebas.setData(records);
 	}
 
 	public void actualizarPreguntasCategoria(
@@ -379,24 +373,20 @@ public class PanelCategorias extends HLayout {
 			System.out.println("imagenes nulas");
 		}
 		try {
-			panelEdicionLaminas.actualizarImagenesUsuario(record);
-		} catch (NullPointerException e) {
-		}
-		try {
 			panelAgregarLaminas.actualizarImagenesUsuario(record);
 		} catch (NullPointerException e) {
 		}
 	}
 
-	public void agregarPreguntaCategoria(PreguntaUsuarioBO bo) {
-		CategoriaUsuarioBO categoria = CategoriaListGridRecord
-				.getBO(categoriaSeleccionada);
+	public void agregarPreguntaPrueba(PreguntaUsuarioBO bo) {
+		PruebaUsuarioBO categoria = PruebaListGridRecord
+				.getBO(pruebaSeleccionada);
 		Maestro.agregarPreguntaUsuario(bo, categoria);
 	}
 
 	public void actualizarPreguntasCategoria() {
 		panelAgregarLaminas.limpiarCamposPreguntas();
-		Maestro.obtenerPreguntasPorCategoria(categoriaSeleccionada
+		Maestro.obtenerPreguntasPorPrueba(pruebaSeleccionada
 				.getAttributeAsInt("id"));
 	}
 

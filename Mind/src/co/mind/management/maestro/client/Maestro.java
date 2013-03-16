@@ -17,22 +17,18 @@ package co.mind.management.maestro.client;
 import java.util.Date;
 import java.util.List;
 
-import co.mind.management.maestro.client.evaluacion.PanelPruebas;
 import co.mind.management.maestro.client.procesos.PanelProcesos;
 import co.mind.management.maestro.client.servicios.UsuarioMaestroService;
 import co.mind.management.maestro.client.servicios.UsuarioMaestroServiceAsync;
-import co.mind.management.maestro.client.temas.PanelCategorias;
-import co.mind.management.shared.bo.CategoriaUsuarioBO;
+import co.mind.management.maestro.client.temas.PanelPruebas;
 import co.mind.management.shared.bo.ImagenUsuarioBO;
 import co.mind.management.shared.bo.ParticipacionEnProcesoBO;
-import co.mind.management.shared.bo.PreguntaEnPruebaBO;
 import co.mind.management.shared.bo.PreguntaUsuarioBO;
 import co.mind.management.shared.bo.ProcesoUsuarioBO;
 import co.mind.management.shared.bo.PruebaUsuarioBO;
 import co.mind.management.shared.bo.UsuarioBO;
 import co.mind.management.shared.bo.EvaluadoBO;
 import co.mind.management.shared.bo.UsuarioMaestroBO;
-import co.mind.management.shared.records.CategoriaListGridRecord;
 import co.mind.management.shared.records.ImagenRecord;
 import co.mind.management.shared.records.ParticipacionEnProcesoListGridRecord;
 import co.mind.management.shared.records.PreguntaCategoriaTileRecord;
@@ -61,7 +57,6 @@ public class Maestro implements EntryPoint {
 	private static MaestroMainLayout mainLayout;
 	// private static PanelEdicionPruebas panelEdicionPruebas;
 
-	private static CategoriaUsuarioBO categoriaTemp;
 	private static PreguntaUsuarioBO preguntaTemp;
 	private static PruebaUsuarioBO pruebaTemp;
 	private static ProcesoUsuarioBO procesoTemp;
@@ -118,7 +113,6 @@ public class Maestro implements EntryPoint {
 	private void inicializarComponentes() {
 		mainLayout = new MaestroMainLayout(usuarioMaestro);
 		RootPanel.get().add(mainLayout);
-		setListaCategorias();
 		setListaImagenesUsuario();
 		setListaProcesos();
 		setListaPruebas();
@@ -167,23 +161,6 @@ public class Maestro implements EntryPoint {
 				});
 	}
 
-	public static void setListaCategorias() {
-		usuarioMaestroService.consultarCategoriasUsuarioAdministrador(
-				usuarioMaestro.getIdentificador(),
-				new AsyncCallback<List<CategoriaUsuarioBO>>() {
-
-					@Override
-					public void onSuccess(List<CategoriaUsuarioBO> result) {
-						mainLayout.actualizarCategorias(result);
-					}
-
-					@Override
-					public void onFailure(Throwable caught) {
-						System.out.println("Error cargando las categorias");
-					}
-				});
-	}
-
 	public static void setListaProcesos() {
 		usuarioMaestroService.consultarProcesosUsuarioAdministrador(
 				usuarioMaestro.getIdentificador(),
@@ -191,7 +168,7 @@ public class Maestro implements EntryPoint {
 
 					@Override
 					public void onSuccess(List<ProcesoUsuarioBO> result) {
-						if(result==null){
+						if (result == null) {
 							System.out.print("Resultado procesos nulo");
 						}
 						mainLayout.actualizarProcesos(result);
@@ -211,9 +188,10 @@ public class Maestro implements EntryPoint {
 				new AsyncCallback<List<EvaluadoBO>>() {
 
 					@Override
-					public void onSuccess(List<EvaluadoBO> result) {if(result==null){
-						System.out.print("Resultado procesos nulo");
-					}
+					public void onSuccess(List<EvaluadoBO> result) {
+						if (result == null) {
+							System.out.print("Resultado procesos nulo");
+						}
 						mainLayout.actualizarUsuariosBasicos(result);
 
 					}
@@ -226,35 +204,14 @@ public class Maestro implements EntryPoint {
 				});
 	}
 
-	public static void obtenerPreguntasCategoriaEnPrueba(int pruebaID) {
-		usuarioMaestroService.consultarPreguntasCategoriaEnPruebaUsuario(
-				usuarioMaestro.getIdentificador(), pruebaID,
-				new AsyncCallback<List<PreguntaEnPruebaBO>>() {
-
-					@Override
-					public void onSuccess(List<PreguntaEnPruebaBO> result) {
-						// panelEdicionPruebas
-						// .actualizarPreguntasPrueba(PreguntaPruebaListGridRecord
-						// .getRecords(result));
-					}
-
-					@Override
-					public void onFailure(Throwable caught) {
-						System.out
-								.println("Error cargando las preguntas de la prueba");
-					}
-				});
-
-	}
-
-	public static void obtenerPreguntasPorCategoria(int categoriaID) {
+	public static void obtenerPreguntasPorPrueba(int categoriaID) {
 		usuarioMaestroService.consultarPreguntasPorCategoria(
 				usuarioMaestro.getIdentificador(), categoriaID,
 				new AsyncCallback<List<PreguntaUsuarioBO>>() {
 
 					@Override
 					public void onSuccess(List<PreguntaUsuarioBO> result) {
-						mainLayout.actualizarPreguntasCategoria(result);
+						mainLayout.actualizarPreguntasPrueba(result);
 					}
 
 					@Override
@@ -320,12 +277,12 @@ public class Maestro implements EntryPoint {
 	}
 
 	public static void agregarPrueba(String nombrePrueba,
-			String descripcionPrueba, List<CategoriaUsuarioBO> categorias) {
+			String descripcionPrueba, List<PreguntaUsuarioBO> preguntas) {
 		PruebaUsuarioBO prueba = new PruebaUsuarioBO();
 		prueba.setDescripcion(descripcionPrueba);
 		prueba.setNombre(nombrePrueba);
 		prueba.setUsuarioAdministradorID(usuarioMaestro.getIdentificador());
-		usuarioMaestroService.agregarPrueba(usuarioMaestro, prueba, categorias,
+		usuarioMaestroService.agregarPrueba(usuarioMaestro, prueba,
 				new AsyncCallback<Integer>() {
 
 					@Override
@@ -377,13 +334,13 @@ public class Maestro implements EntryPoint {
 	}
 
 	public static void agregarPreguntaUsuario(PreguntaUsuarioBO preguntaBO,
-			CategoriaUsuarioBO categoria) {
+			PruebaUsuarioBO prueba) {
 		usuarioMaestroService.agregarPregunta(usuarioMaestro, preguntaBO,
-				categoria, new AsyncCallback<Integer>() {
+				prueba, new AsyncCallback<Integer>() {
 
 					@Override
 					public void onSuccess(Integer result) {
-						mainLayout.actualizarPreguntasCategoria();
+						mainLayout.actualizarPreguntasPrueba();
 					}
 
 					@Override
@@ -445,57 +402,6 @@ public class Maestro implements EntryPoint {
 				});
 	}
 
-	public static void agregarCategoria(CategoriaUsuarioBO categoria) {
-		categoria.setUsuarioAdministradorID(usuarioMaestro.getIdentificador());
-		usuarioMaestroService.agregarCategoria(usuarioMaestro, categoria,
-				new AsyncCallback<Integer>() {
-
-					@Override
-					public void onSuccess(Integer result) {
-						setListaCategorias();
-
-					}
-
-					@Override
-					public void onFailure(Throwable caught) {
-						System.out.println("Error agregando la categoria");
-
-					}
-				});
-	}
-
-	public static void eliminarCategoria(CategoriaUsuarioBO categoria) {
-		categoriaTemp = categoria;
-
-		SC.ask("Precaución",
-				"Esta categoría puede ser usada en alguna prueba. Eliminar la categoría hará que no se encuentre disponible para la prueba. ¿Desea continuar?",
-				new BooleanCallback() {
-
-					@Override
-					public void execute(Boolean value) {
-						if (value == true) {
-							usuarioMaestroService.eliminarCategoria(
-									usuarioMaestro, categoriaTemp,
-									new AsyncCallback<Integer>() {
-
-										@Override
-										public void onFailure(Throwable caught) {
-											System.out
-													.println("Error eliminando la categoria");
-										}
-
-										@Override
-										public void onSuccess(Integer result) {
-											setListaCategorias();
-										}
-									});
-						}
-
-					}
-				});
-
-	}
-
 	public static void obtenerImagenesUsuario() {
 		usuarioMaestroService.consultarImagenesUsuario(
 				usuarioMaestro.getIdentificador(),
@@ -533,7 +439,7 @@ public class Maestro implements EntryPoint {
 										@Override
 										public void onSuccess(Integer result) {
 											mainLayout
-													.actualizarPreguntasCategoria();
+													.actualizarPreguntasPrueba();
 
 										}
 
@@ -650,6 +556,11 @@ public class Maestro implements EntryPoint {
 				Window.Location.replace(urlLogin);
 			}
 		});
+	}
+
+	public static void agregarPrueba(PruebaUsuarioBO prueba) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

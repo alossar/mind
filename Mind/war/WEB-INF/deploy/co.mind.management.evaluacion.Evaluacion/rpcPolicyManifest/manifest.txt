@@ -1,3 +1,3 @@
 # Module co.mind.management.evaluacion.Evaluacion
 # RPC service class, partial path of RPC policy file
-co.mind.management.evaluacion.client.servicios.EvaluacionService, 29318CE96DC34B2F6A3850889A129BB8.gwt.rpc
+co.mind.management.evaluacion.client.servicios.EvaluacionService, FFEA37BA16C96D8F1920C478855643D8.gwt.rpc

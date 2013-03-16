@@ -15,7 +15,7 @@ import com.smartgwt.client.widgets.drawing.Point;
 import com.smartgwt.client.widgets.form.DynamicForm;
 import com.smartgwt.client.widgets.form.fields.StaticTextItem;
 
-public class PanelLaminaEdicionPrueba extends Canvas {
+public class PanelModoEdicionPregunta extends Canvas {
 
 	private DrawPane panelReloj;
 	private DrawSector reloj;
@@ -35,7 +35,7 @@ public class PanelLaminaEdicionPrueba extends Canvas {
 	private int anchoPregunta = 167;
 	private int altoPregunta = 113;
 
-	public PanelLaminaEdicionPrueba() {
+	public PanelModoEdicionPregunta() {
 		setWidth(anchoLamina);
 		setHeight(altoLamina);
 		setLeft(0);

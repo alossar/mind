@@ -3,7 +3,7 @@ package co.mind.management.maestro.client;
 import java.util.List;
 
 import co.mind.management.maestro.client.procesos.PanelProcesos;
-import co.mind.management.maestro.client.temas.PanelCategorias;
+import co.mind.management.maestro.client.temas.PanelPruebas;
 import co.mind.management.shared.bo.EvaluadoBO;
 import co.mind.management.shared.bo.ImagenUsuarioBO;
 import co.mind.management.shared.bo.ParticipacionEnProcesoBO;
@@ -36,7 +36,7 @@ public class MaestroMainLayout extends VLayout {
 	private UsuarioBO usuario;
 	private VLayout layoutContenido;
 	private PanelAdministracion panelAdministracion;
-	private PanelCategorias panelCategorias;
+	private PanelPruebas panelCategorias;
 	private PanelProcesos panelVerProcesos;
 	private List<ProcesoUsuarioBO> listaProcesos;
 	private List<EvaluadoBO> listaUsuariosBasicos;
@@ -151,7 +151,7 @@ public class MaestroMainLayout extends VLayout {
 		layoutContenido.setSize("100%", "100%");
 
 		panelAdministracion = new PanelAdministracion();
-		panelCategorias = new PanelCategorias();
+		panelCategorias = new PanelPruebas();
 		panelVerProcesos = new PanelProcesos();
 
 		panelDashboard = new VLayout();
@@ -234,11 +234,11 @@ public class MaestroMainLayout extends VLayout {
 				.getRecord(result));
 	}
 
-	public void actualizarPreguntasCategoria() {
+	public void actualizarPreguntasPrueba() {
 		panelCategorias.actualizarPreguntasCategoria();
 	}
 
-	public void actualizarPreguntasCategoria(List<PreguntaUsuarioBO> result) {
+	public void actualizarPreguntasPrueba(List<PreguntaUsuarioBO> result) {
 		panelCategorias
 				.actualizarPreguntasCategoria(PreguntaCategoriaTileRecord
 						.getRecords(result));
@@ -259,6 +259,11 @@ public class MaestroMainLayout extends VLayout {
 		panelVerProcesos
 				.actualizarParticipaciones(ParticipacionEnProcesoListGridRecord
 						.getRecords(result));
+
+	}
+
+	public void actualizarPruebas(List<PruebaUsuarioBO> result) {
+		// TODO Auto-generated method stub
 
 	}
 

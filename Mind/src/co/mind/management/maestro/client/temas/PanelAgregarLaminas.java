@@ -2,23 +2,16 @@ package co.mind.management.maestro.client.temas;
 
 import java.util.List;
 
-import co.mind.management.shared.bo.ImagenBO;
 import co.mind.management.shared.bo.ImagenUsuarioBO;
 import co.mind.management.shared.bo.PreguntaUsuarioBO;
 import co.mind.management.shared.records.ImagenRecord;
 import co.mind.management.shared.records.PreguntaCategoriaListGridRecord;
-import co.mind.management.shared.records.PreguntaPruebaListGridRecord;
 import co.mind.management.shared.records.PruebaListGridRecord;
 
-import com.google.gwt.user.client.Timer;
 import com.smartgwt.client.types.Alignment;
 import com.smartgwt.client.types.Overflow;
 import com.smartgwt.client.types.SelectionStyle;
-import com.smartgwt.client.types.Side;
-import com.smartgwt.client.types.VerticalAlignment;
-import com.smartgwt.client.types.Visibility;
 import com.smartgwt.client.util.SC;
-import com.smartgwt.client.widgets.Label;
 import com.smartgwt.client.widgets.events.ClickHandler;
 import com.smartgwt.client.widgets.form.DynamicForm;
 import com.smartgwt.client.widgets.form.fields.IntegerItem;
@@ -29,8 +22,6 @@ import com.smartgwt.client.widgets.grid.ListGrid;
 import com.smartgwt.client.widgets.grid.ListGridField;
 import com.smartgwt.client.widgets.layout.HLayout;
 import com.smartgwt.client.widgets.layout.VLayout;
-import com.smartgwt.client.widgets.tab.Tab;
-import com.smartgwt.client.widgets.tab.TabSet;
 import com.smartgwt.client.widgets.tile.TileGrid;
 import com.smartgwt.client.widgets.tile.events.RecordClickEvent;
 import com.smartgwt.client.widgets.tile.events.RecordClickHandler;
@@ -42,7 +33,7 @@ public class PanelAgregarLaminas extends HLayout {
 
 	private ListGrid treeGridPruebas;
 	private VLayout layoutCentral;
-	private PanelLaminaEdicionPrueba panelPregunta;
+	private PanelModoEdicionPregunta panelPregunta;
 	private TileGrid tileGridImagenesUsuario;
 	private ListGrid listGridPreguntas;
 	private DynamicForm formInformacionLamina;
@@ -54,10 +45,10 @@ public class PanelAgregarLaminas extends HLayout {
 	private boolean nuevaPregunta = false;
 	private RichTextItem richTextEditorPregunta;
 	private ImagenRecord imagenSeleccionada;
-	private PanelCategorias panelCategorias;
+	private PanelPruebas panelPruebas;
 
-	public PanelAgregarLaminas(PanelCategorias panelCategorias) {
-		this.panelCategorias = panelCategorias;
+	public PanelAgregarLaminas(PanelPruebas panelCategorias) {
+		this.panelPruebas = panelCategorias;
 		setWidth100();
 		setHeight100();
 		setBackgroundColor("white");
@@ -153,7 +144,7 @@ public class PanelAgregarLaminas extends HLayout {
 		v2.setWidth(600);
 		v2.setHeight("100%");
 
-		panelPregunta = new PanelLaminaEdicionPrueba();
+		panelPregunta = new PanelModoEdicionPregunta();
 		v2.addMember(panelPregunta);
 
 		tileGridImagenesUsuario = new TileGrid();
@@ -221,7 +212,8 @@ public class PanelAgregarLaminas extends HLayout {
 				.getRecords(listaPreguntasPorCategoria));
 	}
 
-	public void actualizarPreguntasPrueba(PreguntaPruebaListGridRecord[] records) {
+	public void actualizarPreguntasPrueba(
+			PreguntaCategoriaListGridRecord[] records) {
 		listGridPreguntasPrueba.setData(records);
 	}
 
@@ -270,7 +262,7 @@ public class PanelAgregarLaminas extends HLayout {
 			bo.setPregunta(pregunta);
 			bo.setTiempoMaximo(tiempo);
 			bo.setImagenesUsuarioID(imagen);
-			panelCategorias.agregarPreguntaCategoria(bo);
+			panelPruebas.agregarPreguntaPrueba(bo);
 		} else {
 			SC.warn("La informaci\u00F3n de la l\u00E1mina se encuentra incompleta.");
 		}
