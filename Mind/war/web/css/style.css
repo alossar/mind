@@ -1,0 +1,709 @@
+
+*{
+	padding:0px;
+	margin:0px;
+}
+body{
+	display: block;
+	background-color:white;
+	background:url(Img/hexellence.png);
+	background-repeat:repeat;
+}
+#contenedorTotal{
+	position: relative;
+	width:960px;
+	margin: 0px auto;
+	background-color:white;
+	box-shadow: 0px 0px 10px rgba(0,0,0,0.3);
+}
+
+#contenedorTotal p{
+	font-family:arial;
+}
+/*--------------------------------HOME--------------------------------*/
+/*---Link de Navegador----*/
+#navegador a:link{
+	color:black;
+}
+#navegador a:visited{
+	color:black;
+}
+#navegador a:hover{
+	color:rgb(17,170,209);
+}
+/*---NAVEGADOR---*/
+#navegador{	
+	z-index:9999999;
+	height:45px;
+	background-color:white;
+	/*border-bottom: 1px grey;*/
+	box-shadow: 0px 0px 5px rgba(0,0,0,0.3);
+}
+#logo img{
+	border: none;
+}
+#logo{
+	width:147px;
+	height:58px;
+	float:left;
+}
+#logo img{
+	margin-top: 5px;
+	margin-left: 25px;
+}
+#secciones{
+	height:50px;
+	width:400px;
+	float:right;
+	margin-right:62px;
+}
+#secciones li{
+	list-style: none;
+	float:left;
+	margin-top: 10px;
+	margin-left: 20px;
+	font-family: Arial;
+	font-size: 12px;
+	font-weight:bold;
+}
+.sA p{
+	font-size: 10px;
+	font-weight:normal;
+	color:grey;
+	margin-top:-2px;
+}
+#secciones li:hover{
+	cursor: pointer;
+}
+/*---CUERPO---*/
+#cuerpoA{
+	position:relative;
+	height:570px;
+	width: 960px;
+	border-bottom-style:solid; 
+	border-bottom-color: rgb(120,120,120);
+	border-width:1px;
+}
+#cuerpoA img{
+	/*padding-top: 0px;*/
+}
+#imgShot{
+	position:absolute;
+	margin-top:0px;
+}
+#imgShot2 img{
+	margin-top:-13px;
+}
+#imgShot3 img{
+	margin-top:-13px;
+}
+#imgShot4 img{
+	margin-top:-13px;
+}
+#slider{
+	width:960px;
+	height:570px;
+}
+#imgFondoShot{
+	width: 960px;
+}
+#imgFondoShot img{
+	margin-top: 2px;
+	height: 570px;
+	width:960px;
+	margin-left: 20px;
+}
+#shotLogo{
+	z-index:9999;
+	position: absolute;
+	height:114px;
+	width: 335px;
+	top:50px;
+	left:35px;
+}
+#shotFrase{
+	position: absolute;
+	font-size: 25px;
+	top:150px;
+	left:50px;
+	color:rgb(46,55,60);
+}
+#shotLogin{
+	z-index:99999;
+	position:absolute;
+	font-size:12px;
+	width: 104px;
+	height:42px;
+	left:856px;
+	top:15px;
+}
+#shotLoginCont img{
+	border:none;
+}
+#shotLogin p{
+	position: absolute;
+	top:15px;
+	left:43px;
+	color: white;
+}
+#shotLogin a:link{
+	color:white;
+}
+#shotLogin:hover{
+	cursor: pointer;
+	top:20px;
+}
+#shotPrueba{
+	position: absolute;
+	z-index:99999;
+	width:230px;
+	height:116px;
+	left:50px;
+	top:395px;
+	background-color:rgba(255,255,255,0.7);
+	border-style:solid;
+	border-width:1px;
+	border-radius:3px;
+	border-color:rgba(107,107,107,0.5);
+}
+#shotText{
+	z-index:9999;
+	height:50px;
+}
+#shotText p{
+	padding-top: 10px;
+	text-align: center;
+	font-size: 16px;
+	font-family: Arial;
+	color: rgb(91,91,91);
+}
+#shotBotonPrueba{
+	height:42px;
+	width: 190px;
+	margin-top: 8px;
+	margin-left: 19px;
+	background-color:rgb(17,170,209); 
+}
+#shotBotonPrueba p{
+	font-weight: normal;
+	font-size: 12px;
+	padding-top: 13px;
+	text-align: center;
+	color:white;
+}
+#shotBotonPrueba:hover{
+	cursor:pointer;
+	background-color:grey;
+}
+/*---CIERRO CUERPO---*/
+/*---BANNER---*/
+#cuerpoB{
+	position: relative;
+	height:67px;
+	background-image:url(Img/fondo.jpg);
+	margin-top: auto;
+	margin-bottom: auto;
+	border-top-style:solid; 
+	border-top-color: rgb(10,10,10);
+	border-bottom-style:solid; 
+	border-bottom-color: black;
+	border-width: 1px;
+	/*background-color:rgb(46,55,60);*/
+}
+#cuerpoB p{
+	padding-top: 7px;
+	height:60px;
+	width:520px;
+	margin: 3px auto;
+	line-height: 150%;
+}
+#cuerpoB img{
+	position:absolute;
+	left:160px;
+	top:0px;
+}
+#banner{
+
+}
+#banner p{
+	padding-top: 12px;
+	font-size: 14px;
+	font-weight:normal;
+	font-style:italic;
+	text-align: center;
+	color:white;
+}
+/*---CUERPO C---*/
+#cuerpoC{
+	position:relative;
+	height:520px;
+	border-top-style:solid; 
+	border-top-color: white;
+	border-width:1px;
+}
+#subCuerpoC{
+	position:relative;
+	height:380px;
+	background-color: #F8F9F9;
+}
+#cuerpoC h1{
+	font-family:arial;
+	font-size:21px;
+	color:grey;
+}
+.info{
+	float:left;
+}
+#info1{
+	position:relative;
+	width: 300px;
+	left:20px;
+	top:50px;
+}
+#info2{
+	position:relative;
+	width: 300px;
+	left:20px;
+	top:50px;
+}
+#info3{
+	position:relative;
+	width: 300px;
+	left:20px;
+	top:50px;
+}
+#infoText{	
+	height:150px;
+	width: 300px;
+	margin-top: 0px;
+	margin-left: 10px;
+}
+#titleCuerpoC h1{
+	margin: 0px auto;
+	line-height: 100%;
+}
+#titleCuerpoC h1{
+	width: 180px;
+	height: 50px;
+	text-align:center;
+	font-size: 16pt;
+	color:rgb(91,91,91);
+	margin-bottom: 8px;
+	color: grey;
+	/*background-color: red;*/
+	text-align: center;
+}
+
+#infoText p{
+	width: 300px;
+	font-size:14px;
+	color:grey;
+	line-height: 180%;
+	padding-left: 20px;	
+}
+#infoImg1 img{
+	margin-top:13px;
+	margin-left: -15px;
+}
+#infoImg2 img{
+	margin-top:13px;
+	margin-left: -15px;
+}
+
+#info4{
+	position: absolute;
+	top:420px;
+	left:290px;
+	height:100px;
+}
+#info4 h1{
+	width:390px;
+	margin: 0px auto;
+	text-align: center;
+}
+#info4{
+	border-width:0px;
+}
+#info4 p{
+	width: 100px;
+	margin: 3px auto;
+	text-align: center;
+	color:rgb(17,170,209);
+	font-size: 12px;
+	border-bottom-style:solid;
+	border-width:1px;
+}
+#info4 p:hover{
+	color:rgb(17,190,249);
+	cursor:pointer;
+}
+/*---CIERRO---*/
+/*---FOOTER---*/
+#footerEscudo{
+	position: absolute;
+	top:1920px;
+	left:447px;
+}
+#footer{
+	margin: 0px auto;
+	height:34px;
+	background-color:rgb(46,55,60);
+}
+#footer p{
+	font-size:10px;
+	font-family: arial;
+	padding-top:12px;
+	padding-left: 25px;
+	color:white;
+}
+#footertopdetail{
+	height: 36px;
+
+}
+/*---CIERRO HOME---*/
+/*--------------------------------Nosotros--------------------------------*/
+#cuerpoANosotros{
+	position:relative;
+}
+#cuerpoAInfo{
+	margin-top: 20px;
+}
+.shotInfo{
+	margin-top:4px;
+	height:170px;
+	width:840px;
+	margin: 0px auto;
+	font-family: Arial;
+	font-size: 12px;
+	/*outline:black solid 1px;*/
+}
+.shotInfo h1{
+	font-size: 24px;
+}
+.shotInfo p{
+	font-size: 14px;
+	line-height: 180%;
+	clear: both;
+	color:rgb(91,91,91);
+}
+.shotInfoTitulo img{
+	float:left;
+}
+.shotInfoTitulo h1{
+	padding-top:7px;
+	margin-bottom: 5px;
+}
+#cuerpoBNosotros{
+	position: relative;
+	height:454px;
+	margin-top: auto;
+	margin-bottom: auto;
+	/*background-color:rgb(46,55,60);*/
+}
+#cuerpoBNosotros img{
+	margin-left:30px;
+}
+#cuerpoCNostros{
+	position:relative;
+	height:75px;
+}
+/*---CIERRO Nosotros---*/
+/*--------------------------------Servicios--------------------------------*/
+#cuerpoAServiciosInfo{
+	margin-top: 20px;
+}
+#cuerpoBServicios{
+	position: relative;
+	height:624px;
+	margin-top: auto;
+	margin-bottom: auto;
+	/*background-color:rgb(46,55,60);*/
+}
+#cuerpoBServicios{
+	margin-left:45px;
+}
+#botonEntrarServicios{
+	position: absolute;
+	top:880px;
+	left:433px;
+	width: 100px;
+	height: 37px;
+	border-radius: 3px;
+	background-color:rgb(91,91,91);
+}
+#botonEntrarServicios:hover{
+	cursor:pointer;
+	color: black;
+	background-color:rgb(200,200,200);
+}
+#botonEntrarServicios p{
+	color:white;
+	font-weight: normal;
+	font-size: 12px;
+	padding-top: 12px;
+	padding-left: 22px;
+}
+#footerEscudoB{
+	position: absolute;
+	left:447px;
+}
+/*---CIERRO Contactenos---*/
+/*--------------------------------Contactenos--------------------------------*/
+#cuerpoAContactenos{
+	position:relative;
+	height:180px;
+}
+#cuerpoBContactenos{
+	position: relative;
+	height:284px;
+	margin-top: auto;
+	margin-bottom: auto;
+}
+#cuerpoCContactenos{
+	position:relative;
+	height:75px;
+}
+#infoContactos{
+	width:836px;
+	margin-top: 20px;
+	margin-left: 60px;
+	
+}
+#textBoxContactos{
+	width:250px;
+	height:100px;
+	resize:none;
+}
+#botContactenosEnviar{
+	margin-left:220px;
+}
+#botContactenosEnviar:hover{
+	cursor: pointer;
+}
+/*--------------------------------SIGN IN--------------------------------*/
+#contenedorTotalRegistrate{
+	position: relative;
+	width:960px;
+	margin: 0px auto;
+}
+#registrateContenedorDatos{
+	width:408px; 
+	height:380px;
+	background-color: white;
+	box-shadow: 0px 0px 10px rgba(0,0,0,0.3);
+}
+#cuerpoRegistrate{
+	width:408px; 
+	height:643px;
+	margin:auto;
+}
+
+#cuerpoRegistrate p{
+	font-family: Arial;
+	font-size: 12px;
+}
+#registrateTitle{
+	width:137px;
+	height:62px;
+	margin: 25px auto; 
+}
+.registrateInfo{
+	margin-left: 35px;
+}
+#resgistrateInfoInferior{
+	width: 180px;
+	height: 50px;
+	margin: 25px auto;
+}
+#resgistrateInfoInferior p{
+	text-align: center;
+	margin-bottom: 7px;
+}
+#registrateInfo{
+	width:329px;
+	padding-top: 25px;
+	margin: 10px auto;
+	color:black;
+	font-weight: bold;
+
+}
+#registrateInfo input{
+	margin-bottom: 10px;
+	height: 30px;
+	width:325px;
+}
+.regTextBar{
+	margin-bottom: 10px;
+}
+.regName{
+	margin-top: 0px;
+}
+#botEnviarRegistro{
+	width: 75px;
+	height: 30px;
+	background-color:rgb(105,189,69);
+	/*margin-left:292px;*/
+	margin: 0px auto;
+}
+#botEnviarRegistro p{
+	padding-top: 8px;
+	text-align: center;
+	color:white;
+}
+#botEnviarRegistro:hover{
+	cursor:pointer;
+	background-color:rgb(91,91,91);
+}
+#yaTieneCuenta p{
+	float:left;
+	margin-right: 5px;
+}
+#preguntas p{
+	float:left;
+	margin-right: 0px;
+	margin-left: 10px;
+}
+.regReg{
+	font-style: italic;
+	color:rgb(17,170,209);
+}
+.regReg:hover{
+	cursor: pointer;
+}
+/*--------------------------------MAIL REICBO CONFIRMACIÓN DE REGISTRO--------------------------------*/
+#contenedorTotalMail{
+	position: relative;
+	width:960px;
+	margin: 0px auto;
+}
+#cuerpoMail{
+	width:408px; 
+	height:643px;
+	margin:auto;
+
+}
+#infoContactos{
+	margin-top:30px;
+}
+#MailTitle{
+	width:137px;
+	height:62px;
+	margin: 25px auto; 
+}
+#mailContenedorDatos{
+	width:408px; 
+	height:380px;
+	background-color: white;
+	box-shadow: 0px 0px 10px rgba(0,0,0,0.3);
+}
+#mailFooter{
+	height:37px; 
+	width:100%;
+}
+.contSa{
+	margin-top: 5px;
+	margin-bottom: 5px;
+}
+/*----------TOOL TIPS-------------*/
+
+/**** Choco-Slider ****/
+
+#slider{
+	width:960px;
+	height:570px;
+}
+#slider img{
+	width:960px;
+	height:570px;
+	margin-top: -15px;
+}
+
+#cuerpoA{
+	width:960px;
+	height:570px;
+}
+.chocoslider {
+  position:relative;
+  margin-bottom: 50px;
+}
+
+.chocoslider img {
+  position:absolute;
+  top:100px;
+  left:100px;
+}
+
+.chocoslider a.choco-imageLink {
+  position:absolute;
+  top:0px;
+  left:0px;
+  width:100%;
+  height:100%;
+  border:0;
+  padding:0;
+  margin:0;
+  z-index:60;
+  display:none;
+}
+
+.choco-slice {
+  display:block;
+  position:absolute;
+  z-index:50;
+  height:100%;
+}
+
+.choco-title {
+  position:absolute;
+  left:0px;
+  bottom:0px;
+  background:rgb(91,91,91);
+  color:#fff;
+  opacity:0.8;
+  width:100%;
+  z-index:89;
+}
+
+.choco-title p {
+  padding:5px;
+  margin:0;
+}
+
+.choco-title a {
+  display:inline !important;
+}
+
+.choco-html-title {
+    display:none;
+}
+
+.choco-controlNavigation {
+  z-index:9999;
+  position:absolute;
+  top:540px;
+  right:450px;
+  bottom:-30px;
+  height: 20px;
+  background-color: rgba(255,255,255,0.8);
+  border: 1px solid rgba(150,150,150,0.5);
+}
+
+.choco-controlNavigation a {
+  text-indent: -999999px;
+  text-transform:uppercase;
+    text-decoration:none;
+    height:20px;
+    width:18px;
+    display:block;
+    cursor: pointer;
+    background: transparent url(Img/controlls.png) center bottom no-repeat;
+    float:left;
+    outline: none;
+
+}
+
+.choco-controlNavigation a.active {
+  background: transparent url(Img/controlls.png) center top no-repeat;
+}
+
+

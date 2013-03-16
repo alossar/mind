@@ -1,0 +1,3 @@
+# Module co.mind.management.maestro.Maestro
+# RPC service class, partial path of RPC policy file
+co.mind.management.maestro.client.servicios.UsuarioMaestroService, C9D4274E87D49EFB3049FF5492096825.gwt.rpc

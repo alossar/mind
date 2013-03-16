@@ -1,0 +1,44 @@
+<!doctype html>
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<link type="text/css" rel="stylesheet" href="css/Admin.css">
+<script type="text/javascript" src="js/jquery.js"></script>
+<title>Mind Management</title>
+<script type="text/javascript">
+	$(document).ready(function() {
+
+		$(window).resize(function() {
+
+			$('.className').css({
+				position : 'absolute',
+				left : ($(window).width() - $('.className').outerWidth()) / 2,
+				top : ($(window).height() - $('.className').outerHeight()) / 2
+			});
+
+		});
+		// To initially run the function:
+		$(window).resize();
+
+	});
+</script>
+<script>
+	var isomorphicDir = "co.mind.management.admin.Admin/sc/";
+</script>
+<script
+	src="co.mind.management.admin.Admin/co.mind.management.admin.Admin.nocache.js"></script>
+
+</head>
+
+<!--                                           -->
+<!-- The body can have arbitrary html, or      -->
+<!-- we leave the body empty because we want   -->
+<!-- to create a completely dynamic ui         -->
+<!--                                           -->
+<body id="body">
+
+	<div id="contenido" class="className"></div>
+
+
+</body>
+</html>

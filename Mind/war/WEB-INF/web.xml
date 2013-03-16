@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://java.sun.com/xml/ns/javaee" xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
+http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+	version="2.5">
+	<!-- TODO: Add <servlet> tags for each servlet here. -->
+	<!-- TODO: Add <servlet-mapping> tags for each <servlet> here. -->
+	<!-- TODO: Optionally add a <welcome-file-list> tag to display a welcome 
+		file. -->
+
+	<servlet>
+		<servlet-name>LoginService</servlet-name>
+		<servlet-class>co.mind.management.login.server.LoginServiceImpl</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>LoginService</servlet-name>
+		<url-pattern>/co.mind.management.login.Login/LoginService</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>EvaluacionService</servlet-name>
+		<servlet-class>co.mind.management.evaluacion.server.EvaluacionServiceImpl</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>EvaluacionService</servlet-name>
+		<url-pattern>/co.mind.management.evaluacion.Evaluacion/EvaluacionService</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>UsuarioMaestroService</servlet-name>
+		<servlet-class>co.mind.management.maestro.server.UsuarioMaestroServiceImpl</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>UsuarioMaestroService</servlet-name>
+		<url-pattern>/co.mind.management.maestro.Maestro/UsuarioMaestroService</url-pattern>
+	</servlet-mapping>
+
+<servlet>
+		<servlet-name>PDFReportServlet</servlet-name>
+		<servlet-class>co.mind.management.shared.recursos.PDFReportServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>PDFReportServlet</servlet-name>
+		<url-pattern>/PDFReportServlet</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>ExcelReportServlet</servlet-name>
+		<servlet-class>co.mind.management.shared.recursos.ExcelReportServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>ExcelReportServlet</servlet-name>
+		<url-pattern>/ExcelReportServlet</url-pattern>
+	</servlet-mapping>
+
+
+	<welcome-file-list>
+		<welcome-file>Login.html</welcome-file>
+	</welcome-file-list>
+
+</web-app>

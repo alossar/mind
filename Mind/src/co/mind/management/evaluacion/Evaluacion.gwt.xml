@@ -1,0 +1,7 @@
+<module>
+	<inherits name="com.google.gwt.user.User" />
+	<inherits name="com.smartgwt.SmartGwt" />
+	<inherits name="com.smartgwt.Drawing" />
+	<entry-point class="co.mind.management.evaluacion.client.Evaluacion" />
+	<inherits name="co.mind.management.shared.Mind"></inherits>
+</module>

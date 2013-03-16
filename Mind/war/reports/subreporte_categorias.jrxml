@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version last-->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Blank A4" language="groovy" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="289be1dc-d126-42e6-853c-bb64626d392f">
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="Conexion Mind Management"/>
+	<parameter name="pruebaID" class="java.lang.String"/>
+	<parameter name="participacionID" class="java.lang.String"/>
+	<parameter name="SUBREPORT_DIR_PRE" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[SELECT DISTINCT categorias_usuarios.nombre as Categoria, categorias_usuarios.identificador as CategoriaID FROM categorias_usuarios, preguntas_usuarios, preguntas_en_prueba, pruebas_usuarios WHERE pruebas_usuarios.identificador=$P{pruebaID} AND preguntas_en_prueba.pruebas_usuarios_identificador=pruebas_usuarios.identificador AND preguntas_en_prueba.preguntas_usuarios_identificador=preguntas_usuarios.identificador AND categorias_usuarios.identificador=preguntas_usuarios.categorias_usuarios_identificador;]]>
+	</queryString>
+	<field name="Categoria" class="java.lang.String"/>
+	<field name="CategoriaID" class="java.lang.Integer"/>
+	<group name="Categoria"/>
+	<group name="CategoriaID"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<detail>
+		<band height="75" splitType="Stretch">
+			<staticText>
+				<reportElement uuid="34ef02a6-df9c-4f58-9747-05968424ad2a" key="staticText-1" x="0" y="5" width="80" height="23"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement>
+					<font size="14" isBold="true" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+				<text><![CDATA[Categoria]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement uuid="0e9945c4-ef96-4db5-962d-394611934ed3" key="textField" x="80" y="5" width="476" height="23"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement>
+					<font size="14" isBold="true" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{Categoria}]]></textFieldExpression>
+			</textField>
+			<subreport>
+				<reportElement uuid="88b9c765-6823-45de-89c8-012cf9da6aa1" x="0" y="30" width="556" height="30"/>
+				<subreportParameter name="participacionID">
+					<subreportParameterExpression><![CDATA[$P{participacionID}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="categoriaID">
+					<subreportParameterExpression><![CDATA[$F{CategoriaID}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA[new File($P{SUBREPORT_DIR_PRE})]]></subreportExpression>
+			</subreport>
+		</band>
+	</detail>
+</jasperReport>
