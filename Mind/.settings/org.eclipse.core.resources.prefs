@@ -1,4 +1,5 @@
 eclipse.preferences.version=1
+encoding//src/co/mind/management/login/client/LoginConstants_es.properties=UTF-8
 encoding//war/reports/reporte.jrxml=UTF-8
 encoding//war/reports/subreporte_categorias.jrxml=UTF-8
 encoding//war/reports/subreporte_preguntas.jrxml=UTF-8

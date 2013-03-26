@@ -14,10 +14,7 @@
  *******************************************************************************/
 package co.mind.management.login.client;
 
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.util.Date;
-import java.util.Properties;
 
 import co.mind.management.login.client.servicios.LoginService;
 import co.mind.management.login.client.servicios.LoginServiceAsync;
@@ -39,11 +36,11 @@ public class Login implements EntryPoint {
 	private static PanelLogin panelLogin;
 	private static LoginServiceAsync loginService = GWT
 			.create(LoginService.class);
-	private static String urlAplicacion = "/Tarmin.html";
-	private static String urlMaster = "/Maestro.html";
+	private static String urlAplicacion = "/Mind/Tarmin.html";
+	private static String urlMaster = "/Mind/Maestro.html";
 
 	public void onModuleLoad() {
-		
+
 		String sessionID = Cookies.getCookie("sid");
 		if (sessionID != null) {
 			verificarSessionCookie(sessionID);

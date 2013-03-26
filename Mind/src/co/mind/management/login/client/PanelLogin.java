@@ -54,12 +54,15 @@ public class PanelLogin extends VLayout {
 
 			@Override
 			public void onKeyDown(KeyDownEvent event) {
-				if (event.getKeyName().equalsIgnoreCase("Enter")) {
-					validarLogin();
+				try {
+					if (event.getKeyName().equalsIgnoreCase("Enter")) {
+						validarLogin();
+					}
+				} catch (NullPointerException e) {
+
 				}
 			}
 		});
-		
 
 		textPassword.addKeyDownHandler(new KeyDownHandler() {
 

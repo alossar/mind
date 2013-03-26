@@ -2,6 +2,7 @@ package co.mind.management.maestro.client;
 
 import java.util.List;
 
+import co.mind.management.maestro.client.cuenta.PanelCuenta;
 import co.mind.management.maestro.client.procesos.PanelProcesos;
 import co.mind.management.maestro.client.temas.PanelPruebas;
 import co.mind.management.shared.bo.EvaluadoBO;
@@ -15,7 +16,6 @@ import co.mind.management.shared.records.ImagenRecord;
 import co.mind.management.shared.records.ParticipacionEnProcesoListGridRecord;
 import co.mind.management.shared.records.PreguntaCategoriaTileRecord;
 import co.mind.management.shared.records.ProcesoRecord;
-import co.mind.management.shared.records.UsuarioBasicoListGridRecord;
 
 import com.smartgwt.client.types.Alignment;
 import com.smartgwt.client.types.VerticalAlignment;
@@ -35,14 +35,10 @@ public class MaestroMainLayout extends VLayout {
 
 	private UsuarioBO usuario;
 	private VLayout layoutContenido;
-	private PanelAdministracion panelAdministracion;
 	private PanelPruebas panelCategorias;
 	private PanelProcesos panelVerProcesos;
-	private List<ProcesoUsuarioBO> listaProcesos;
-	private List<EvaluadoBO> listaUsuariosBasicos;
-	private List<ImagenUsuarioBO> listaImagenes;
-	private List<PruebaUsuarioBO> listaPruebas;
 	private VLayout panelDashboard;
+	private PanelCuenta panelCuenta;
 
 	public MaestroMainLayout(UsuarioBO usuario) {
 		this.usuario = usuario;
@@ -62,6 +58,14 @@ public class MaestroMainLayout extends VLayout {
 
 		Menu menuUsuario = new Menu();
 		MenuItem menuItemUsos = new MenuItem("Informaci\u00f3n de la Cuenta");
+		menuItemUsos.addClickHandler(new ClickHandler() {
+			
+			@Override
+			public void onClick(MenuItemClickEvent event) {
+				cargarLayoutCuenta();
+				
+			}
+		});
 		MenuItem menuItemCerrarSesion = new MenuItem("Cerrar Sesi\u00f3n");
 		menuItemCerrarSesion.addClickHandler(new ClickHandler() {
 
@@ -88,17 +92,7 @@ public class MaestroMainLayout extends VLayout {
 
 					}
 				});
-		ToolStripButton toolStripButtonEvaluaciones = new ToolStripButton(
-				"Evaluaciones");
-		toolStripButtonEvaluaciones
-				.addClickHandler(new com.smartgwt.client.widgets.events.ClickHandler() {
 
-					@Override
-					public void onClick(ClickEvent event) {
-						cargarLayoutEvaluaciones();
-
-					}
-				});
 		ToolStripButton toolStripButtonTemas = new ToolStripButton("Temas");
 		toolStripButtonTemas
 				.addClickHandler(new com.smartgwt.client.widgets.events.ClickHandler() {
@@ -115,10 +109,39 @@ public class MaestroMainLayout extends VLayout {
 
 					@Override
 					public void onClick(ClickEvent event) {
-						cargarLayoutAdministracion();
+						cargarLayoutCuenta();
+					}
+				});
+		ToolStripButton toolStripButtonProgramadores = new ToolStripButton(
+				"Programadores");
+		toolStripButtonProgramadores
+				.addClickHandler(new com.smartgwt.client.widgets.events.ClickHandler() {
+
+					@Override
+					public void onClick(ClickEvent event) {
+
+					}
+				});
+		ToolStripButton toolStripButtonLaminas = new ToolStripButton("Láminas");
+		toolStripButtonLaminas
+				.addClickHandler(new com.smartgwt.client.widgets.events.ClickHandler() {
+
+					@Override
+					public void onClick(ClickEvent event) {
+
 					}
 				});
 		ToolStripButton toolStripButtonHome = new ToolStripButton("Home");
+		toolStripButtonHome
+				.addClickHandler(new com.smartgwt.client.widgets.events.ClickHandler() {
+
+					@Override
+					public void onClick(ClickEvent event) {
+						cargarLayoutHome();
+					}
+				});
+
+		ToolStripButton toolStripButtonPregunta = new ToolStripButton("Home");
 		toolStripButtonHome
 				.addClickHandler(new com.smartgwt.client.widgets.events.ClickHandler() {
 
@@ -132,11 +155,13 @@ public class MaestroMainLayout extends VLayout {
 		menuBarUsuarioBasico.addMember(imagenLogo);
 		menuBarUsuarioBasico.addSeparator();
 		menuBarUsuarioBasico.addButton(toolStripButtonProcesosEvaluacion);
-		menuBarUsuarioBasico.addButton(toolStripButtonEvaluaciones);
 		menuBarUsuarioBasico.addButton(toolStripButtonTemas);
 		menuBarUsuarioBasico.addButton(toolStripButtonEvaluados);
+		menuBarUsuarioBasico.addButton(toolStripButtonProgramadores);
+		menuBarUsuarioBasico.addButton(toolStripButtonLaminas);
 		menuBarUsuarioBasico.addFill();
 		menuBarUsuarioBasico.addMember(toolStripButtonHome);
+		menuBarUsuarioBasico.addMember(toolStripButtonPregunta);
 		menuBarUsuarioBasico.addSeparator();
 		menuBarUsuarioBasico.addMember(toolStripMenuUsuario);
 
@@ -150,9 +175,9 @@ public class MaestroMainLayout extends VLayout {
 		layoutContenido = new VLayout();
 		layoutContenido.setSize("100%", "100%");
 
-		panelAdministracion = new PanelAdministracion();
 		panelCategorias = new PanelPruebas();
 		panelVerProcesos = new PanelProcesos();
+		panelCuenta = new PanelCuenta(usuario);
 
 		panelDashboard = new VLayout();
 		panelDashboard.setSize("100%", "80%");
@@ -166,67 +191,61 @@ public class MaestroMainLayout extends VLayout {
 
 		Img imagenDashboard = new Img("img/dashboard.png", 1024, 600);
 		imagenDashboard.setAlign(Alignment.CENTER);
+		
+		h.addMember(imagenDashboard);
 
-		layoutContenido.addMember(panelAdministracion);
 		layoutContenido.addMember(panelCategorias);
 		layoutContenido.addMember(panelVerProcesos);
-		h.addMember(imagenDashboard);
-		panelDashboard.addMember(h);
+		layoutContenido.addMember(panelCuenta);
 		layoutContenido.addMember(panelDashboard);
 
-		panelAdministracion.setVisible(false);
 		panelCategorias.setVisible(false);
 		panelVerProcesos.setVisible(false);
+		panelCuenta.setVisible(false);
 
 	}
 
-	private void cargarLayoutAdministracion() {
-		panelAdministracion.setVisible(true);
+	private void cargarLayoutCuenta() {
+		panelCuenta.setVisible(true);
 		panelCategorias.setVisible(false);
 		panelVerProcesos.setVisible(false);
 		panelDashboard.setVisible(false);
 	}
 
 	private void cargarLayoutProcesos() {
-		panelAdministracion.setVisible(false);
+		panelCuenta.setVisible(false);
 		panelCategorias.setVisible(false);
 		panelVerProcesos.setVisible(true);
 		panelDashboard.setVisible(false);
 	}
 
 	private void cargarLayoutEvaluaciones() {
-		panelAdministracion.setVisible(false);
+		panelCuenta.setVisible(false);
 		panelCategorias.setVisible(false);
 		panelVerProcesos.setVisible(false);
 		panelDashboard.setVisible(false);
 	}
 
 	private void cargarLayoutTemas() {
-		panelAdministracion.setVisible(false);
+		panelCuenta.setVisible(false);
 		panelCategorias.setVisible(true);
 		panelVerProcesos.setVisible(false);
 		panelDashboard.setVisible(false);
 	}
 
 	private void cargarLayoutHome() {
-		panelAdministracion.setVisible(false);
+		panelCuenta.setVisible(false);
 		panelCategorias.setVisible(false);
 		panelVerProcesos.setVisible(false);
 		panelDashboard.setVisible(true);
 	}
 
 	public void actualizarProcesos(List<ProcesoUsuarioBO> result) {
-		listaProcesos = result;
-		panelVerProcesos.actualizarProcesos(ProcesoRecord
-				.getRecords(listaProcesos));
+		panelVerProcesos.actualizarProcesos(ProcesoRecord.getRecords(result));
 	}
 
 	public void actualizarUsuariosBasicos(List<EvaluadoBO> result) {
-		listaUsuariosBasicos = result;
-		panelAdministracion
-				.actualizarUsuariosBasicos(UsuarioBasicoListGridRecord
-						.getRecords(listaUsuariosBasicos));
-		panelVerProcesos.actualizarListaUsuariosBasicos(listaUsuariosBasicos);
+		panelVerProcesos.actualizarListaUsuariosBasicos(result);
 	}
 
 	public void actualizarImagenesUsuario(List<ImagenUsuarioBO> result) {

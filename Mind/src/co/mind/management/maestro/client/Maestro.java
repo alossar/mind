@@ -50,7 +50,7 @@ import com.smartgwt.client.util.SC;
  * Entry point classes define <code>onModuleLoad()</code>.
  */
 public class Maestro implements EntryPoint {
-	private static String urlLogin = "/Login.html";
+	private static String urlLogin = "/Mind/Login.html";
 	private static UsuarioMaestroServiceAsync usuarioMaestroService = GWT
 			.create(UsuarioMaestroService.class);
 	private static UsuarioMaestroBO usuarioMaestro;
@@ -303,8 +303,8 @@ public class Maestro implements EntryPoint {
 	public static void eliminarPrueba(PruebaUsuarioBO prueba) {
 		pruebaTemp = prueba;
 
-		SC.ask("Precaución",
-				"Esta prueba puede ser usada en algun proceso. Eliminar la prueba hará que no se encuentre disponible para el proceso. ¿Desea continuar?",
+		SC.ask("Precauciï¿½n",
+				"Esta prueba puede ser usada en algun proceso. Eliminar la prueba harï¿½ que no se encuentre disponible para el proceso. ï¿½Desea continuar?",
 				new BooleanCallback() {
 
 					@Override
@@ -374,8 +374,8 @@ public class Maestro implements EntryPoint {
 	public static void eliminarProceso(ProcesoUsuarioBO proceso) {
 		procesoTemp = proceso;
 
-		SC.ask("Precaución",
-				"Este proceso puede estar siendo usado. ¿Desea continuar?",
+		SC.ask("Precauciï¿½n",
+				"Este proceso puede estar siendo usado. ï¿½Desea continuar?",
 				new BooleanCallback() {
 
 					@Override
@@ -425,8 +425,8 @@ public class Maestro implements EntryPoint {
 	public static void eliminarPreguntaCategoria(PreguntaUsuarioBO pregunta) {
 		preguntaTemp = pregunta;
 
-		SC.ask("Precaución",
-				"Esta lámina es usada en alguna prueba. Eliminar la categoría hará que no se encuentre disponible para la prueba. ¿Desea continuar?",
+		SC.ask("Precauciï¿½n",
+				"Esta lï¿½mina es usada en alguna prueba. Eliminar la categorï¿½a harï¿½ que no se encuentre disponible para la prueba. ï¿½Desea continuar?",
 				new BooleanCallback() {
 
 					@Override
