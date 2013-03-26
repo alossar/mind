@@ -15,22 +15,22 @@
 		<class>co.mind.management.shared.entidades.Solicitud</class>
 		<class>co.mind.management.shared.entidades.Usuario</class>
 
-		<!-- <properties> -->
-		<!-- <property name="javax.persistence.jdbc.driver" value="com.mysql.jdbc.Driver" 
-			/> -->
-		<!-- <property name="javax.persistence.jdbc.url" -->
-		<!-- value="jdbc:mysql://localhost:3306/mind_measurement" /> -->
-		<!-- <property name="javax.persistence.jdbc.user" value="root" /> -->
-		<!-- <property name="javax.persistence.jdbc.password" value="admin" /> -->
-		<!-- </properties> -->
-
 		<properties>
-			<property name="javax.persistence.jdbc.driver" value="com.mysql.jdbc.Driver" />
-			<property name="javax.persistence.jdbc.url"
-				value="jdbc:mysql://ec2-23-21-211-172.compute-1.amazonaws.com:3306/mind_measurement" />
-			<property name="javax.persistence.jdbc.user" value="mindm" />
-			<property name="javax.persistence.jdbc.password" value="mindm" />
+		<property name="javax.persistence.jdbc.driver" value="com.mysql.jdbc.Driver" 
+			/>
+		<property name="javax.persistence.jdbc.url"
+		value="jdbc:mysql://192.168.13.62:3306/mind_measurement" />
+		<property name="javax.persistence.jdbc.user" value="root" />
+		<property name="javax.persistence.jdbc.password" value="WUWV1ITjkI" />
 		</properties>
+
+<!-- 		<properties> -->
+<!-- 			<property name="javax.persistence.jdbc.driver" value="com.mysql.jdbc.Driver" /> -->
+<!-- 			<property name="javax.persistence.jdbc.url" -->
+<!-- 				value="jdbc:mysql://ec2-23-21-211-172.compute-1.amazonaws.com:3306/mind_measurement" /> -->
+<!-- 			<property name="javax.persistence.jdbc.user" value="mindm" /> -->
+<!-- 			<property name="javax.persistence.jdbc.password" value="mindm" /> -->
+<!-- 		</properties> -->
 
 	</persistence-unit>
 </persistence>
