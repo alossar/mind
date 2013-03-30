@@ -28,8 +28,6 @@ public interface IGestionEvaluacion {
 	public List<ParticipacionEnProcesoBO> listarParticipacionesEnProceso(
 			int usuarioAdministradorBO, int procesoID);
 
-	public String generarCodigoAcceso();
-
 	public int eliminarCodigoAcceso(int participacionID);
 
 	public int agregarResultadoParticipacionEnProceso(

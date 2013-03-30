@@ -5,15 +5,12 @@ import java.util.List;
 import co.mind.management.shared.bo.ParticipacionEnProcesoBO;
 import co.mind.management.shared.bo.ProcesoUsuarioBO;
 import co.mind.management.shared.bo.EvaluadoBO;
+import co.mind.management.shared.bo.PruebaUsuarioBO;
 
 public interface IGestionProcesos {
 	public int agregarProcesoUsuarioAdministrador(int usuarioAdministradorID,
 			ProcesoUsuarioBO proceso);
-
-	public int agregarProcesoUsuarioAdministrador(int usuarioAdministradorID,
-			ProcesoUsuarioBO proceso,
-			List<ParticipacionEnProcesoBO> participacionesUsuariosBasicos);
-
+	
 	public int editarProcesoUsuarioAdministrador(int usuarioAdministradorID,
 			ProcesoUsuarioBO proceso);
 

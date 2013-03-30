@@ -19,12 +19,12 @@ public class ImagenUsuario implements Serializable {
 	private int identificador;
 
 	//bi-directional many-to-one association to Imagen
-    @ManyToOne
+	@ManyToOne
 	@JoinColumn(name="imagenes_identificador")
 	private Imagen imagene;
 
 	//bi-directional many-to-one association to Usuario
-    @ManyToOne
+	@ManyToOne
 	@JoinColumn(name="usuarios_identificador")
 	private Usuario usuario;
 
@@ -32,8 +32,8 @@ public class ImagenUsuario implements Serializable {
 	@OneToMany(mappedBy="imagenesUsuario")
 	private List<PreguntaUsuario> preguntasUsuarios;
 
-    public ImagenUsuario() {
-    }
+	public ImagenUsuario() {
+	}
 
 	public int getIdentificador() {
 		return this.identificador;
@@ -50,7 +50,7 @@ public class ImagenUsuario implements Serializable {
 	public void setImagene(Imagen imagene) {
 		this.imagene = imagene;
 	}
-	
+
 	public Usuario getUsuario() {
 		return this.usuario;
 	}
@@ -58,7 +58,7 @@ public class ImagenUsuario implements Serializable {
 	public void setUsuario(Usuario usuario) {
 		this.usuario = usuario;
 	}
-	
+
 	public List<PreguntaUsuario> getPreguntasUsuarios() {
 		return this.preguntasUsuarios;
 	}
@@ -66,5 +66,19 @@ public class ImagenUsuario implements Serializable {
 	public void setPreguntasUsuarios(List<PreguntaUsuario> preguntasUsuarios) {
 		this.preguntasUsuarios = preguntasUsuarios;
 	}
-	
+
+	public PreguntaUsuario addPreguntasUsuario(PreguntaUsuario preguntasUsuario) {
+		getPreguntasUsuarios().add(preguntasUsuario);
+		preguntasUsuario.setImagenesUsuario(this);
+
+		return preguntasUsuario;
+	}
+
+	public PreguntaUsuario removePreguntasUsuario(PreguntaUsuario preguntasUsuario) {
+		getPreguntasUsuarios().remove(preguntasUsuario);
+		preguntasUsuario.setImagenesUsuario(null);
+
+		return preguntasUsuario;
+	}
+
 }

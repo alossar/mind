@@ -19,20 +19,25 @@ public class ProcesoUsuario implements Serializable {
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private int identificador;
 
+	@Column(name="Descripcion")
 	private String descripcion;
 
 	@Column(name="estado_valoracion")
 	private String estadoValoracion;
 
-    @Temporal( TemporalType.TIMESTAMP)
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name="FechaCreacion")
 	private Date fechaCreacion;
 
-    @Temporal( TemporalType.TIMESTAMP)
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name="FechaFinalizacion")
 	private Date fechaFinalizacion;
 
-    @Temporal( TemporalType.TIMESTAMP)
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name="FechaInicio")
 	private Date fechaInicio;
 
+	@Column(name="Nombre")
 	private String nombre;
 
 	@Column(name="notificacion_enviada")
@@ -43,16 +48,16 @@ public class ProcesoUsuario implements Serializable {
 	private List<ParticipacionEnProceso> participacionEnProcesos;
 
 	//bi-directional many-to-one association to Usuario
-    @ManyToOne
+	@ManyToOne
 	@JoinColumn(name="usuarios_identificador")
 	private Usuario usuario;
 
-	//bi-directional many-to-many association to PruebaUsuario
-	@ManyToMany(mappedBy="procesosUsuarios")
-	private List<PruebaUsuario> pruebasUsuarios;
+	//bi-directional many-to-one association to ProcesoUsuarioHasPruebaUsuario
+	@OneToMany(mappedBy="procesosUsuario")
+	private List<ProcesoUsuarioHasPruebaUsuario> procesosUsuariosHasPruebasUsuarios;
 
-    public ProcesoUsuario() {
-    }
+	public ProcesoUsuario() {
+	}
 
 	public int getIdentificador() {
 		return this.identificador;
@@ -125,7 +130,21 @@ public class ProcesoUsuario implements Serializable {
 	public void setParticipacionEnProcesos(List<ParticipacionEnProceso> participacionEnProcesos) {
 		this.participacionEnProcesos = participacionEnProcesos;
 	}
-	
+
+	public ParticipacionEnProceso addParticipacionEnProceso(ParticipacionEnProceso participacionEnProceso) {
+		getParticipacionEnProcesos().add(participacionEnProceso);
+		participacionEnProceso.setProcesosUsuario(this);
+
+		return participacionEnProceso;
+	}
+
+	public ParticipacionEnProceso removeParticipacionEnProceso(ParticipacionEnProceso participacionEnProceso) {
+		getParticipacionEnProcesos().remove(participacionEnProceso);
+		participacionEnProceso.setProcesosUsuario(null);
+
+		return participacionEnProceso;
+	}
+
 	public Usuario getUsuario() {
 		return this.usuario;
 	}
@@ -133,13 +152,27 @@ public class ProcesoUsuario implements Serializable {
 	public void setUsuario(Usuario usuario) {
 		this.usuario = usuario;
 	}
-	
-	public List<PruebaUsuario> getPruebasUsuarios() {
-		return this.pruebasUsuarios;
+
+	public List<ProcesoUsuarioHasPruebaUsuario> getProcesosUsuariosHasPruebasUsuarios() {
+		return this.procesosUsuariosHasPruebasUsuarios;
 	}
 
-	public void setPruebasUsuarios(List<PruebaUsuario> pruebasUsuarios) {
-		this.pruebasUsuarios = pruebasUsuarios;
+	public void setProcesosUsuariosHasPruebasUsuarios(List<ProcesoUsuarioHasPruebaUsuario> procesosUsuariosHasPruebasUsuarios) {
+		this.procesosUsuariosHasPruebasUsuarios = procesosUsuariosHasPruebasUsuarios;
 	}
-	
+
+	public ProcesoUsuarioHasPruebaUsuario addProcesosUsuariosHasPruebasUsuario(ProcesoUsuarioHasPruebaUsuario procesosUsuariosHasPruebasUsuario) {
+		getProcesosUsuariosHasPruebasUsuarios().add(procesosUsuariosHasPruebasUsuario);
+		procesosUsuariosHasPruebasUsuario.setProcesosUsuario(this);
+
+		return procesosUsuariosHasPruebasUsuario;
+	}
+
+	public ProcesoUsuarioHasPruebaUsuario removeProcesosUsuariosHasPruebasUsuario(ProcesoUsuarioHasPruebaUsuario procesosUsuariosHasPruebasUsuario) {
+		getProcesosUsuariosHasPruebasUsuarios().remove(procesosUsuariosHasPruebasUsuario);
+		procesosUsuariosHasPruebasUsuario.setProcesosUsuario(null);
+
+		return procesosUsuariosHasPruebasUsuario;
+	}
+
 }

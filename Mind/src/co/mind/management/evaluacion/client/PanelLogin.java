@@ -18,6 +18,7 @@ public class PanelLogin extends VLayout {
 	private TextItem textPassword;
 	private IntegerItem textCedula;
 	private DynamicForm formLogin;
+	private IButton botonIngresar;
 
 	public PanelLogin() {
 		setSize("300px", "250px");
@@ -87,7 +88,7 @@ public class PanelLogin extends VLayout {
 		// form.setBorder("1px solid blue");
 		formLogin.setFields(textCorreo, textPassword, textCedula);
 
-		IButton botonIngresar = new IButton();
+		botonIngresar = new IButton();
 		botonIngresar.setTitle("Ingresar");
 		botonIngresar.addClickHandler(new ClickHandler() {
 			public void onClick(ClickEvent event) {
@@ -99,13 +100,24 @@ public class PanelLogin extends VLayout {
 	}
 
 	private void validarLogin() {
+		habilitarCampos(false);
 		if (formLogin.validate()) {
 			String usuario = textCorreo.getValueAsString();
 			String pass = textPassword.getValueAsString();
 			int cedula = textCedula.getValueAsInteger();
 			Evaluacion.validarLogin(usuario, pass,
 					((Integer) cedula).toString());
+		} else {
+			habilitarCampos(true);
 		}
+	}
+
+	public void habilitarCampos(boolean b) {
+		botonIngresar.setDisabled(!b);
+		textCorreo.setDisabled(!b);
+		textPassword.setDisabled(!b);
+		textCedula.setDisabled(!b);
+
 	}
 
 }

@@ -32,34 +32,6 @@ public class GestionPreguntas implements IGestionPreguntas {
 
 	@Override
 	public int agregarPreguntaUsuarioAdministrador(int usuarioAdministradorID,
-			PreguntaUsuarioBO preguntaUsuario) {
-		EntityTransaction userTransaction = entityManager.getTransaction();
-		try {
-			userTransaction.begin();
-			ImagenUsuario im = entityManager.find(ImagenUsuario.class,
-					preguntaUsuario.getImagenesUsuario().getIdentificador());
-			PreguntaUsuario pregunta = new PreguntaUsuario();
-			pregunta.setCaracteresMaximo(preguntaUsuario.getCaracteresMaximo());
-			pregunta.setImagenesUsuario(im);
-			pregunta.setPregunta(preguntaUsuario.getPregunta());
-			pregunta.setTiempoMaximo(preguntaUsuario.getTiempoMaximo());
-			if (!entityManager.contains(pregunta)) {
-				entityManager.persist(pregunta);
-				entityManager.flush();
-				userTransaction.commit();
-				return Convencion.CORRECTO;
-			} else {
-				return Convencion.INCORRECTO;
-			}
-		} catch (Exception exception) {
-			// Exception has occurred, roll-back the transaction.
-			userTransaction.rollback();
-			return Convencion.INCORRECTO;
-		}
-	}
-
-	@Override
-	public int agregarPreguntaUsuarioAdministrador(int usuarioAdministradorID,
 			PreguntaUsuarioBO preguntaUsuario, PruebaUsuarioBO categoria) {
 		EntityTransaction userTransaction = entityManager.getTransaction();
 		try {
@@ -82,13 +54,13 @@ public class GestionPreguntas implements IGestionPreguntas {
 				entityManager.persist(pregunta);
 				entityManager.flush();
 				userTransaction.commit();
-				entityManager.refresh(pregunta);
 				return Convencion.CORRECTO;
 			} else {
 				return Convencion.INCORRECTO;
 			}
 		} catch (Exception exception) {
 			// Exception has occurred, roll-back the transaction.
+			exception.printStackTrace();
 			userTransaction.rollback();
 			return Convencion.INCORRECTO;
 		}
@@ -114,6 +86,7 @@ public class GestionPreguntas implements IGestionPreguntas {
 			return Convencion.CORRECTO;
 		} catch (Exception exception) {
 			// Exception has occurred, roll-back the transaction.
+			exception.printStackTrace();
 			userTransaction.rollback();
 			return Convencion.INCORRECTO;
 		}
@@ -168,6 +141,7 @@ public class GestionPreguntas implements IGestionPreguntas {
 			return Convencion.CORRECTO;
 		} catch (Exception exception) {
 			// Exception has occurred, roll-back the transaction.
+			exception.printStackTrace();
 			userTransaction.rollback();
 			return Convencion.INCORRECTO;
 		}

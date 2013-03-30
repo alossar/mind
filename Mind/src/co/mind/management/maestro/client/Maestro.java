@@ -1,40 +1,20 @@
-/*******************************************************************************
- * Copyright 2011 Google Inc. All Rights Reserved.
- *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *******************************************************************************/
 package co.mind.management.maestro.client;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import co.mind.management.maestro.client.procesos.PanelProcesos;
 import co.mind.management.maestro.client.servicios.UsuarioMaestroService;
 import co.mind.management.maestro.client.servicios.UsuarioMaestroServiceAsync;
-import co.mind.management.maestro.client.temas.PanelPruebas;
+import co.mind.management.shared.bo.EvaluadoBO;
 import co.mind.management.shared.bo.ImagenUsuarioBO;
 import co.mind.management.shared.bo.ParticipacionEnProcesoBO;
 import co.mind.management.shared.bo.PreguntaUsuarioBO;
 import co.mind.management.shared.bo.ProcesoUsuarioBO;
+import co.mind.management.shared.bo.ProcesoUsuarioHasPruebaUsuarioBO;
 import co.mind.management.shared.bo.PruebaUsuarioBO;
 import co.mind.management.shared.bo.UsuarioBO;
-import co.mind.management.shared.bo.EvaluadoBO;
 import co.mind.management.shared.bo.UsuarioMaestroBO;
-import co.mind.management.shared.records.ImagenRecord;
-import co.mind.management.shared.records.ParticipacionEnProcesoListGridRecord;
-import co.mind.management.shared.records.PreguntaCategoriaTileRecord;
-import co.mind.management.shared.records.ProcesoRecord;
-import co.mind.management.shared.records.PruebaListGridRecord;
-import co.mind.management.shared.records.UsuarioBasicoListGridRecord;
 import co.mind.management.shared.recursos.Convencion;
 
 import com.google.gwt.core.client.EntryPoint;
@@ -116,7 +96,7 @@ public class Maestro implements EntryPoint {
 		setListaImagenesUsuario();
 		setListaProcesos();
 		setListaPruebas();
-		setListausuariosBasicos();
+		setListaUsuariosBasicos();
 	}
 
 	private void actualizarCookie() {
@@ -127,7 +107,7 @@ public class Maestro implements EntryPoint {
 		Cookies.setCookie("sid", sessionID, expires, null, "/", false);
 	}
 
-	public void setListaImagenesUsuario() {
+	public static void setListaImagenesUsuario() {
 		usuarioMaestroService.consultarImagenesUsuario(
 				usuarioMaestro.getIdentificador(),
 				new AsyncCallback<List<ImagenUsuarioBO>>() {
@@ -139,6 +119,7 @@ public class Maestro implements EntryPoint {
 
 					@Override
 					public void onFailure(Throwable caught) {
+						caught.printStackTrace();
 						System.out.println("Error Cargando las imagenes");
 					}
 				});
@@ -156,7 +137,7 @@ public class Maestro implements EntryPoint {
 
 					@Override
 					public void onFailure(Throwable caught) {
-						System.out.println("Error cargando las pruebas");
+						caught.printStackTrace();
 					}
 				});
 	}
@@ -168,39 +149,55 @@ public class Maestro implements EntryPoint {
 
 					@Override
 					public void onSuccess(List<ProcesoUsuarioBO> result) {
-						if (result == null) {
-							System.out.print("Resultado procesos nulo");
-						}
 						mainLayout.actualizarProcesos(result);
-
 					}
 
 					@Override
 					public void onFailure(Throwable caught) {
+						caught.printStackTrace();
 						System.out.println("Error cargando los procesos");
 					}
 				});
 	}
 
-	public static void setListausuariosBasicos() {
+	public static void setListaUsuariosBasicos() {
 		usuarioMaestroService.consultarUsuariosBasicosUsuarioAdministrador(
 				usuarioMaestro.getIdentificador(),
 				new AsyncCallback<List<EvaluadoBO>>() {
 
 					@Override
 					public void onSuccess(List<EvaluadoBO> result) {
-						if (result == null) {
-							System.out.print("Resultado procesos nulo");
-						}
 						mainLayout.actualizarUsuariosBasicos(result);
-
 					}
 
 					@Override
 					public void onFailure(Throwable caught) {
-						// TODO Auto-generated method stub
+						caught.printStackTrace();
 
 					}
+				});
+	}
+
+	public static void obtenerTemasProceso(ProcesoUsuarioBO proceso) {
+		usuarioMaestroService.consultarProceso((UsuarioBO) usuarioMaestro,
+				proceso, new AsyncCallback<ProcesoUsuarioBO>() {
+
+					@Override
+					public void onFailure(Throwable caught) {
+						caught.printStackTrace();
+					}
+
+					@Override
+					public void onSuccess(ProcesoUsuarioBO result) {
+
+						List<PruebaUsuarioBO> pruebas = new ArrayList<PruebaUsuarioBO>();
+						for (ProcesoUsuarioHasPruebaUsuarioBO pHas : result
+								.getProcesoUsuarioHasPruebaUsuario()) {
+							pruebas.add(pHas.getPruebasUsuario());
+						}
+						mainLayout.actualizarTemasProceso(pruebas);
+					}
+
 				});
 	}
 
@@ -216,6 +213,7 @@ public class Maestro implements EntryPoint {
 
 					@Override
 					public void onFailure(Throwable caught) {
+						caught.printStackTrace();
 						System.out
 								.println("Error cargando las preguntas de la categoria");
 					}
@@ -223,23 +221,22 @@ public class Maestro implements EntryPoint {
 	}
 
 	public static void agregarUsuarioBasico(int idUsuario,
-			String nombreUsuario, String apellidosUsuario,
-			String correoUsuario, int edadUsuario) {
+			String nombreUsuario, String apellidosUsuario, String correoUsuario) {
 		EvaluadoBO usuarioBasico = new EvaluadoBO();
 		usuarioBasico.setApellidos(apellidosUsuario);
 		usuarioBasico.setCorreoElectronico(correoUsuario);
-		usuarioBasico.setEdad(edadUsuario);
 		usuarioBasico.setIdentificadorUsuarioAdministrador(usuarioMaestro
 				.getIdentificador());
 		usuarioBasico.setNombres(nombreUsuario);
 		usuarioBasico.setIdentificador(idUsuario);
+
 		usuarioMaestroService.agregarUsuarioBasico(usuarioMaestro,
 				usuarioBasico, new AsyncCallback<Integer>() {
 
 					@Override
 					public void onSuccess(Integer result) {
 						if (result == Convencion.CORRECTO) {
-							setListausuariosBasicos();
+							setListaUsuariosBasicos();
 						} else {
 							SC.warn("Error ingresando el nuevo usuario.");
 						}
@@ -248,6 +245,7 @@ public class Maestro implements EntryPoint {
 
 					@Override
 					public void onFailure(Throwable caught) {
+						caught.printStackTrace();
 						SC.warn("Error conectando la base de datos.");
 
 					}
@@ -268,7 +266,7 @@ public class Maestro implements EntryPoint {
 
 						@Override
 						public void onFailure(Throwable caught) {
-							// TODO Auto-generated method stub
+							caught.printStackTrace();
 
 						}
 					});
@@ -293,6 +291,7 @@ public class Maestro implements EntryPoint {
 
 					@Override
 					public void onFailure(Throwable caught) {
+						caught.printStackTrace();
 						System.out.println("Error cargando las pruebas");
 
 					}
@@ -316,6 +315,8 @@ public class Maestro implements EntryPoint {
 
 										@Override
 										public void onFailure(Throwable caught) {
+
+											caught.printStackTrace();
 											System.out
 													.println("Error eliminando la prueba");
 
@@ -335,16 +336,18 @@ public class Maestro implements EntryPoint {
 
 	public static void agregarPreguntaUsuario(PreguntaUsuarioBO preguntaBO,
 			PruebaUsuarioBO prueba) {
-		usuarioMaestroService.agregarPregunta(usuarioMaestro, preguntaBO,
-				prueba, new AsyncCallback<Integer>() {
+		pruebaTemp = prueba;
+		usuarioMaestroService.agregarPreguntaAPrueba(usuarioMaestro, prueba,
+				preguntaBO, new AsyncCallback<Integer>() {
 
 					@Override
 					public void onSuccess(Integer result) {
-						mainLayout.actualizarPreguntasPrueba();
+						obtenerPreguntasPorPrueba(pruebaTemp.getIdentificador());
 					}
 
 					@Override
 					public void onFailure(Throwable caught) {
+						caught.printStackTrace();
 						System.out.println("Error agregando la pregunta");
 
 					}
@@ -352,23 +355,43 @@ public class Maestro implements EntryPoint {
 
 	}
 
-	public static void agregarProceso(List<EvaluadoBO> usuariosBasicos,
-			ProcesoUsuarioBO p) {
-		usuarioMaestroService.agregarProceso(usuarioMaestro, usuariosBasicos,
-				p, new AsyncCallback<Integer>() {
+	public static void agregarParticipacionesAProceso(
+			List<ParticipacionEnProcesoBO> evaluados, ProcesoUsuarioBO p) {
+		procesoTemp = p;
+		usuarioMaestroService.agregarParticipacionDeUsuarioBasicoAProceso(
+				usuarioMaestro, p, evaluados, new AsyncCallback<Integer>() {
 
 					@Override
 					public void onSuccess(Integer result) {
-						setListaProcesos();
+						obtenerParticipantesProceso(procesoTemp);
 					}
 
 					@Override
 					public void onFailure(Throwable caught) {
-						System.out.println("Error agregando el proceso.");
-
+						caught.printStackTrace();
 					}
 				});
+	}
 
+	public static void agregarTemasAProceso(List<PruebaUsuarioBO> pruebas,
+			ProcesoUsuarioBO p) {
+		procesoTemp = p;
+		usuarioMaestroService.agregarPruebasAProceso(usuarioMaestro, p,
+				pruebas, new AsyncCallback<Integer>() {
+
+					@Override
+					public void onSuccess(Integer result) {
+						obtenerTemasProceso(procesoTemp);
+						setListaPruebas();
+					}
+
+					@Override
+					public void onFailure(Throwable caught) {
+						caught.printStackTrace();
+						System.out
+								.println("Error agregando los temas al proceso");
+					}
+				});
 	}
 
 	public static void eliminarProceso(ProcesoUsuarioBO proceso) {
@@ -387,6 +410,8 @@ public class Maestro implements EntryPoint {
 
 										@Override
 										public void onFailure(Throwable caught) {
+
+											caught.printStackTrace();
 											System.out
 													.println("Error eliminado el proceso");
 										}
@@ -415,6 +440,7 @@ public class Maestro implements EntryPoint {
 
 					@Override
 					public void onFailure(Throwable caught) {
+						caught.printStackTrace();
 						System.out.println("Error cargando las imagenes");
 
 					}
@@ -422,11 +448,13 @@ public class Maestro implements EntryPoint {
 
 	}
 
-	public static void eliminarPreguntaCategoria(PreguntaUsuarioBO pregunta) {
+	public static void eliminarPreguntaCategoria(PreguntaUsuarioBO pregunta,
+			PruebaUsuarioBO pruebaSeleccionada) {
 		preguntaTemp = pregunta;
+		pruebaTemp = pruebaSeleccionada;
 
 		SC.ask("Precauci�n",
-				"Esta l�mina es usada en alguna prueba. Eliminar la categor�a har� que no se encuentre disponible para la prueba. �Desea continuar?",
+				"Esta l�mina es usada en algun proceso. Eliminar la categor�a har� que no se encuentre disponible para la prueba. �Desea continuar?",
 				new BooleanCallback() {
 
 					@Override
@@ -438,15 +466,15 @@ public class Maestro implements EntryPoint {
 
 										@Override
 										public void onSuccess(Integer result) {
-											mainLayout
-													.actualizarPreguntasPrueba();
+											obtenerPreguntasPorPrueba(pruebaTemp
+													.getIdentificador());
 
 										}
 
 										@Override
 										public void onFailure(Throwable caught) {
-											// TODO Auto-generated method stub
 
+											caught.printStackTrace();
 										}
 									});
 						}
@@ -467,6 +495,7 @@ public class Maestro implements EntryPoint {
 
 					@Override
 					public void onFailure(Throwable caught) {
+						caught.printStackTrace();
 						System.out
 								.println("Error cargando las participaciones");
 
@@ -482,6 +511,7 @@ public class Maestro implements EntryPoint {
 
 					@Override
 					public void onFailure(Throwable caught) {
+						caught.printStackTrace();
 						System.out
 								.println("Error cargando los resultados del proceso");
 
@@ -498,7 +528,7 @@ public class Maestro implements EntryPoint {
 
 					@Override
 					public void onFailure(Throwable caught) {
-						// TODO Auto-generated method stub
+						caught.printStackTrace();
 
 					}
 
@@ -519,7 +549,7 @@ public class Maestro implements EntryPoint {
 
 					@Override
 					public void onFailure(Throwable caught) {
-						// TODO Auto-generated method stub
+						caught.printStackTrace();
 
 					}
 
@@ -553,14 +583,78 @@ public class Maestro implements EntryPoint {
 
 			@Override
 			public void onFailure(Throwable arg0) {
+				arg0.printStackTrace();
 				Window.Location.replace(urlLogin);
 			}
 		});
 	}
 
 	public static void agregarPrueba(PruebaUsuarioBO prueba) {
+		usuarioMaestroService.agregarPrueba(usuarioMaestro, prueba,
+				new AsyncCallback<Integer>() {
+
+					@Override
+					public void onSuccess(Integer result) {
+						setListaPruebas();
+					}
+
+					@Override
+					public void onFailure(Throwable caught) {
+						caught.printStackTrace();
+
+					}
+				});
+
+	}
+
+	public static void agregarProceso(ProcesoUsuarioBO proceso) {
+		usuarioMaestroService.agregarProceso(usuarioMaestro, proceso,
+				new AsyncCallback<Integer>() {
+
+					@Override
+					public void onSuccess(Integer result) {
+						System.out.println(result);
+						setListaProcesos();
+					}
+
+					@Override
+					public void onFailure(Throwable caught) {
+						caught.printStackTrace();
+						System.out.println("Error agregando el proceso");
+
+					}
+				});
+	}
+
+	public static void eliminarParticipacionesDeProceso(
+			List<ParticipacionEnProcesoBO> bo) {
 		// TODO Auto-generated method stub
-		
+	}
+
+	public static void eliminarPrubasDeProceso(List<PruebaUsuarioBO> bo) {
+		// TODO Auto-generated method stub
+
+	}
+
+	public static void eliminarImagen(ImagenUsuarioBO imagenSeleccionada) {
+		// TODO Auto-generated method stub
+	}
+
+	public static void enviarNotificacionesCorreo(
+			List<ParticipacionEnProcesoBO> p) {
+		usuarioMaestroService.enviarNotificacionesParticipacionesProceso(
+				usuarioMaestro, p, new AsyncCallback<Integer>() {
+
+					@Override
+					public void onSuccess(Integer result) {
+					}
+
+					@Override
+					public void onFailure(Throwable caught) {
+						caught.printStackTrace();
+					}
+				});
+
 	}
 
 }

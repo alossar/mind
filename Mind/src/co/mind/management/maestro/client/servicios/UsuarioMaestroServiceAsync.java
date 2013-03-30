@@ -15,7 +15,7 @@ import co.mind.management.shared.bo.SolicitudEliminacionCuentaBO;
 import co.mind.management.shared.bo.SolicitudIncrementoUsosBO;
 import co.mind.management.shared.bo.SolicitudPlanBO;
 import co.mind.management.shared.bo.SolicitudValoracionBO;
-import co.mind.management.shared.bo.UsuarioAdministradorBO;
+import co.mind.management.shared.bo.UsuarioBO;
 import co.mind.management.shared.bo.UsuarioBO;
 import co.mind.management.shared.bo.EvaluadoBO;
 import co.mind.management.shared.bo.UsuarioMaestroBO;
@@ -24,7 +24,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public interface UsuarioMaestroServiceAsync {
 
-	void crearCuenta(UsuarioAdministradorBO usuarioAdministrador,
+	void crearCuenta(UsuarioBO usuarioAdministrador,
 			SolicitudPlanBO solicitud, PermisoBO plan, Date fechaFinalizacion,
 			int usosTotal, AsyncCallback<Integer> callback);
 
@@ -35,7 +35,7 @@ public interface UsuarioMaestroServiceAsync {
 			AsyncCallback<Integer> callback);
 
 	void agregarImagenPredeterminadaAUsuarios(
-			List<UsuarioAdministradorBO> usuariosAdministradores,
+			List<UsuarioBO> usuariosAdministradores,
 			ImagenBO imagen, AsyncCallback<Integer> callback);
 
 	void agregarPlan(PermisoBO plan, AsyncCallback<Integer> callback);
@@ -67,7 +67,7 @@ public interface UsuarioMaestroServiceAsync {
 			AsyncCallback<List<SolicitudValoracionBO>> callback);
 
 	void consultarUsuarioAdministrador(int usuarioAdministradorID,
-			AsyncCallback<UsuarioAdministradorBO> callback);
+			AsyncCallback<UsuarioBO> callback);
 
 	void consultarUsuariosBasicosUsuarioAdministrador(
 			int usuarioAdministradorID, AsyncCallback<List<EvaluadoBO>> callback);
@@ -87,30 +87,22 @@ public interface UsuarioMaestroServiceAsync {
 	void cerrarSesion(AsyncCallback<Void> callback);
 
 	void consultarUsuariosAdministradores(
-			AsyncCallback<List<UsuarioAdministradorBO>> callback);
+			AsyncCallback<List<UsuarioBO>> callback);
 
 	void consultarImagenesUsuario(int usuariID,
 			AsyncCallback<List<ImagenUsuarioBO>> callback);
 
 	void agregarParticipacionDeUsuarioBasicoAProceso(
-			UsuarioAdministradorBO usuarioAdministrador,
-			ProcesoUsuarioBO proceso, EvaluadoBO usuarioBasico,
-			ParticipacionEnProcesoBO participacion,
+			UsuarioBO usuarioAdministrador,
+			ProcesoUsuarioBO proceso, List<ParticipacionEnProcesoBO> evaluados,
 			AsyncCallback<Integer> callback);
 
-	void agregarPregunta(UsuarioAdministradorBO usuarioAdministrador,
-			PreguntaUsuarioBO pregunta, AsyncCallback<Integer> callback);
-
-	void agregarPreguntaAPrueba(UsuarioAdministradorBO usuarioAdministrador,
+	void agregarPreguntaAPrueba(UsuarioBO usuarioAdministrador,
 			PruebaUsuarioBO prueba, PreguntaUsuarioBO pregunta,
 			AsyncCallback<Integer> callback);
 
-	void agregarPreguntasAPrueba(UsuarioAdministradorBO usuarioAdministrador,
+	void agregarPreguntasAPrueba(UsuarioBO usuarioAdministrador,
 			PruebaUsuarioBO prueba, List<PreguntaUsuarioBO> preguntas,
-			AsyncCallback<Integer> callback);
-
-	void agregarProceso(UsuarioBO usuarioAdministrador,
-			List<EvaluadoBO> usuariosBasicos, ProcesoUsuarioBO proceso,
 			AsyncCallback<Integer> callback);
 
 	void agregarPrueba(UsuarioBO usuarioAdministrador, PruebaUsuarioBO prueba,
@@ -124,7 +116,7 @@ public interface UsuarioMaestroServiceAsync {
 			AsyncCallback<List<ParticipacionEnProcesoBO>> callback);
 
 	void consultarValoracionesProceso(
-			UsuarioAdministradorBO usuarioAdministrador,
+			UsuarioBO usuarioAdministrador,
 			ProcesoUsuarioBO proceso,
 			AsyncCallback<List<ParticipacionEnProcesoBO>> callback);
 
@@ -137,10 +129,6 @@ public interface UsuarioMaestroServiceAsync {
 
 	void consultarPreguntasPorCategoriaUsuarioAdministrador(int usuarioId,
 			AsyncCallback<List<PreguntaUsuarioBO>> callback);
-
-	void agregarPregunta(UsuarioBO usuarioAdministrador,
-			PreguntaUsuarioBO pregunta, PruebaUsuarioBO categoria,
-			AsyncCallback<Integer> callback);
 
 	void consultarPreguntasPorCategoria(int usuarioID, int categoriaID,
 			AsyncCallback<List<PreguntaUsuarioBO>> callback);
@@ -156,5 +144,19 @@ public interface UsuarioMaestroServiceAsync {
 
 	void generarReporte(List<ParticipacionEnProcesoBO> participaciones,
 			AsyncCallback<Void> callback);
+
+	void agregarProceso(UsuarioBO usuarioAdministrador,
+			ProcesoUsuarioBO proceso, AsyncCallback<Integer> callback);
+
+	void agregarPruebasAProceso(UsuarioBO usuarioAdministrador,
+			ProcesoUsuarioBO proceso, List<PruebaUsuarioBO> pruebas,
+			AsyncCallback<Integer> callback);
+
+	void consultarProceso(UsuarioBO usuarioMaestro, ProcesoUsuarioBO proceso,
+			AsyncCallback<ProcesoUsuarioBO> asyncCallback);
+
+	void enviarNotificacionesParticipacionesProceso(
+			UsuarioMaestroBO usuarioMaestro, List<ParticipacionEnProcesoBO> p,
+			AsyncCallback<Integer> asyncCallback);
 
 }

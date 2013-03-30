@@ -1,16 +1,14 @@
 package co.mind.management.maestro.server;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import co.mind.management.maestro.client.servicios.UsuarioMaestroService;
+import co.mind.management.shared.bo.EvaluadoBO;
 import co.mind.management.shared.bo.ImagenBO;
 import co.mind.management.shared.bo.ImagenUsuarioBO;
 import co.mind.management.shared.bo.ParticipacionEnProcesoBO;
@@ -25,9 +23,7 @@ import co.mind.management.shared.bo.SolicitudPlanBO;
 import co.mind.management.shared.bo.SolicitudValoracionBO;
 import co.mind.management.shared.bo.UsuarioAdministradorBO;
 import co.mind.management.shared.bo.UsuarioBO;
-import co.mind.management.shared.bo.EvaluadoBO;
 import co.mind.management.shared.bo.UsuarioMaestroBO;
-import co.mind.management.maestro.client.servicios.UsuarioMaestroService;
 import co.mind.management.shared.persistencia.GestionEvaluacion;
 import co.mind.management.shared.persistencia.GestionLaminas;
 import co.mind.management.shared.persistencia.GestionPreguntas;
@@ -36,7 +32,6 @@ import co.mind.management.shared.persistencia.GestionPruebas;
 import co.mind.management.shared.persistencia.GestionUsuariosAdministradores;
 import co.mind.management.shared.persistencia.GestionUsuariosBasicos;
 import co.mind.management.shared.recursos.Convencion;
-import co.mind.management.shared.recursos.Generador;
 import co.mind.management.shared.recursos.NotificadorCorreo;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
@@ -95,7 +90,7 @@ public class UsuarioMaestroServiceImpl extends RemoteServiceServlet implements
 	}
 
 	@Override
-	public int crearCuenta(UsuarioAdministradorBO usuarioAdministrador,
+	public int crearCuenta(UsuarioBO usuarioAdministrador,
 			SolicitudPlanBO solicitud, PermisoBO plan, Date fechaFinalizacion,
 			int usosTotal) {
 
@@ -104,14 +99,14 @@ public class UsuarioMaestroServiceImpl extends RemoteServiceServlet implements
 
 	@Override
 	public int activarCuenta(int usuarioAdministradorID) {
-		UsuarioAdministradorBO usuario = gestionUsuariosAdministradores
+		UsuarioBO usuario = gestionUsuariosAdministradores
 				.consultarUsuarioAdministrador(usuarioAdministradorID);
 		if (usuario != null) {
 			if (usuario.getEstado_Cuenta().equalsIgnoreCase(
 					Convencion.ESTADO_CUENTA_INACTIVA)) {
 				usuario.setEstado_Cuenta(Convencion.ESTADO_CUENTA_ACTIVA);
 				int resultado = gestionUsuariosAdministradores
-						.editarUsuarioAdministrador(usuario);
+						.editarUsuarioAdministrador((UsuarioAdministradorBO) usuario);
 				return resultado;
 			} else {
 				return 1;
@@ -123,14 +118,14 @@ public class UsuarioMaestroServiceImpl extends RemoteServiceServlet implements
 
 	@Override
 	public int desactivarCuenta(int usuarioAdministradorID) {
-		UsuarioAdministradorBO usuario = gestionUsuariosAdministradores
+		UsuarioBO usuario = gestionUsuariosAdministradores
 				.consultarUsuarioAdministrador(usuarioAdministradorID);
 		if (usuario != null) {
 			if (usuario.getEstado_Cuenta().equalsIgnoreCase(
 					Convencion.ESTADO_CUENTA_ACTIVA)) {
 				usuario.setEstado_Cuenta(Convencion.ESTADO_CUENTA_INACTIVA);
 				int resultado = gestionUsuariosAdministradores
-						.editarUsuarioAdministrador(usuario);
+						.editarUsuarioAdministrador((UsuarioAdministradorBO) usuario);
 				return resultado;
 			} else {
 				return 1;
@@ -161,8 +156,7 @@ public class UsuarioMaestroServiceImpl extends RemoteServiceServlet implements
 
 	@Override
 	public int agregarImagenPredeterminadaAUsuarios(
-			List<UsuarioAdministradorBO> usuariosAdministradores,
-			ImagenBO imagen) {
+			List<UsuarioBO> usuariosAdministradores, ImagenBO imagen) {
 		// TODO Auto-generated method stub
 		return 0;
 	}
@@ -204,16 +198,23 @@ public class UsuarioMaestroServiceImpl extends RemoteServiceServlet implements
 	}
 
 	@Override
-	public UsuarioAdministradorBO consultarUsuarioAdministrador(
-			int usuarioAdministradorID) {
-		// TODO Auto-generated method stub
+	public UsuarioBO consultarUsuarioAdministrador(int usuarioAdministradorID) {
+		Object result = gestionUsuariosAdministradores
+				.consultarUsuarioAdministrador(usuarioAdministradorID);
+		if (result != null) {
+			return (UsuarioBO) result;
+		}
 		return null;
 	}
 
 	@Override
 	public List<PreguntaUsuarioBO> consultarPreguntasUsuarioAdministrador(
 			int usuarioAdministradorID) {
-		// TODO Auto-generated method stub
+		Object result = gestionPreguntas
+				.listarPreguntasUsuarioAdministrador(usuarioAdministradorID);
+		if (result != null) {
+			return (List<PreguntaUsuarioBO>) result;
+		}
 		return null;
 	}
 
@@ -259,11 +260,11 @@ public class UsuarioMaestroServiceImpl extends RemoteServiceServlet implements
 	}
 
 	@Override
-	public List<UsuarioAdministradorBO> consultarUsuariosAdministradores() {
+	public List<UsuarioBO> consultarUsuariosAdministradores() {
 		Object lista = gestionUsuariosAdministradores
 				.listarUsuariosAdministradores();
 		if (lista != null) {
-			return (List<UsuarioAdministradorBO>) lista;
+			return (List<UsuarioBO>) lista;
 		} else {
 			return null;
 		}
@@ -282,10 +283,26 @@ public class UsuarioMaestroServiceImpl extends RemoteServiceServlet implements
 
 	@Override
 	public int agregarParticipacionDeUsuarioBasicoAProceso(
-			UsuarioAdministradorBO usuarioAdministrador,
-			ProcesoUsuarioBO proceso, EvaluadoBO usuarioBasico,
-			ParticipacionEnProcesoBO participacion) {
-		// TODO Auto-generated method stub
+			UsuarioBO usuarioAdministrador, ProcesoUsuarioBO proceso,
+			List<ParticipacionEnProcesoBO> evaluados) {
+		for (ParticipacionEnProcesoBO participacionEnProcesoBO : evaluados) {
+			gestionEvaluacion.agregarParticipacionEnProceso(
+					usuarioAdministrador.getIdentificador(),
+					participacionEnProcesoBO.getUsuarioBasico()
+							.getIdentificador(), proceso.getIdentificador(),
+					participacionEnProcesoBO);
+		}
+		return 0;
+	}
+
+	@Override
+	public int agregarPruebasAProceso(UsuarioBO usuarioAdministrador,
+			ProcesoUsuarioBO proceso, List<PruebaUsuarioBO> pruebas) {
+		for (PruebaUsuarioBO pruebaUsuarioBO : pruebas) {
+			gestionPruebas.agregarPruebaAProceso(
+					usuarioAdministrador.getIdentificador(), pruebaUsuarioBO,
+					proceso);
+		}
 		return 0;
 	}
 
@@ -306,46 +323,17 @@ public class UsuarioMaestroServiceImpl extends RemoteServiceServlet implements
 	}
 
 	@Override
-	public int agregarPreguntaAPrueba(
-			UsuarioAdministradorBO usuarioAdministrador,
+	public int agregarPreguntaAPrueba(UsuarioBO usuarioAdministrador,
 			PruebaUsuarioBO prueba, PreguntaUsuarioBO pregunta) {
-		// TODO Auto-generated method stub
 		return gestionPreguntas.agregarPreguntaUsuarioAdministrador(
-				usuarioAdministrador.getIdentificador(), pregunta);
+				usuarioAdministrador.getIdentificador(), pregunta, prueba);
 	}
 
 	@Override
-	public int agregarPreguntasAPrueba(
-			UsuarioAdministradorBO usuarioAdministrador,
+	public int agregarPreguntasAPrueba(UsuarioBO usuarioAdministrador,
 			PruebaUsuarioBO prueba, List<PreguntaUsuarioBO> preguntas) {
 
 		return 0;
-	}
-
-	@Override
-	public int agregarPregunta(UsuarioAdministradorBO usuarioAdministrador,
-			PreguntaUsuarioBO pregunta) {
-		return 0;
-	}
-
-	@Override
-	public int agregarProceso(UsuarioBO usuarioAdministrador,
-			List<EvaluadoBO> usuariosBasicos, ProcesoUsuarioBO proceso) {
-		List<ParticipacionEnProcesoBO> participaciones = new ArrayList<ParticipacionEnProcesoBO>();
-		for (int i = 0; i < usuariosBasicos.size(); i++) {
-			ParticipacionEnProcesoBO part = new ParticipacionEnProcesoBO();
-			part.setCodigo_Acceso(Generador.GenerarCodigo(Generador.CARACTERES,
-					8));
-			part.setEstado(Convencion.ESTADO_PARTICIPACION_EN_PROCESO_EN_ESPERA);
-			part.setFechaFinalizacion(proceso.getFechaFinalizacion());
-			part.setFechaInicio(proceso.getFechaInicio());
-			part.setUsuarioBasicoID(usuariosBasicos.get(i).getIdentificador());
-			part.setUsuarioBasico(usuariosBasicos.get(i));
-			participaciones.add(part);
-		}
-		return gestionProcesos.agregarProcesoUsuarioAdministrador(
-				usuarioAdministrador.getIdentificador(), proceso,
-				participaciones);
 	}
 
 	@Override
@@ -362,8 +350,7 @@ public class UsuarioMaestroServiceImpl extends RemoteServiceServlet implements
 
 	@Override
 	public List<ParticipacionEnProcesoBO> consultarValoracionesProceso(
-			UsuarioAdministradorBO usuarioAdministrador,
-			ProcesoUsuarioBO proceso) {
+			UsuarioBO usuarioAdministrador, ProcesoUsuarioBO proceso) {
 		Object result = gestionEvaluacion.listarParticipacionesEnProceso(
 				usuarioAdministrador.getIdentificador(),
 				proceso.getIdentificador());
@@ -446,17 +433,39 @@ public class UsuarioMaestroServiceImpl extends RemoteServiceServlet implements
 	}
 
 	@Override
-	public int agregarPregunta(UsuarioBO usuarioAdministrador,
-			PreguntaUsuarioBO pregunta, PruebaUsuarioBO categoria) {
-		// TODO Auto-generated method stub
-		return 0;
+	public List<PreguntaUsuarioBO> consultarPreguntasPorCategoria(
+			int usuarioID, int categoriaID) {
+		Object result = gestionPruebas.listarPreguntasPrueba(usuarioID,
+				categoriaID);
+		if (result != null) {
+			return (List<PreguntaUsuarioBO>) result;
+		}
+		return null;
+
 	}
 
 	@Override
-	public List<PreguntaUsuarioBO> consultarPreguntasPorCategoria(
-			int usuarioID, int categoriaID) {
-		// TODO Auto-generated method stub
-		return null;
+	public int agregarProceso(UsuarioBO usuarioAdministrador,
+			ProcesoUsuarioBO proceso) {
+		return gestionProcesos.agregarProcesoUsuarioAdministrador(
+				usuarioAdministrador.getIdentificador(), proceso);
+	}
+
+	@Override
+	public ProcesoUsuarioBO consultarProceso(UsuarioBO usuarioMaestro,
+			ProcesoUsuarioBO proceso) {
+		return gestionProcesos.consultarProcesoUsuarioAdministrador(
+				usuarioMaestro.getIdentificador(), proceso.getIdentificador());
+	}
+
+	@Override
+	public int enviarNotificacionesParticipacionesProceso(
+			UsuarioMaestroBO usuarioMaestro, List<ParticipacionEnProcesoBO> p) {
+		for (ParticipacionEnProcesoBO participacionEnProcesoBO : p) {
+			NotificadorCorreo
+					.enviarCorreoParticipacionAProceso(participacionEnProcesoBO);
+		}
+		return 0;
 	}
 
 }

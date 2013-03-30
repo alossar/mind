@@ -82,7 +82,7 @@ public class PanelLogin extends VLayout {
 		formLogin.setFields(textCorreo, textPassword);
 
 		IButton validateButton = new IButton();
-		validateButton.setTitle("Validate");
+		validateButton.setTitle("Ingresar");
 		validateButton.addClickHandler(new ClickHandler() {
 
 			public void onClick(ClickEvent event) {

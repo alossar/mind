@@ -55,7 +55,7 @@ public class Evaluacion implements EntryPoint {
 	private static String codigoAcceso;
 	private static boolean termina = false;
 	// private static String finUrl ="/end.html";
-	private static String finUrl = "/end.html";
+	private static String finUrl = "/Mind/end.html";
 
 	private static PanelInstruccion panelInstruccion;
 	private static HashMap<PruebaUsuarioBO, List<PreguntaUsuarioBO>> preguntasPorPrueba;
@@ -125,24 +125,27 @@ public class Evaluacion implements EntryPoint {
 					public void onFailure(Throwable caught) {
 						// Show the RPC error message to the user
 						caught.printStackTrace();
-						SC.warn("Error de conexión.");
+						SC.warn("Error de conexiï¿½n.");
 					}
 
 					@Override
 					public void onSuccess(Integer result) {
 						if (result == Convencion.VERIFICACION_USUARIO_BASICO_CORRECTA) {
 							obtenerParticipacionEnProceso();
-						} else if (result == Convencion.VERIFICACION_USUARIO_BASICO_CODIGO_ACCESO_NO_VALIDO) {
-							SC.warn("El c\u00F3digo de Acceso no es válido");
-						} else if (result == Convencion.VERIFICACION_USUARIO_BASICO_SIN_TERMINAR_PRUEBA) {
-							SC.warn("El usuario comenz\u00F3 una prueba pero no la termin\u00F3.");
-						} else if (result == Convencion.VERIFICACION_USUARIO_BASICO_PARTICIPACION_NO_EXISTE) {
-
-							SC.warn("Identificaci\u00F3n o c\u00F3digo no válido.");
-						} else if (result == Convencion.VERIFICACION_USUARIO_BASICO_NO_EXISTE) {
-							SC.warn("Identificaci\u00F3n o c\u00F3digo no válido.");
 						} else {
-							SC.warn("Correo o c\u00F3digo no válido.");
+							panelLogin.habilitarCampos(true);
+							if (result == Convencion.VERIFICACION_USUARIO_BASICO_CODIGO_ACCESO_NO_VALIDO) {
+								SC.warn("El c\u00F3digo de Acceso no es vï¿½lido");
+							} else if (result == Convencion.VERIFICACION_USUARIO_BASICO_SIN_TERMINAR_PRUEBA) {
+								SC.warn("El usuario comenz\u00F3 una prueba pero no la termin\u00F3.");
+							} else if (result == Convencion.VERIFICACION_USUARIO_BASICO_PARTICIPACION_NO_EXISTE) {
+
+								SC.warn("Identificaci\u00F3n o c\u00F3digo no vï¿½lido.");
+							} else if (result == Convencion.VERIFICACION_USUARIO_BASICO_NO_EXISTE) {
+								SC.warn("Identificaci\u00F3n o c\u00F3digo no vï¿½lido.");
+							} else {
+								SC.warn("Correo o c\u00F3digo no vï¿½lido.");
+							}
 						}
 					}
 				});

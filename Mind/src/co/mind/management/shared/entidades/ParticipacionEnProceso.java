@@ -19,29 +19,31 @@ public class ParticipacionEnProceso implements Serializable {
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private int identificador;
 
+	@Column(name="Codigo_Acceso")
 	private String codigo_Acceso;
 
+	@Column(name="Estado")
 	private String estado;
 
-    @Temporal( TemporalType.TIMESTAMP)
+	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name="fecha_finalizacion")
 	private Date fechaFinalizacion;
 
-    @Temporal( TemporalType.TIMESTAMP)
+	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name="fecha_inicio")
 	private Date fechaInicio;
 
-    @Temporal( TemporalType.TIMESTAMP)
+	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name="fecha_realizacion")
 	private Date fechaRealizacion;
 
 	//bi-directional many-to-one association to ProcesoUsuario
-    @ManyToOne
+	@ManyToOne
 	@JoinColumn(name="procesos_usuarios_identificador")
 	private ProcesoUsuario procesosUsuario;
 
 	//bi-directional many-to-one association to Evaluado
-    @ManyToOne
+	@ManyToOne
 	@JoinColumn(name="usuarios_basicos_identificador")
 	private Evaluado evaluado;
 
@@ -49,8 +51,8 @@ public class ParticipacionEnProceso implements Serializable {
 	@OneToMany(mappedBy="participacionEnProceso")
 	private List<Resultado> resultados;
 
-    public ParticipacionEnProceso() {
-    }
+	public ParticipacionEnProceso() {
+	}
 
 	public int getIdentificador() {
 		return this.identificador;
@@ -107,7 +109,7 @@ public class ParticipacionEnProceso implements Serializable {
 	public void setProcesosUsuario(ProcesoUsuario procesosUsuario) {
 		this.procesosUsuario = procesosUsuario;
 	}
-	
+
 	public Evaluado getEvaluado() {
 		return this.evaluado;
 	}
@@ -115,7 +117,7 @@ public class ParticipacionEnProceso implements Serializable {
 	public void setEvaluado(Evaluado evaluado) {
 		this.evaluado = evaluado;
 	}
-	
+
 	public List<Resultado> getResultados() {
 		return this.resultados;
 	}
@@ -123,5 +125,19 @@ public class ParticipacionEnProceso implements Serializable {
 	public void setResultados(List<Resultado> resultados) {
 		this.resultados = resultados;
 	}
-	
+
+	public Resultado addResultado(Resultado resultado) {
+		getResultados().add(resultado);
+		resultado.setParticipacionEnProceso(this);
+
+		return resultado;
+	}
+
+	public Resultado removeResultado(Resultado resultado) {
+		getResultados().remove(resultado);
+		resultado.setParticipacionEnProceso(null);
+
+		return resultado;
+	}
+
 }

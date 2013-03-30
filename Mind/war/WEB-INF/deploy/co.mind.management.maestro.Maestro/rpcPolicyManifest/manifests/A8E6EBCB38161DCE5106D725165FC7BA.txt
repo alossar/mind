@@ -1,2 +1,0 @@
-serviceClass: co.mind.management.maestro.client.servicios.UsuarioMaestroService
-path: E80FBAB8CF1A82911AD58E2417FDADB8.gwt.rpc

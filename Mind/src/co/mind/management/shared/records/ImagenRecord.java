@@ -16,6 +16,7 @@ public class ImagenRecord extends TileRecord {
 		setIdImagen(idImagen);
 		setIdImagenUsuario(idImagenUsuario);
 		setPicture(picture);
+		setThumbnail("Thumbnails/" + picture);
 	}
 
 	/**
@@ -73,6 +74,25 @@ public class ImagenRecord extends TileRecord {
 	 */
 	public String getPicture() {
 		return getAttribute("picture");
+	}
+
+	/**
+	 * Set the picture.
+	 * 
+	 * @param picture
+	 *            the picture
+	 */
+	public void setThumbnail(String picture) {
+		setAttribute("thumbnail", picture);
+	}
+
+	/**
+	 * Return the picture.
+	 * 
+	 * @return the picture
+	 */
+	public String getThumbnail() {
+		return getAttribute("thumbnail");
 	}
 
 	public static ImagenRecord[] getRecord(List<ImagenUsuarioBO> result) {

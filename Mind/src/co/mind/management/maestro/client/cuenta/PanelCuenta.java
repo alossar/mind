@@ -22,16 +22,15 @@ public class PanelCuenta extends VLayout {
 		setPadding(15);
 
 		canvasEncabezado = new Canvas();
-		canvasEncabezado.setSize("100%", "20%");
+		canvasEncabezado.setSize("100%", "70px");
 		canvasEncabezado.setBackgroundColor("white");
-		panelContenidoCuenta = new PanelContenidoCuenta();
+		panelContenidoCuenta = new PanelContenidoCuenta(usuario);
 
 		inicializarEncabezado();
 
 		titulo.setContents("<h1>" + "Información de la Cuenta" + "</h1>");
 		subtitulo.setContents(usuario.getNombres() + " "
 				+ usuario.getApellidos());
-		setInformacion(usuario);
 
 		addMember(canvasEncabezado);
 		addMember(panelContenidoCuenta);
@@ -42,6 +41,7 @@ public class PanelCuenta extends VLayout {
 		titulo = new HTMLFlow();
 		titulo.setTop(25);
 		titulo.setLeft(70);
+		titulo.setWidth("90%");
 
 		subtitulo = new HTMLFlow();
 		subtitulo.setTop(60);
@@ -59,7 +59,7 @@ public class PanelCuenta extends VLayout {
 
 	}
 
-	private void setInformacion(UsuarioBO usuario) {
+	public void setInformacion(UsuarioBO usuario) {
 		panelContenidoCuenta.setInformacionContacto(usuario);
 	}
 

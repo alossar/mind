@@ -17,6 +17,7 @@ import co.mind.management.shared.bo.SolicitudPlanBO;
 import co.mind.management.shared.bo.SolicitudValoracionBO;
 import co.mind.management.shared.bo.UsuarioAdministradorBO;
 import co.mind.management.shared.bo.UsuarioBO;
+import co.mind.management.shared.bo.UsuarioBO;
 import co.mind.management.shared.bo.EvaluadoBO;
 import co.mind.management.shared.bo.UsuarioMaestroBO;
 
@@ -30,19 +31,8 @@ public interface UsuarioMaestroService extends RemoteService {
 
 	public void cerrarSesion();
 
-	/**
-	 * Agrega un Usuario Administradors a la Base de Datos, dada la cuenta de
-	 * Usuario Administrador a la que pertenece. Se crean el plan de Usuario
-	 * Basico, las laminas, pruebas predeterminadas para el usuario.
-	 * <p>
-	 * 
-	 * @param usuarioAdministrador
-	 *            Datos del Usuario Administrador.
-	 * @return 0 si el objeto se ingreso correctamente.
-	 */
-	public int crearCuenta(UsuarioAdministradorBO usuarioAdministrador,
-			SolicitudPlanBO solicitud, PermisoBO plan, Date fechaFinalizacion,
-			int usosTotal);
+	int crearCuenta(UsuarioBO usuarioAdministrador, SolicitudPlanBO solicitud,
+			PermisoBO plan, Date fechaFinalizacion, int usosTotal);
 
 	/**
 	 * Activa la cuenta de un Usuario Administrador.
@@ -50,7 +40,7 @@ public interface UsuarioMaestroService extends RemoteService {
 	 * 
 	 * @param usuarioAdministradorID
 	 *            Identificador del Usuario Administrador.
-	 * @return 0 si el objeto se editó correctamente. 1 en caso contrario.
+	 * @return 0 si el objeto se editï¿½ correctamente. 1 en caso contrario.
 	 */
 	public int activarCuenta(int usuarioAdministradorID);
 
@@ -60,7 +50,7 @@ public interface UsuarioMaestroService extends RemoteService {
 	 * 
 	 * @param usuarioAdministradorID
 	 *            Identificador del Usuario Administrador.
-	 * @return 0 si el objeto se editó correctamente. 1 en caso contrario.
+	 * @return 0 si el objeto se editï¿½ correctamente. 1 en caso contrario.
 	 */
 	public int desactivarCuenta(int usuarioAdministradorID);
 
@@ -72,44 +62,36 @@ public interface UsuarioMaestroService extends RemoteService {
 	public int agregarImagenPredeterminada(ImagenBO imagen);
 
 	public int agregarImagenPredeterminadaAUsuarios(
-			List<UsuarioAdministradorBO> usuariosAdministradores,
-			ImagenBO imagen);
+			List<UsuarioBO> usuariosAdministradores, ImagenBO imagen);
 
 	public int agregarPlan(PermisoBO plan);
 
-	public int agregarParticipacionDeUsuarioBasicoAProceso(
-			UsuarioAdministradorBO usuarioAdministrador,
-			ProcesoUsuarioBO proceso, EvaluadoBO usuarioBasico,
-			ParticipacionEnProcesoBO participacion);
+	int agregarParticipacionDeUsuarioBasicoAProceso(
+			UsuarioBO usuarioAdministrador, ProcesoUsuarioBO proceso,
+			List<ParticipacionEnProcesoBO> evaluados);
+
+	int agregarPruebasAProceso(UsuarioBO usuarioAdministrador,
+			ProcesoUsuarioBO proceso, List<PruebaUsuarioBO> pruebas);
 
 	public int agregarUsuarioBasico(UsuarioBO usuarioAdministrador,
 			EvaluadoBO usuarioBasico);
 
 	int agregarPrueba(UsuarioBO usuarioAdministrador, PruebaUsuarioBO prueba);
 
-	public int agregarPreguntaAPrueba(
-			UsuarioAdministradorBO usuarioAdministrador,
+	int agregarPreguntaAPrueba(UsuarioBO usuarioAdministrador,
 			PruebaUsuarioBO prueba, PreguntaUsuarioBO pregunta);
 
-	public int agregarPreguntasAPrueba(
-			UsuarioAdministradorBO usuarioAdministrador,
+	int agregarPreguntasAPrueba(UsuarioBO usuarioAdministrador,
 			PruebaUsuarioBO prueba, List<PreguntaUsuarioBO> preguntas);
 
-	public int agregarPregunta(UsuarioAdministradorBO usuarioAdministrador,
-			PreguntaUsuarioBO pregunta);
-
-	public int agregarPregunta(UsuarioBO usuarioAdministrador,
-			PreguntaUsuarioBO pregunta, PruebaUsuarioBO categoria);
-
 	public int agregarProceso(UsuarioBO usuarioAdministrador,
-			List<EvaluadoBO> usuariosBasicos, ProcesoUsuarioBO proceso);
+			ProcesoUsuarioBO proceso);
 
 	List<ParticipacionEnProcesoBO> consultarParticipacionEnProceso(
 			UsuarioBO usuarioAdministrador, ProcesoUsuarioBO proceso);
 
-	public List<ParticipacionEnProcesoBO> consultarValoracionesProceso(
-			UsuarioAdministradorBO usuarioAdministrador,
-			ProcesoUsuarioBO proceso);
+	List<ParticipacionEnProcesoBO> consultarValoracionesProceso(
+			UsuarioBO usuarioAdministrador, ProcesoUsuarioBO proceso);
 
 	public List<ParticipacionEnProcesoBO> consultarResultadosProceso(
 			UsuarioBO usuarioAdministrador, ProcesoUsuarioBO proceso);
@@ -124,9 +106,9 @@ public interface UsuarioMaestroService extends RemoteService {
 
 	public List<SolicitudPlanBO> consultarSolicitudesPlan();
 
-	public UsuarioAdministradorBO consultarUsuarioAdministrador(int usuarioID);
+	public UsuarioBO consultarUsuarioAdministrador(int usuarioID);
 
-	public List<UsuarioAdministradorBO> consultarUsuariosAdministradores();
+	public List<UsuarioBO> consultarUsuariosAdministradores();
 
 	public List<PreguntaUsuarioBO> consultarPreguntasUsuarioAdministrador(
 			int usuarioID);
@@ -163,4 +145,11 @@ public interface UsuarioMaestroService extends RemoteService {
 			ProcesoUsuarioBO procesoTemp);
 
 	public void generarReporte(List<ParticipacionEnProcesoBO> participaciones);
+
+	ProcesoUsuarioBO consultarProceso(UsuarioBO usuarioMaestro,
+			ProcesoUsuarioBO proceso);
+
+	int enviarNotificacionesParticipacionesProceso(
+			UsuarioMaestroBO usuarioMaestro, List<ParticipacionEnProcesoBO> p);
+
 }

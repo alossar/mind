@@ -91,7 +91,6 @@ public class EvaluacionServiceImpl extends RemoteServiceServlet implements
 		u.setCorreoElectronico(correo);
 		u.setIdentificador(Integer.parseInt(identificador));
 		ParticipacionEnProcesoBO p = new ParticipacionEnProcesoBO();
-		p.setUsuarioBasicoID(Integer.parseInt(identificador));
 		p.setCodigo_Acceso(codigoAcceso);
 		return (Integer) g.verificarUsuarioBasico(u, p);
 	}

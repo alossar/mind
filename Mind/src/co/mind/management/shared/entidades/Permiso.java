@@ -22,14 +22,15 @@ public class Permiso implements Serializable {
 
 	private String edicion;
 
+	@Column(name="Nombre")
 	private String nombre;
 
 	//bi-directional many-to-one association to Usuario
 	@OneToMany(mappedBy="permiso")
 	private List<Usuario> usuarios;
 
-    public Permiso() {
-    }
+	public Permiso() {
+	}
 
 	public int getIdentificador() {
 		return this.identificador;
@@ -70,5 +71,19 @@ public class Permiso implements Serializable {
 	public void setUsuarios(List<Usuario> usuarios) {
 		this.usuarios = usuarios;
 	}
-	
+
+	public Usuario addUsuario(Usuario usuario) {
+		getUsuarios().add(usuario);
+		usuario.setPermiso(this);
+
+		return usuario;
+	}
+
+	public Usuario removeUsuario(Usuario usuario) {
+		getUsuarios().remove(usuario);
+		usuario.setPermiso(null);
+
+		return usuario;
+	}
+
 }

@@ -9,10 +9,16 @@ import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
 import javax.persistence.Query;
 
+import co.mind.management.shared.bo.ImagenBO;
+import co.mind.management.shared.bo.ImagenUsuarioBO;
 import co.mind.management.shared.bo.ParticipacionEnProcesoBO;
+import co.mind.management.shared.bo.PreguntaUsuarioBO;
 import co.mind.management.shared.bo.ProcesoUsuarioBO;
+import co.mind.management.shared.bo.ProcesoUsuarioHasPruebaUsuarioBO;
 import co.mind.management.shared.bo.PruebaUsuarioBO;
+import co.mind.management.shared.entidades.PreguntaUsuario;
 import co.mind.management.shared.entidades.ProcesoUsuario;
+import co.mind.management.shared.entidades.ProcesoUsuarioHasPruebaUsuario;
 import co.mind.management.shared.entidades.PruebaUsuario;
 import co.mind.management.shared.entidades.Usuario;
 import co.mind.management.shared.recursos.Convencion;
@@ -37,13 +43,6 @@ public class GestionProcesos implements IGestionProcesos {
 		EntityTransaction userTransaction = entityManager.getTransaction();
 		try {
 			userTransaction.begin();
-			List<PruebaUsuarioBO> pruebasUsuario = proceso
-					.getPruebasUsuarioID();
-			List<PruebaUsuario> pruebas = new ArrayList<>();
-			for (PruebaUsuarioBO pruebaUsuarioBO : pruebasUsuario) {
-				pruebas.add(entityManager.find(PruebaUsuario.class,
-						pruebaUsuarioBO.getIdentificador()));
-			}
 			ProcesoUsuario proc = new ProcesoUsuario();
 			proc.setDescripcion(proceso.getDescripcion());
 			proc.setEstadoValoracion(proceso.getEstadoValoracion());
@@ -51,7 +50,10 @@ public class GestionProcesos implements IGestionProcesos {
 			proc.setFechaFinalizacion(proceso.getFechaFinalizacion());
 			proc.setFechaInicio(proceso.getFechaInicio());
 			proc.setNombre(proceso.getNombre());
-			proc.setPruebasUsuarios(pruebas);
+			Usuario user = entityManager.find(Usuario.class,
+					usuarioAdministradorID);
+			proc.setUsuario(user);
+			System.out.println("Agregando");
 			if (!entityManager.contains(proc)) {
 				entityManager.persist(proc);
 				entityManager.flush();
@@ -64,56 +66,7 @@ public class GestionProcesos implements IGestionProcesos {
 		} catch (Exception exception) {
 			// Exception has occurred, roll-back the transaction.
 			userTransaction.rollback();
-			return Convencion.INCORRECTO;
-		}
-	}
-
-	@Override
-	public int agregarProcesoUsuarioAdministrador(int usuarioAdministradorID,
-			ProcesoUsuarioBO proceso,
-			List<ParticipacionEnProcesoBO> participaciones) {
-		EntityTransaction userTransaction = entityManager.getTransaction();
-		try {
-			userTransaction.begin();
-			List<PruebaUsuarioBO> pruebasUsuario = proceso
-					.getPruebasUsuarioID();
-			List<PruebaUsuario> pruebas = new ArrayList<>();
-			for (PruebaUsuarioBO pruebaUsuarioBO : pruebasUsuario) {
-				pruebas.add(entityManager.find(PruebaUsuario.class,
-						pruebaUsuarioBO.getIdentificador()));
-			}
-			ProcesoUsuario proc = new ProcesoUsuario();
-			proc.setDescripcion(proceso.getDescripcion());
-			proc.setEstadoValoracion(proceso.getEstadoValoracion());
-			proc.setFechaCreacion(proceso.getFechaCreacion());
-			proc.setFechaFinalizacion(proceso.getFechaFinalizacion());
-			proc.setFechaInicio(proceso.getFechaInicio());
-			proc.setNombre(proceso.getNombre());
-			proc.setPruebasUsuarios(pruebas);
-			proc.setEstadoValoracion(Convencion.ESTADO_SOLICITUD_NO_REALIZADA);
-			if (!entityManager.contains(proc)) {
-				entityManager.persist(proc);
-				entityManager.flush();
-				userTransaction.commit();
-				entityManager.refresh(proc);
-				for (int i = 0; i < participaciones.size(); i++) {
-					gestionEvaluacion
-							.agregarParticipacionEnProceso(
-									usuarioAdministradorID, participaciones
-											.get(i).getUsuarioBasicoID(), proc
-											.getIdentificador(),
-									participaciones.get(i));
-					NotificadorCorreo
-							.enviarCorreoParticipacionAProceso(participaciones
-									.get(i));
-				}
-				return Convencion.CORRECTO;
-			} else {
-				return Convencion.INCORRECTO;
-			}
-		} catch (Exception exception) {
-			// Exception has occurred, roll-back the transaction.
-			userTransaction.rollback();
+			exception.printStackTrace();
 			return Convencion.INCORRECTO;
 		}
 	}
@@ -126,11 +79,17 @@ public class GestionProcesos implements IGestionProcesos {
 			userTransaction.begin();
 			ProcesoUsuario proc = entityManager.find(ProcesoUsuario.class,
 					proceso.getIdentificador());
-			List<PruebaUsuarioBO> pruebasUsuario = proceso
-					.getPruebasUsuarioID();
-			List<PruebaUsuario> pruebas = new ArrayList<>();
+			List<ProcesoUsuarioHasPruebaUsuarioBO> procesoUsuarioHasPruebaUsuario = proceso
+					.getProcesoUsuarioHasPruebaUsuario();
+			List<PruebaUsuarioBO> pruebasUsuario = new ArrayList<PruebaUsuarioBO>();
+			for (ProcesoUsuarioHasPruebaUsuarioBO procesoUsuarioHasPruebaUsuarioBO : procesoUsuarioHasPruebaUsuario) {
+				pruebasUsuario.add(procesoUsuarioHasPruebaUsuarioBO
+						.getPruebasUsuario());
+			}
+			List<ProcesoUsuarioHasPruebaUsuario> pruebas = new ArrayList<ProcesoUsuarioHasPruebaUsuario>();
 			for (PruebaUsuarioBO pruebaUsuarioBO : pruebasUsuario) {
-				pruebas.add(entityManager.find(PruebaUsuario.class,
+				pruebas.add(entityManager.find(
+						ProcesoUsuarioHasPruebaUsuario.class,
 						pruebaUsuarioBO.getIdentificador()));
 			}
 			proc.setDescripcion(proceso.getDescripcion());
@@ -139,7 +98,7 @@ public class GestionProcesos implements IGestionProcesos {
 			proc.setFechaFinalizacion(proceso.getFechaFinalizacion());
 			proc.setFechaInicio(proceso.getFechaInicio());
 			proc.setNombre(proceso.getNombre());
-			proc.setPruebasUsuarios(pruebas);
+			proc.setProcesosUsuariosHasPruebasUsuarios(pruebas);
 			proc.setEstadoValoracion(Convencion.ESTADO_SOLICITUD_NO_REALIZADA);
 			entityManager.merge(proc);
 			entityManager.flush();
@@ -155,29 +114,60 @@ public class GestionProcesos implements IGestionProcesos {
 	@Override
 	public ProcesoUsuarioBO consultarProcesoUsuarioAdministrador(
 			int usuarioAdministradorID, int procesoID) {
-		ProcesoUsuario im = entityManager.find(ProcesoUsuario.class, procesoID);
-		if (im == null) {
+		ProcesoUsuario proceso = entityManager.find(ProcesoUsuario.class,
+				procesoID);
+		if (proceso == null) {
 			return null;
 		} else {
+			entityManager.refresh(proceso);
 			ProcesoUsuarioBO resultado = new ProcesoUsuarioBO();
-			resultado.setDescripcion(im.getDescripcion());
-			resultado.setEstadoValoracion(im.getEstadoValoracion());
-			resultado.setFechaCreacion(im.getFechaCreacion());
-			resultado.setFechaFinalizacion(im.getFechaFinalizacion());
-			resultado.setFechaInicio(im.getFechaInicio());
-			resultado.setIdentificador(im.getIdentificador());
-			resultado.setNombre(im.getNombre());
-			List<PruebaUsuario> pruebas = im.getPruebasUsuarios();
-			List<PruebaUsuarioBO> pruebasUsuarioBOs = new ArrayList<>();
-			for (PruebaUsuario pruebaUsuario : pruebas) {
-
+			resultado.setDescripcion(proceso.getDescripcion());
+			resultado.setEstadoValoracion(proceso.getEstadoValoracion());
+			resultado.setFechaCreacion(proceso.getFechaCreacion());
+			resultado.setFechaFinalizacion(proceso.getFechaFinalizacion());
+			resultado.setFechaInicio(proceso.getFechaInicio());
+			resultado.setIdentificador(proceso.getIdentificador());
+			resultado.setNombre(proceso.getNombre());
+			List<ProcesoUsuarioHasPruebaUsuario> pruebas = proceso
+					.getProcesosUsuariosHasPruebasUsuarios();
+			List<ProcesoUsuarioHasPruebaUsuarioBO> pruebasUsuarioBOs = new ArrayList<>();
+			for (ProcesoUsuarioHasPruebaUsuario pruebaUsuario : pruebas) {
+				ProcesoUsuarioHasPruebaUsuarioBO pHas = new ProcesoUsuarioHasPruebaUsuarioBO();
+				pHas.setIdentificador(pruebaUsuario.getIdentificador());
 				PruebaUsuarioBO prueba = new PruebaUsuarioBO();
-				prueba.setDescripcion(pruebaUsuario.getDescripcion());
-				prueba.setIdentificador(pruebaUsuario.getIdentificador());
-				prueba.setNombre(pruebaUsuario.getNombre());
-				prueba.setUsuarioAdministradorID(pruebaUsuario.getUsuario()
+				prueba.setDescripcion(pruebaUsuario.getPruebasUsuario()
+						.getDescripcion());
+				prueba.setIdentificador(pruebaUsuario.getPruebasUsuario()
 						.getIdentificador());
-				pruebasUsuarioBOs.add(prueba);
+				prueba.setNombre(pruebaUsuario.getPruebasUsuario().getNombre());
+				prueba.setUsuarioAdministradorID(pruebaUsuario
+						.getPruebasUsuario().getUsuario().getIdentificador());
+				List<PreguntaUsuario> preguntas = pruebaUsuario
+						.getPruebasUsuario().getPreguntasUsuarios();
+				List<PreguntaUsuarioBO> preguntasBO = new ArrayList<>();
+				for (PreguntaUsuario pre : preguntas) {
+					PreguntaUsuarioBO pregunta = new PreguntaUsuarioBO();
+					pregunta.setCaracteresMaximo(pre.getCaracteresMaximo());
+					pregunta.setIdentificador(pre.getIdentificador());
+					pregunta.setPregunta(pre.getPregunta());
+					pregunta.setTiempoMaximo(pre.getTiempoMaximo());
+					ImagenUsuarioBO imagen = new ImagenUsuarioBO();
+					imagen.setIdentificador(pre.getImagenesUsuario()
+							.getIdentificador());
+					imagen.setUsuario(pre.getImagenesUsuario().getUsuario()
+							.getIdentificador());
+					ImagenBO ima = new ImagenBO();
+					ima.setIdentificador(pre.getImagenesUsuario().getImagene()
+							.getIdentificador());
+					ima.setImagenURI(pre.getImagenesUsuario().getImagene()
+							.getImagenURI());
+					imagen.setImagene(ima);
+					pregunta.setImagenesUsuarioID(imagen);
+					preguntasBO.add(pregunta);
+				}
+				prueba.setPreguntas(preguntasBO);
+				pHas.setPruebasUsuario(prueba);
+				pruebasUsuarioBOs.add(pHas);
 			}
 			resultado.setPruebasUsuarioID(pruebasUsuarioBOs);
 			return resultado;
@@ -209,10 +199,8 @@ public class GestionProcesos implements IGestionProcesos {
 		Usuario user = entityManager
 				.find(Usuario.class, usuarioAdministradorID);
 		if (user != null) {
-			String query = "SELECT DISTINCT (u) FROM ProcesoUsuario u, PruebaUsuario i WHERE i.usuario =:user AND u.pruebasUsuario = i";
-			Query q = entityManager.createQuery(query);
-			q.setParameter("user", user);
-			List<ProcesoUsuario> usuarios = q.getResultList();
+			entityManager.refresh(user);
+			List<ProcesoUsuario> usuarios = user.getProcesosUsuarios();
 			// Valida que se encuentre un usuario.
 			if (usuarios != null) {
 				if (usuarios.size() > 0) {
@@ -228,19 +216,53 @@ public class GestionProcesos implements IGestionProcesos {
 						resultado.setFechaInicio(im.getFechaInicio());
 						resultado.setIdentificador(im.getIdentificador());
 						resultado.setNombre(im.getNombre());
-						List<PruebaUsuario> pruebas = im.getPruebasUsuarios();
-						List<PruebaUsuarioBO> pruebasUsuarioBOs = new ArrayList<>();
-						for (PruebaUsuario pruebaUsuario : pruebas) {
-
+						List<ProcesoUsuarioHasPruebaUsuario> pruebas = im
+								.getProcesosUsuariosHasPruebasUsuarios();
+						List<ProcesoUsuarioHasPruebaUsuarioBO> pruebasUsuarioBOs = new ArrayList<>();
+						for (ProcesoUsuarioHasPruebaUsuario pruebaUsuario : pruebas) {
+							ProcesoUsuarioHasPruebaUsuarioBO pHas = new ProcesoUsuarioHasPruebaUsuarioBO();
+							pHas.setIdentificador(pruebaUsuario
+									.getIdentificador());
 							PruebaUsuarioBO prueba = new PruebaUsuarioBO();
 							prueba.setDescripcion(pruebaUsuario
-									.getDescripcion());
+									.getPruebasUsuario().getDescripcion());
 							prueba.setIdentificador(pruebaUsuario
-									.getIdentificador());
-							prueba.setNombre(pruebaUsuario.getNombre());
+									.getPruebasUsuario().getIdentificador());
+							prueba.setNombre(pruebaUsuario.getPruebasUsuario()
+									.getNombre());
 							prueba.setUsuarioAdministradorID(pruebaUsuario
-									.getUsuario().getIdentificador());
-							pruebasUsuarioBOs.add(prueba);
+									.getPruebasUsuario().getUsuario()
+									.getIdentificador());
+							List<PreguntaUsuario> preguntas = pruebaUsuario
+									.getPruebasUsuario().getPreguntasUsuarios();
+							List<PreguntaUsuarioBO> preguntasBO = new ArrayList<>();
+							for (PreguntaUsuario pre : preguntas) {
+								PreguntaUsuarioBO pregunta = new PreguntaUsuarioBO();
+								pregunta.setCaracteresMaximo(pre
+										.getCaracteresMaximo());
+								pregunta.setIdentificador(pre
+										.getIdentificador());
+								pregunta.setPregunta(pre.getPregunta());
+								pregunta.setTiempoMaximo(pre.getTiempoMaximo());
+								ImagenUsuarioBO imagen = new ImagenUsuarioBO();
+								imagen.setIdentificador(pre
+										.getImagenesUsuario()
+										.getIdentificador());
+								imagen.setUsuario(pre.getImagenesUsuario()
+										.getUsuario().getIdentificador());
+								ImagenBO ima = new ImagenBO();
+								ima.setIdentificador(pre.getImagenesUsuario()
+										.getImagene().getIdentificador());
+								ima.setImagenURI(pre.getImagenesUsuario()
+										.getImagene().getImagenURI());
+								imagen.setImagene(ima);
+								pregunta.setImagenesUsuarioID(imagen);
+								preguntasBO.add(pregunta);
+
+							}
+							prueba.setPreguntas(preguntasBO);
+							pHas.setPruebasUsuario(prueba);
+							pruebasUsuarioBOs.add(pHas);
 						}
 						resultado.setPruebasUsuarioID(pruebasUsuarioBOs);
 						lista.add(resultado);

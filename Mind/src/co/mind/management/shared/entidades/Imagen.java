@@ -18,14 +18,15 @@ public class Imagen implements Serializable {
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private int identificador;
 
+	@Column(name="ImagenURI")
 	private String imagenURI;
 
 	//bi-directional many-to-one association to ImagenUsuario
 	@OneToMany(mappedBy="imagene")
 	private List<ImagenUsuario> imagenesUsuarios;
 
-    public Imagen() {
-    }
+	public Imagen() {
+	}
 
 	public int getIdentificador() {
 		return this.identificador;
@@ -50,5 +51,19 @@ public class Imagen implements Serializable {
 	public void setImagenesUsuarios(List<ImagenUsuario> imagenesUsuarios) {
 		this.imagenesUsuarios = imagenesUsuarios;
 	}
-	
+
+	public ImagenUsuario addImagenesUsuario(ImagenUsuario imagenesUsuario) {
+		getImagenesUsuarios().add(imagenesUsuario);
+		imagenesUsuario.setImagene(this);
+
+		return imagenesUsuario;
+	}
+
+	public ImagenUsuario removeImagenesUsuario(ImagenUsuario imagenesUsuario) {
+		getImagenesUsuarios().remove(imagenesUsuario);
+		imagenesUsuario.setImagene(null);
+
+		return imagenesUsuario;
+	}
+
 }

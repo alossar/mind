@@ -35,7 +35,7 @@ public class GestionAccesos implements IGestionAccesos {
 	@Override
 	public int verificarUsuarioBasico(EvaluadoBO usuarioBasico,
 			ParticipacionEnProcesoBO participacion) {
-		String query = "SELECT DISTINCT(p) FROM UsuarioBasico u, ParticipacionEnProceso p WHERE p.usuariosBasico = u AND u.correoElectronico =:correo AND p.codigo_Acceso =:codigo";
+		String query = "SELECT DISTINCT(p) FROM Evaluado u, ParticipacionEnProceso p WHERE p.evaluado = u AND u.correoElectronico =:correo AND p.codigo_Acceso =:codigo";
 		Query qs = entityManager.createQuery(query);
 		qs.setParameter("correo", usuarioBasico.getCorreoElectronico());
 		qs.setParameter("codigo", participacion.getCodigo_Acceso());

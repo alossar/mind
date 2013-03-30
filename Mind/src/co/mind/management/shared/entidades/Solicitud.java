@@ -18,39 +18,54 @@ public class Solicitud implements Serializable {
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private int identificador;
 
+	@Column(name="Apellidos")
 	private String apellidos;
 
+	@Column(name="Cargo")
 	private String cargo;
 
+	@Column(name="Ciudad")
 	private String ciudad;
 
+	@Column(name="Correo_Electronico")
 	private String correo_Electronico;
 
+	@Column(name="Descripcion")
 	private String descripcion;
 
+	@Column(name="Direccion_Empresa")
 	private String direccion_Empresa;
 
+	@Column(name="Direccion_Residencia")
 	private String direccion_Residencia;
 
+	@Column(name="Empresa")
 	private String empresa;
 
+	@Column(name="Estado_Solicitud")
 	private String estado_Solicitud;
 
-    @Temporal( TemporalType.TIMESTAMP)
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name="Fecha_Solicitud")
 	private Date fecha_Solicitud;
 
+	@Column(name="Nombres")
 	private String nombres;
 
+	@Column(name="Pais")
 	private String pais;
 
+	@Column(name="Telefono")
 	private String telefono;
 
+	@Column(name="Telefono_Celular")
 	private String telefono_Celular;
 
+	@Column(name="Tipo")
 	private String tipo;
 
-    public Solicitud() {
-    }
+	public Solicitud() {
+	}
 
 	public int getIdentificador() {
 		return this.identificador;

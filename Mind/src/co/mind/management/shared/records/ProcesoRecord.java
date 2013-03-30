@@ -14,7 +14,7 @@ public class ProcesoRecord extends ListGridRecord {
 	public ProcesoRecord(int idProceso, String nombreProceso,
 			String descripcionProceso, Date fechaCreacion, Date fechaInicio,
 			Date fechaFinalizacion, String estadoValoracion,
-			String solicitudValoracion) {
+			String solicitudValoracion, int tiempoProceso, int cantidadPreguntas) {
 		setAttribute("idProceso", idProceso);
 		setAttribute("nombreProceso", nombreProceso);
 		setAttribute("descripcionProceso", descripcionProceso);
@@ -23,6 +23,8 @@ public class ProcesoRecord extends ListGridRecord {
 		setAttribute("fechaFinalizacion", fechaFinalizacion);
 		setAttribute("estadoValoracion", estadoValoracion);
 		setAttribute("solicitudValoracion", solicitudValoracion);
+		setAttribute("tiempoProceso", tiempoProceso);
+		setAttribute("cantidadPreguntas", cantidadPreguntas);
 	}
 
 	public static ProcesoRecord[] getRecords(List<ProcesoUsuarioBO> procesos) {
@@ -37,7 +39,9 @@ public class ProcesoRecord extends ListGridRecord {
 						procesoUsuario.getFechaInicio(),
 						procesoUsuario.getFechaFinalizacion(),
 						procesoUsuario.getEstadoValoracion(),
-						procesoUsuario.getSolicitudValoracion());
+						procesoUsuario.getSolicitudValoracion(),
+						procesoUsuario.duracionPrueba(),
+						procesoUsuario.cantidadDePreguntas());
 				resultado.add(imagen);
 			}
 			ProcesoRecord[] records = new ProcesoRecord[resultado.size()];
@@ -60,7 +64,7 @@ public class ProcesoRecord extends ListGridRecord {
 		proceso.setIdentificador(record.getAttributeAsInt("idProceso"));
 		proceso.setNombre(record.getAttribute("nombreProceso"));
 		proceso.setSolicitudValoracion(record
-				.getAttribute("solicitudValoracion"));
+				.getAttribute("solicitudValoracion"));		
 		return proceso;
 	}
 }

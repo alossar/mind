@@ -93,7 +93,7 @@ public class Convencion {
 	public static final String CONEXION_PASS = "mindm";
 	
 	//Mensajes
-	public static final String MENSAJE_FALLO_LOGIN = "El correo o la contraseña ingresada es incorrecta. Por favor intente de nuevo.";
+	public static final String MENSAJE_FALLO_LOGIN = "El correo o la contraseï¿½a ingresada es incorrecta. Por favor intente de nuevo.";
 	
 	public static String obtenerTiempoMinutoSegundos(double tiempoLamina) {
 		int minutos = (int) tiempoLamina / 60;

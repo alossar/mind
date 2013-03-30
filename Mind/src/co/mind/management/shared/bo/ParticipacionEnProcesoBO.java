@@ -4,22 +4,14 @@ import java.io.Serializable;
 import java.util.Date;
 
 public class ParticipacionEnProcesoBO implements Serializable {
+
 	private static final long serialVersionUID = 1L;
-
 	private int identificador;
-
 	private String codigo_Acceso;
-
 	private String estado;
-
 	private Date fechaFinalizacion;
-
 	private Date fechaInicio;
-
 	private int procesoID;
-
-	private int usuarioBasicoID;
-
 	private EvaluadoBO usuarioBasico;
 
 	private String sesionID;
@@ -73,14 +65,6 @@ public class ParticipacionEnProcesoBO implements Serializable {
 
 	public void setProcesoID(int procesoID) {
 		this.procesoID = procesoID;
-	}
-
-	public int getUsuarioBasicoID() {
-		return usuarioBasicoID;
-	}
-
-	public void setUsuarioBasicoID(int usuarioBasicoID) {
-		this.usuarioBasicoID = usuarioBasicoID;
 	}
 
 	public EvaluadoBO getUsuarioBasico() {

@@ -20,17 +20,17 @@ public class Resultado implements Serializable {
 	private String respuesta;
 
 	//bi-directional many-to-one association to ParticipacionEnProceso
-    @ManyToOne
+	@ManyToOne
 	@JoinColumn(name="participacion_en_proceso_identificador")
 	private ParticipacionEnProceso participacionEnProceso;
 
 	//bi-directional many-to-one association to PreguntaUsuario
-    @ManyToOne
+	@ManyToOne
 	@JoinColumn(name="preguntas_identificador")
 	private PreguntaUsuario preguntasUsuario;
 
-    public Resultado() {
-    }
+	public Resultado() {
+	}
 
 	public int getIdentificador() {
 		return this.identificador;
@@ -55,7 +55,7 @@ public class Resultado implements Serializable {
 	public void setParticipacionEnProceso(ParticipacionEnProceso participacionEnProceso) {
 		this.participacionEnProceso = participacionEnProceso;
 	}
-	
+
 	public PreguntaUsuario getPreguntasUsuario() {
 		return this.preguntasUsuario;
 	}
@@ -63,5 +63,5 @@ public class Resultado implements Serializable {
 	public void setPreguntasUsuario(PreguntaUsuario preguntasUsuario) {
 		this.preguntasUsuario = preguntasUsuario;
 	}
-	
+
 }

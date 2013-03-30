@@ -18,8 +18,10 @@ public class PreguntaUsuario implements Serializable {
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private int identificador;
 
+	@Column(name="CaracteresMaximo")
 	private int caracteresMaximo;
 
+	@Column(name="Orden")
 	private int orden;
 
 	@Column(name="posicion_pregunta_x")
@@ -28,17 +30,19 @@ public class PreguntaUsuario implements Serializable {
 	@Column(name="posicion_pregunta_y")
 	private int posicionPreguntaY;
 
+	@Column(name="Pregunta")
 	private String pregunta;
 
+	@Column(name="TiempoMaximo")
 	private int tiempoMaximo;
 
 	//bi-directional many-to-one association to ImagenUsuario
-    @ManyToOne
+	@ManyToOne
 	@JoinColumn(name="imagenes_usuarios_identificador")
 	private ImagenUsuario imagenesUsuario;
 
 	//bi-directional many-to-one association to PruebaUsuario
-    @ManyToOne
+	@ManyToOne
 	@JoinColumn(name="pruebas_usuarios_identificador")
 	private PruebaUsuario pruebasUsuario;
 
@@ -46,8 +50,8 @@ public class PreguntaUsuario implements Serializable {
 	@OneToMany(mappedBy="preguntasUsuario")
 	private List<Resultado> resultados;
 
-    public PreguntaUsuario() {
-    }
+	public PreguntaUsuario() {
+	}
 
 	public int getIdentificador() {
 		return this.identificador;
@@ -112,7 +116,7 @@ public class PreguntaUsuario implements Serializable {
 	public void setImagenesUsuario(ImagenUsuario imagenesUsuario) {
 		this.imagenesUsuario = imagenesUsuario;
 	}
-	
+
 	public PruebaUsuario getPruebasUsuario() {
 		return this.pruebasUsuario;
 	}
@@ -120,7 +124,7 @@ public class PreguntaUsuario implements Serializable {
 	public void setPruebasUsuario(PruebaUsuario pruebasUsuario) {
 		this.pruebasUsuario = pruebasUsuario;
 	}
-	
+
 	public List<Resultado> getResultados() {
 		return this.resultados;
 	}
@@ -128,5 +132,19 @@ public class PreguntaUsuario implements Serializable {
 	public void setResultados(List<Resultado> resultados) {
 		this.resultados = resultados;
 	}
-	
+
+	public Resultado addResultado(Resultado resultado) {
+		getResultados().add(resultado);
+		resultado.setPreguntasUsuario(this);
+
+		return resultado;
+	}
+
+	public Resultado removeResultado(Resultado resultado) {
+		getResultados().remove(resultado);
+		resultado.setPreguntasUsuario(null);
+
+		return resultado;
+	}
+
 }

@@ -3,6 +3,7 @@ package co.mind.management.shared.persistencia;
 import java.util.List;
 
 import co.mind.management.shared.bo.PreguntaUsuarioBO;
+import co.mind.management.shared.bo.ProcesoUsuarioBO;
 import co.mind.management.shared.bo.PruebaUsuarioBO;
 
 public interface IGestionPruebas {
@@ -25,7 +26,7 @@ public interface IGestionPruebas {
 			int usuarioAdministradorID, int preguntaID);
 
 	public List<PreguntaUsuarioBO> listarPreguntasPrueba(
-			int usuarioAdministradorID, int pruebaID);	
+			int usuarioAdministradorID, int pruebaID);
 
 	public List<PreguntaUsuarioBO> listarPreguntasRestantesPrueba(
 			int usuarioAdministradorID, int pruebaID, int usuarioBasicoID);
@@ -35,5 +36,8 @@ public interface IGestionPruebas {
 
 	int agregarPruebaUsuarioAdministrador(int usuarioAdministradorID,
 			PruebaUsuarioBO prueba, List<PreguntaUsuarioBO> categorias);
+
+	int agregarPruebaAProceso(int usuarioAdministradorID,
+			PruebaUsuarioBO prueba, ProcesoUsuarioBO proceso);
 
 }

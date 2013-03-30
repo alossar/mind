@@ -7,7 +7,7 @@ import com.smartgwt.client.widgets.form.fields.TextItem;
 import com.smartgwt.client.widgets.layout.HLayout;
 import com.smartgwt.client.widgets.layout.VLayout;
 
-public class PanelContenidoCuenta extends VLayout {
+public class PanelContenidoCuenta extends HLayout {
 
 	private VLayout layoutContenedor;
 	private TextItem nombreItem;
@@ -19,20 +19,20 @@ public class PanelContenidoCuenta extends VLayout {
 	private TextItem nombreEmpresa;
 	private TextItem cargo;
 
-	public PanelContenidoCuenta() {
+	public PanelContenidoCuenta(UsuarioBO usuario) {
 		setWidth("100%");
 		setHeight("80%");
 		setBackgroundColor("white");
 		setPadding(15);
 
 		layoutContenedor = new VLayout();
-		layoutContenedor.setSize("100%", "100%");
+		layoutContenedor.setSize("50%", "100%");
 		layoutContenedor.setBackgroundColor("white");
 
 		inicializarInformacionPersonal();
 		inicializarInformacionContacto();
-
-		setDeshabilitarEdicion(true);
+		setInformacionContacto(usuario);
+		setHabilitarEdicion(false);
 
 		addMember(layoutContenedor);
 	}
@@ -69,7 +69,7 @@ public class PanelContenidoCuenta extends VLayout {
 	private void inicializarInformacionContacto() {
 		DynamicForm formInformacionContacto = new DynamicForm();
 		formInformacionContacto.setGroupTitle("Información de Contacto");
-		formInformacionContacto.setIsGroup(true);
+		formInformacionContacto.setIsGroup(false);
 		formInformacionContacto.setNumCols(2);
 		// form.setBorder("1px solid blue");
 		formInformacionContacto.setPadding(5);
@@ -110,14 +110,14 @@ public class PanelContenidoCuenta extends VLayout {
 		telefono.clearValue();
 	}
 
-	public void setDeshabilitarEdicion(boolean habilitar) {
-		nombreItem.setDisabled(habilitar);
-		apellidosItem.setDisabled(habilitar);
-		cedulaItem.setDisabled(habilitar);
-		mailItem.setDisabled(habilitar);
-		ciudadItem.setDisabled(habilitar);
-		nombreEmpresa.setDisabled(habilitar);
-		cargo.setDisabled(habilitar);
-		telefono.setDisabled(habilitar);
+	public void setHabilitarEdicion(boolean habilitar) {
+		nombreItem.setCanEdit(habilitar);
+		apellidosItem.setCanEdit(habilitar);
+		cedulaItem.setCanEdit(habilitar);
+		mailItem.setCanEdit(habilitar);
+		ciudadItem.setCanEdit(habilitar);
+		nombreEmpresa.setCanEdit(habilitar);
+		cargo.setCanEdit(habilitar);
+		telefono.setCanEdit(habilitar);
 	}
 }

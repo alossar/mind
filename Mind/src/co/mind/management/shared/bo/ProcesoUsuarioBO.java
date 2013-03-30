@@ -16,7 +16,7 @@ public class ProcesoUsuarioBO implements Serializable {
 	private String nombre;
 	private String solicitudValoracion;
 	private String notificacionEnviada;
-	private List<PruebaUsuarioBO> pruebasUsuario;
+	private List<ProcesoUsuarioHasPruebaUsuarioBO> procesoUsuarioHasPruebaUsuario;
 
 	public ProcesoUsuarioBO() {
 	}
@@ -85,12 +85,13 @@ public class ProcesoUsuarioBO implements Serializable {
 		this.solicitudValoracion = solicitudValoracion;
 	}
 
-	public List<PruebaUsuarioBO> getPruebasUsuarioID() {
-		return this.pruebasUsuario;
+	public List<ProcesoUsuarioHasPruebaUsuarioBO> getProcesoUsuarioHasPruebaUsuario() {
+		return this.procesoUsuarioHasPruebaUsuario;
 	}
 
-	public void setPruebasUsuarioID(List<PruebaUsuarioBO> pruebasUsuario) {
-		this.pruebasUsuario = pruebasUsuario;
+	public void setPruebasUsuarioID(
+			List<ProcesoUsuarioHasPruebaUsuarioBO> pruebasUsuario) {
+		this.procesoUsuarioHasPruebaUsuario = pruebasUsuario;
 	}
 
 	public String getNotificacionEnviada() {
@@ -99,6 +100,24 @@ public class ProcesoUsuarioBO implements Serializable {
 
 	public void setNotificacionEnviada(String notificacionEnviada) {
 		this.notificacionEnviada = notificacionEnviada;
+	}
+
+	public int cantidadDePreguntas() {
+		int cantidad = 0;
+		for (int i = 0; i < procesoUsuarioHasPruebaUsuario.size(); i++) {
+			cantidad *= procesoUsuarioHasPruebaUsuario.get(i)
+					.getPruebasUsuario().cantidadDePreguntas();
+		}
+		return cantidad;
+	}
+
+	public int duracionPrueba() {
+		int duracion = 0;
+		for (int i = 0; i < procesoUsuarioHasPruebaUsuario.size(); i++) {
+			duracion *= procesoUsuarioHasPruebaUsuario.get(i)
+					.getPruebasUsuario().duracionPrueba();
+		}
+		return duracion;
 	}
 
 }

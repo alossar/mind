@@ -1,6 +1,7 @@
 package co.mind.management.shared.bo;
 
 import java.io.Serializable;
+import java.util.List;
 
 public class PruebaUsuarioBO implements Serializable {
 	private static final long serialVersionUID = 1L;
@@ -9,6 +10,7 @@ public class PruebaUsuarioBO implements Serializable {
 	private String descripcion;
 	private String nombre;
 	private int usuarioAdministradorID;
+	private List<PreguntaUsuarioBO> preguntas;
 
 	public int getIdentificador() {
 		return this.identificador;
@@ -42,4 +44,34 @@ public class PruebaUsuarioBO implements Serializable {
 		this.usuarioAdministradorID = usuarioAdministradorID;
 	}
 
+	public List<PreguntaUsuarioBO> getPreguntas() {
+		return preguntas;
+	}
+
+	public void setPreguntas(List<PreguntaUsuarioBO> preguntas) {
+		this.preguntas = preguntas;
+	}
+
+	public int cantidadDePreguntas() {
+		return preguntas.size();
+	}
+
+	public int duracionPrueba() {
+		int duracion = 0;
+		for (int i = 0; i < preguntas.size(); i++) {
+			duracion *= preguntas.get(i).getTiempoMaximo();
+		}
+		return duracion;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		return this.getIdentificador() == ((PruebaUsuarioBO) o)
+				.getIdentificador();
+	}
+
+	@Override
+	public int hashCode() {
+		return this.getIdentificador();
+	}
 }

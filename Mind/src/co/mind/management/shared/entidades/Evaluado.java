@@ -17,16 +17,20 @@ public class Evaluado implements Serializable {
 	@Id
 	private int identificador;
 
+	@Column(name="Apellidos")
 	private String apellidos;
 
+	@Column(name="CorreoElectronico")
 	private String correoElectronico;
 
+	@Column(name="Edad")
 	private int edad;
 
+	@Column(name="Nombres")
 	private String nombres;
 
 	//bi-directional many-to-one association to Usuario
-    @ManyToOne
+	@ManyToOne
 	@JoinColumn(name="cuentaUsuarioAdministrador_identificador")
 	private Usuario usuario;
 
@@ -34,8 +38,8 @@ public class Evaluado implements Serializable {
 	@OneToMany(mappedBy="evaluado")
 	private List<ParticipacionEnProceso> participacionEnProcesos;
 
-    public Evaluado() {
-    }
+	public Evaluado() {
+	}
 
 	public int getIdentificador() {
 		return this.identificador;
@@ -84,7 +88,7 @@ public class Evaluado implements Serializable {
 	public void setUsuario(Usuario usuario) {
 		this.usuario = usuario;
 	}
-	
+
 	public List<ParticipacionEnProceso> getParticipacionEnProcesos() {
 		return this.participacionEnProcesos;
 	}
@@ -92,5 +96,19 @@ public class Evaluado implements Serializable {
 	public void setParticipacionEnProcesos(List<ParticipacionEnProceso> participacionEnProcesos) {
 		this.participacionEnProcesos = participacionEnProcesos;
 	}
-	
+
+	public ParticipacionEnProceso addParticipacionEnProceso(ParticipacionEnProceso participacionEnProceso) {
+		getParticipacionEnProcesos().add(participacionEnProceso);
+		participacionEnProceso.setEvaluado(this);
+
+		return participacionEnProceso;
+	}
+
+	public ParticipacionEnProceso removeParticipacionEnProceso(ParticipacionEnProceso participacionEnProceso) {
+		getParticipacionEnProcesos().remove(participacionEnProceso);
+		participacionEnProceso.setEvaluado(null);
+
+		return participacionEnProceso;
+	}
+
 }

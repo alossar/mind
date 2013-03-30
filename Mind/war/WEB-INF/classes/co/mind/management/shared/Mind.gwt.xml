@@ -1,0 +1,9 @@
+
+<module>
+	<inherits name="com.google.gwt.user.User" />
+	<source path="persistencia" />
+	<source path="entidades" />
+	<source path="recursos" />
+	<source path="bo" />
+	<source path="records" />
+</module>

@@ -18,31 +18,44 @@ public class Usuario implements Serializable {
 	@Id
 	private int identificador;
 
+	@Column(name="Apellidos")
 	private String apellidos;
 
+	@Column(name="Cargo")
 	private String cargo;
 
+	@Column(name="Ciudad")
 	private String ciudad;
 
+	@Column(name="Contrasena")
 	private String contrasena;
 
+	@Column(name="Correo_Electronico")
 	private String correo_Electronico;
 
+	@Column(name="Empresa")
 	private String empresa;
 
+	@Column(name="Estado_Cuenta")
 	private String estado_Cuenta;
 
-    @Temporal( TemporalType.TIMESTAMP)
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name="Fecha_Creacion")
 	private Date fecha_Creacion;
 
+	@Column(name="Nombres")
 	private String nombres;
 
+	@Column(name="Pais")
 	private String pais;
 
+	@Column(name="Telefono")
 	private String telefono;
 
+	@Column(name="Telefono_Celular")
 	private String telefono_Celular;
 
+	@Column(name="Tipo")
 	private String tipo;
 
 	//bi-directional many-to-one association to Evaluado
@@ -62,12 +75,12 @@ public class Usuario implements Serializable {
 	private List<PruebaUsuario> pruebasUsuarios;
 
 	//bi-directional many-to-one association to Permiso
-    @ManyToOne
+	@ManyToOne
 	@JoinColumn(name="permisos_identificador")
 	private Permiso permiso;
 
 	//bi-directional many-to-one association to Usuario
-    @ManyToOne
+	@ManyToOne
 	@JoinColumn(name="usuarios_identificador")
 	private Usuario usuario;
 
@@ -75,8 +88,8 @@ public class Usuario implements Serializable {
 	@OneToMany(mappedBy="usuario")
 	private List<Usuario> usuarios;
 
-    public Usuario() {
-    }
+	public Usuario() {
+	}
 
 	public int getIdentificador() {
 		return this.identificador;
@@ -197,7 +210,21 @@ public class Usuario implements Serializable {
 	public void setEvaluados(List<Evaluado> evaluados) {
 		this.evaluados = evaluados;
 	}
-	
+
+	public Evaluado addEvaluado(Evaluado evaluado) {
+		getEvaluados().add(evaluado);
+		evaluado.setUsuario(this);
+
+		return evaluado;
+	}
+
+	public Evaluado removeEvaluado(Evaluado evaluado) {
+		getEvaluados().remove(evaluado);
+		evaluado.setUsuario(null);
+
+		return evaluado;
+	}
+
 	public List<ImagenUsuario> getImagenesUsuarios() {
 		return this.imagenesUsuarios;
 	}
@@ -205,7 +232,21 @@ public class Usuario implements Serializable {
 	public void setImagenesUsuarios(List<ImagenUsuario> imagenesUsuarios) {
 		this.imagenesUsuarios = imagenesUsuarios;
 	}
-	
+
+	public ImagenUsuario addImagenesUsuario(ImagenUsuario imagenesUsuario) {
+		getImagenesUsuarios().add(imagenesUsuario);
+		imagenesUsuario.setUsuario(this);
+
+		return imagenesUsuario;
+	}
+
+	public ImagenUsuario removeImagenesUsuario(ImagenUsuario imagenesUsuario) {
+		getImagenesUsuarios().remove(imagenesUsuario);
+		imagenesUsuario.setUsuario(null);
+
+		return imagenesUsuario;
+	}
+
 	public List<ProcesoUsuario> getProcesosUsuarios() {
 		return this.procesosUsuarios;
 	}
@@ -213,7 +254,21 @@ public class Usuario implements Serializable {
 	public void setProcesosUsuarios(List<ProcesoUsuario> procesosUsuarios) {
 		this.procesosUsuarios = procesosUsuarios;
 	}
-	
+
+	public ProcesoUsuario addProcesosUsuario(ProcesoUsuario procesosUsuario) {
+		getProcesosUsuarios().add(procesosUsuario);
+		procesosUsuario.setUsuario(this);
+
+		return procesosUsuario;
+	}
+
+	public ProcesoUsuario removeProcesosUsuario(ProcesoUsuario procesosUsuario) {
+		getProcesosUsuarios().remove(procesosUsuario);
+		procesosUsuario.setUsuario(null);
+
+		return procesosUsuario;
+	}
+
 	public List<PruebaUsuario> getPruebasUsuarios() {
 		return this.pruebasUsuarios;
 	}
@@ -221,7 +276,21 @@ public class Usuario implements Serializable {
 	public void setPruebasUsuarios(List<PruebaUsuario> pruebasUsuarios) {
 		this.pruebasUsuarios = pruebasUsuarios;
 	}
-	
+
+	public PruebaUsuario addPruebasUsuario(PruebaUsuario pruebasUsuario) {
+		getPruebasUsuarios().add(pruebasUsuario);
+		pruebasUsuario.setUsuario(this);
+
+		return pruebasUsuario;
+	}
+
+	public PruebaUsuario removePruebasUsuario(PruebaUsuario pruebasUsuario) {
+		getPruebasUsuarios().remove(pruebasUsuario);
+		pruebasUsuario.setUsuario(null);
+
+		return pruebasUsuario;
+	}
+
 	public Permiso getPermiso() {
 		return this.permiso;
 	}
@@ -229,7 +298,7 @@ public class Usuario implements Serializable {
 	public void setPermiso(Permiso permiso) {
 		this.permiso = permiso;
 	}
-	
+
 	public Usuario getUsuario() {
 		return this.usuario;
 	}
@@ -237,7 +306,7 @@ public class Usuario implements Serializable {
 	public void setUsuario(Usuario usuario) {
 		this.usuario = usuario;
 	}
-	
+
 	public List<Usuario> getUsuarios() {
 		return this.usuarios;
 	}
@@ -245,5 +314,19 @@ public class Usuario implements Serializable {
 	public void setUsuarios(List<Usuario> usuarios) {
 		this.usuarios = usuarios;
 	}
-	
+
+	public Usuario addUsuario(Usuario usuario) {
+		getUsuarios().add(usuario);
+		usuario.setUsuario(this);
+
+		return usuario;
+	}
+
+	public Usuario removeUsuario(Usuario usuario) {
+		getUsuarios().remove(usuario);
+		usuario.setUsuario(null);
+
+		return usuario;
+	}
+
 }

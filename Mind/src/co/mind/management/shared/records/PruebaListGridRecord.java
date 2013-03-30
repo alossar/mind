@@ -10,11 +10,13 @@ import com.smartgwt.client.widgets.grid.ListGridRecord;
 public class PruebaListGridRecord extends ListGridRecord {
 
 	public PruebaListGridRecord(int pruebaID, int usuarioID, String nombre,
-			String descripcion) {
+			String descripcion, int tiempoPrueba, int cantidadPreguntas) {
 		setAttribute("pruebaID", pruebaID);
 		setAttribute("usuarioID", usuarioID);
 		setAttribute("nombre", nombre);
 		setAttribute("descripcion", descripcion);
+		setAttribute("tiempoPrueba", tiempoPrueba);
+		setAttribute("cantidadPreguntas", cantidadPreguntas);
 	}
 
 	public static PruebaListGridRecord[] getRecords(
@@ -26,7 +28,9 @@ public class PruebaListGridRecord extends ListGridRecord {
 						pruebaUsuario.getIdentificador(),
 						pruebaUsuario.getUsuarioAdministradorID(),
 						pruebaUsuario.getNombre(),
-						pruebaUsuario.getDescripcion());
+						pruebaUsuario.getDescripcion(),
+						pruebaUsuario.duracionPrueba(),
+						pruebaUsuario.cantidadDePreguntas());
 				resultado.add(imagen);
 			}
 			PruebaListGridRecord[] records = new PruebaListGridRecord[resultado
@@ -48,7 +52,6 @@ public class PruebaListGridRecord extends ListGridRecord {
 			resultado.setUsuarioAdministradorID(prueba
 					.getAttributeAsInt("usuarioID"));
 			return resultado;
-
 		}
 		return null;
 	}

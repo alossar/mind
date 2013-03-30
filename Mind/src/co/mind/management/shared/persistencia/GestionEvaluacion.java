@@ -42,17 +42,35 @@ public class GestionEvaluacion implements IGestionEvaluacion {
 		EntityTransaction userTransaction = entityManager.getTransaction();
 		try {
 			userTransaction.begin();
-			Evaluado usuario = entityManager.find(Evaluado.class,
+			Evaluado evaluado = entityManager.find(Evaluado.class,
 					usuarioBasicoID);
+			if (evaluado == null) {
+				evaluado = new Evaluado();
+				Usuario usuario = entityManager.find(Usuario.class,
+						usuarioAdministradorBO);
+				evaluado.setApellidos(participacion.getUsuarioBasico()
+						.getApellidos());
+				evaluado.setCorreoElectronico(participacion.getUsuarioBasico()
+						.getCorreoElectronico());
+				evaluado.setIdentificador(participacion.getUsuarioBasico()
+						.getIdentificador());
+				evaluado.setNombres(participacion.getUsuarioBasico()
+						.getNombres());
+				evaluado.setUsuario(usuario);
+				entityManager.persist(evaluado);
+				entityManager.flush();
+				userTransaction.commit();
+				entityManager.refresh(evaluado);
+			}
 			ProcesoUsuario proceso = entityManager.find(ProcesoUsuario.class,
 					procesoID);
 			ParticipacionEnProceso par = new ParticipacionEnProceso();
-			par.setCodigo_Acceso(participacion.getCodigo_Acceso());
+			par.setCodigo_Acceso(generarCodigoAcceso());
 			par.setEstado(Convencion.ESTADO_PARTICIPACION_EN_PROCESO_EN_ESPERA);
 			par.setFechaFinalizacion(participacion.getFechaFinalizacion());
 			par.setFechaInicio(participacion.getFechaInicio());
 			par.setProcesosUsuario(proceso);
-			par.setEvaluado(usuario);
+			par.setEvaluado(evaluado);
 			if (!entityManager.contains(par)) {
 				entityManager.persist(par);
 				entityManager.flush();
@@ -63,6 +81,7 @@ public class GestionEvaluacion implements IGestionEvaluacion {
 			}
 		} catch (Exception exception) {
 			// Exception has occurred, roll-back the transaction.
+			exception.printStackTrace();
 			userTransaction.rollback();
 			return Convencion.INCORRECTO;
 		}
@@ -124,7 +143,6 @@ public class GestionEvaluacion implements IGestionEvaluacion {
 			resultado.setFechaInicio(par.getFechaInicio());
 			resultado.setIdentificador(par.getIdentificador());
 			resultado.setProcesoID(par.getProcesosUsuario().getIdentificador());
-			resultado.setUsuarioBasicoID(par.getEvaluado().getIdentificador());
 			EvaluadoBO user = new EvaluadoBO();
 			user.setApellidos(par.getEvaluado().getApellidos());
 			user.setCorreoElectronico(par.getEvaluado().getCorreoElectronico());
@@ -164,8 +182,6 @@ public class GestionEvaluacion implements IGestionEvaluacion {
 						resultado.setIdentificador(par.getIdentificador());
 						resultado.setProcesoID(par.getProcesosUsuario()
 								.getIdentificador());
-						resultado.setUsuarioBasicoID(par.getEvaluado()
-								.getIdentificador());
 						EvaluadoBO userb = new EvaluadoBO();
 						userb.setApellidos(par.getEvaluado().getApellidos());
 						userb.setCorreoElectronico(par.getEvaluado()
@@ -190,8 +206,7 @@ public class GestionEvaluacion implements IGestionEvaluacion {
 		}
 	}
 
-	@Override
-	public String generarCodigoAcceso() {
+	private String generarCodigoAcceso() {
 		return Generador.GenerarCodigo(Generador.CARACTERES, 8);
 	}
 
@@ -272,8 +287,6 @@ public class GestionEvaluacion implements IGestionEvaluacion {
 					.getIdentificador());
 			par.setProcesoID(res.getParticipacionEnProceso()
 					.getProcesosUsuario().getIdentificador());
-			par.setUsuarioBasicoID(res.getParticipacionEnProceso()
-					.getEvaluado().getIdentificador());
 			resultado.setParticipacionEnProceso(par);
 
 			PreguntaUsuarioBO pregunta = new PreguntaUsuarioBO();
@@ -336,8 +349,6 @@ public class GestionEvaluacion implements IGestionEvaluacion {
 								.getIdentificador());
 						par.setProcesoID(res.getParticipacionEnProceso()
 								.getProcesosUsuario().getIdentificador());
-						par.setUsuarioBasicoID(res.getParticipacionEnProceso()
-								.getEvaluado().getIdentificador());
 						resultado.setParticipacionEnProceso(par);
 
 						PreguntaUsuarioBO pregunta = new PreguntaUsuarioBO();
@@ -412,8 +423,6 @@ public class GestionEvaluacion implements IGestionEvaluacion {
 								.getIdentificador());
 						par.setProcesoID(res.getParticipacionEnProceso()
 								.getProcesosUsuario().getIdentificador());
-						par.setUsuarioBasicoID(res.getParticipacionEnProceso()
-								.getEvaluado().getIdentificador());
 						resultado.setParticipacionEnProceso(par);
 
 						PreguntaUsuarioBO pregunta = new PreguntaUsuarioBO();
@@ -456,7 +465,7 @@ public class GestionEvaluacion implements IGestionEvaluacion {
 	@Override
 	public ParticipacionEnProcesoBO consultarParticipacionAProceso(
 			int usuarioBasicoID, String correo, String codigoAcceso) {
-		String query = "SELECT DISTINCT(p) FROM Evaluado u, ParticipacionEnProceso p WHERE p.usuariosBasico = u AND u.correoElectronico =:correo AND p.codigo_Acceso =:codigo AND u.identificador =:id";
+		String query = "SELECT DISTINCT(p) FROM Evaluado u, ParticipacionEnProceso p WHERE p.evaluado = u AND u.correoElectronico =:correo AND p.codigo_Acceso =:codigo AND u.identificador =:id";
 		Query qs = entityManager.createQuery(query);
 		qs.setParameter("correo", correo);
 		qs.setParameter("codigo", codigoAcceso);
@@ -480,7 +489,6 @@ public class GestionEvaluacion implements IGestionEvaluacion {
 					.getUsuario().getIdentificador());
 			user.setNombres(par.getEvaluado().getNombres());
 			resultado.setUsuarioBasico(user);
-			resultado.setUsuarioBasicoID(par.getEvaluado().getIdentificador());
 
 			return resultado;
 
@@ -518,8 +526,6 @@ public class GestionEvaluacion implements IGestionEvaluacion {
 						resultado.setFechaInicio(par.getFechaInicio());
 						resultado.setIdentificador(par.getIdentificador());
 						resultado.setProcesoID(par.getProcesosUsuario()
-								.getIdentificador());
-						resultado.setUsuarioBasicoID(par.getEvaluado()
 								.getIdentificador());
 						EvaluadoBO userb = new EvaluadoBO();
 						userb.setApellidos(par.getEvaluado().getApellidos());

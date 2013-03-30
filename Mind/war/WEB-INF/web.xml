@@ -17,7 +17,7 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 		<servlet-name>LoginService</servlet-name>
 		<url-pattern>/co.mind.management.login.Login/LoginService</url-pattern>
 	</servlet-mapping>
-	
+
 	<servlet>
 		<servlet-name>EvaluacionService</servlet-name>
 		<servlet-class>co.mind.management.evaluacion.server.EvaluacionServiceImpl</servlet-class>
@@ -26,7 +26,7 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 		<servlet-name>EvaluacionService</servlet-name>
 		<url-pattern>/co.mind.management.evaluacion.Evaluacion/EvaluacionService</url-pattern>
 	</servlet-mapping>
-	
+
 	<servlet>
 		<servlet-name>UsuarioMaestroService</servlet-name>
 		<servlet-class>co.mind.management.maestro.server.UsuarioMaestroServiceImpl</servlet-class>
@@ -36,7 +36,7 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 		<url-pattern>/co.mind.management.maestro.Maestro/UsuarioMaestroService</url-pattern>
 	</servlet-mapping>
 
-<servlet>
+	<servlet>
 		<servlet-name>PDFReportServlet</servlet-name>
 		<servlet-class>co.mind.management.shared.recursos.PDFReportServlet</servlet-class>
 	</servlet>
@@ -54,6 +54,14 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 		<url-pattern>/ExcelReportServlet</url-pattern>
 	</servlet-mapping>
 
+	<servlet>
+		<servlet-name>upload</servlet-name>
+		<servlet-class>co.mind.management.shared.recursos.FileUploadServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>upload</servlet-name>
+		<url-pattern>/FileUploadsmart/upload</url-pattern>
+	</servlet-mapping>
 
 	<welcome-file-list>
 		<welcome-file>Login.html</welcome-file>
