@@ -52,9 +52,6 @@ public class PanelContenidoEvaluados extends HLayout {
 		topTabSet.setWidth100();
 		topTabSet.setHeight100();
 
-		Tab tabUsuariosBasicos = new Tab("Usuarios B\u00E1sicos",
-				"pieces/16/pawn_blue.png");
-
 		listGridUsuariosBasicos = new ListGrid();
 		listGridUsuariosBasicos.setWidth100();
 		listGridUsuariosBasicos.setHeight100();

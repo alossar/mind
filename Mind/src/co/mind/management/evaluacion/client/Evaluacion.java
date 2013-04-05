@@ -100,7 +100,7 @@ public class Evaluacion implements EntryPoint {
 
 	private static void mostrarPanelInstruccion() {
 		panelInstruccion
-				.setInstruccion("<div style='color:#40B3DF;letter-spacing:12px;font-size:15px;position:relative;left:25px;top:10px;'>Categor\u00EDa "
+				.setInstruccion("<div style='color:#40B3DF;letter-spacing:12px;font-size:15px;position:relative;left:25px;top:10px;'>Prueba: "
 						+ categoriaActual.getKey().getNombre()
 						+ "</div><p></p><div style='letter-spacing:6px;font-size:12px;position:relative;left:25px;top:20px;'>"
 						+ categoriaActual.getKey().getDescripcion() + "</div>");
@@ -135,16 +135,16 @@ public class Evaluacion implements EntryPoint {
 						} else {
 							panelLogin.habilitarCampos(true);
 							if (result == Convencion.VERIFICACION_USUARIO_BASICO_CODIGO_ACCESO_NO_VALIDO) {
-								SC.warn("El c\u00F3digo de Acceso no es v�lido");
+								SC.warn("El c\u00F3digo de Acceso no es válido");
 							} else if (result == Convencion.VERIFICACION_USUARIO_BASICO_SIN_TERMINAR_PRUEBA) {
 								SC.warn("El usuario comenz\u00F3 una prueba pero no la termin\u00F3.");
 							} else if (result == Convencion.VERIFICACION_USUARIO_BASICO_PARTICIPACION_NO_EXISTE) {
 
 								SC.warn("Identificaci\u00F3n o c\u00F3digo no v�lido.");
 							} else if (result == Convencion.VERIFICACION_USUARIO_BASICO_NO_EXISTE) {
-								SC.warn("Identificaci\u00F3n o c\u00F3digo no v�lido.");
+								SC.warn("Identificaci\u00F3n o c\u00F3digo no válido.");
 							} else {
-								SC.warn("Correo o c\u00F3digo no v�lido.");
+								SC.warn("Correo o c\u00F3digo no válido.");
 							}
 						}
 					}
@@ -164,7 +164,7 @@ public class Evaluacion implements EntryPoint {
 							@Override
 							public void onWindowClosing(ClosingEvent event) {
 								if (!termina) {
-									event.setMessage("If you leave, you may lose data. Continue?");
+									event.setMessage("Si cierra puede perder los resultados de la prueba. ¿Desea continuar?");
 								}
 							}
 						});

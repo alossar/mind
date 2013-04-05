@@ -93,10 +93,10 @@ public class Maestro implements EntryPoint {
 	private void inicializarComponentes() {
 		mainLayout = new MaestroMainLayout(usuarioMaestro);
 		RootPanel.get().add(mainLayout);
-		setListaImagenesUsuario();
 		setListaProcesos();
 		setListaPruebas();
 		setListaUsuariosBasicos();
+		setListaImagenesUsuario();
 	}
 
 	private void actualizarCookie() {
@@ -254,23 +254,22 @@ public class Maestro implements EntryPoint {
 	}
 
 	public static void eliminarUsuariosBasicos(List<EvaluadoBO> bo) {
-		for (EvaluadoBO usuarioBasicoBO : bo) {
-			usuarioMaestroService.eliminarUsuariosBasicos(usuarioMaestro, bo,
-					new AsyncCallback<Integer>() {
+		usuarioMaestroService.eliminarUsuariosBasicos(usuarioMaestro, bo,
+				new AsyncCallback<Integer>() {
 
-						@Override
-						public void onSuccess(Integer result) {
-							// TODO Auto-generated method stub
+					@Override
+					public void onSuccess(Integer result) {
+						// TODO Auto-generated method stub
+						setListaUsuariosBasicos();
+						setListaProcesos();
+					}
 
-						}
+					@Override
+					public void onFailure(Throwable caught) {
+						caught.printStackTrace();
 
-						@Override
-						public void onFailure(Throwable caught) {
-							caught.printStackTrace();
-
-						}
-					});
-		}
+					}
+				});
 
 	}
 
@@ -302,8 +301,8 @@ public class Maestro implements EntryPoint {
 	public static void eliminarPrueba(PruebaUsuarioBO prueba) {
 		pruebaTemp = prueba;
 
-		SC.ask("Precauci�n",
-				"Esta prueba puede ser usada en algun proceso. Eliminar la prueba har� que no se encuentre disponible para el proceso. �Desea continuar?",
+		SC.ask("Precaución",
+				"Esta prueba puede ser usada en algun proceso. Eliminar la prueba hará que no se encuentre disponible para el proceso. ¿Desea continuar?",
 				new BooleanCallback() {
 
 					@Override
@@ -324,7 +323,8 @@ public class Maestro implements EntryPoint {
 
 										@Override
 										public void onSuccess(Integer result) {
-
+											setListaPruebas();
+											setListaProcesos();
 										}
 									});
 						}
@@ -363,6 +363,7 @@ public class Maestro implements EntryPoint {
 
 					@Override
 					public void onSuccess(Integer result) {
+						setListaUsuariosBasicos();
 						obtenerParticipantesProceso(procesoTemp);
 					}
 
@@ -397,8 +398,8 @@ public class Maestro implements EntryPoint {
 	public static void eliminarProceso(ProcesoUsuarioBO proceso) {
 		procesoTemp = proceso;
 
-		SC.ask("Precauci�n",
-				"Este proceso puede estar siendo usado. �Desea continuar?",
+		SC.ask("Precaución",
+				"Este proceso puede estar siendo usado. ¿Desea continuar?",
 				new BooleanCallback() {
 
 					@Override
@@ -453,8 +454,8 @@ public class Maestro implements EntryPoint {
 		preguntaTemp = pregunta;
 		pruebaTemp = pruebaSeleccionada;
 
-		SC.ask("Precauci�n",
-				"Esta l�mina es usada en algun proceso. Eliminar la categor�a har� que no se encuentre disponible para la prueba. �Desea continuar?",
+		SC.ask("Precaución",
+				"Esta pregunta es usada en algun proceso. Eliminar la pregunta hará que no se encuentre disponible para la prueba. ¿Desea continuar?",
 				new BooleanCallback() {
 
 					@Override
@@ -534,7 +535,7 @@ public class Maestro implements EntryPoint {
 
 					@Override
 					public void onSuccess(Void result) {
-						Window.open("/PDFReportServlet", "_blank", "");
+						Window.open("/Mind/PDFReportServlet", "_blank", "");
 
 					}
 				});
@@ -555,7 +556,7 @@ public class Maestro implements EntryPoint {
 
 					@Override
 					public void onSuccess(Void result) {
-						Window.open("/ExcelReportServlet", "_blank", "");
+						Window.open("/Mind/ExcelReportServlet", "_blank", "");
 
 					}
 				});
@@ -596,6 +597,7 @@ public class Maestro implements EntryPoint {
 					@Override
 					public void onSuccess(Integer result) {
 						setListaPruebas();
+						setListaProcesos();
 					}
 
 					@Override
@@ -615,6 +617,8 @@ public class Maestro implements EntryPoint {
 					public void onSuccess(Integer result) {
 						System.out.println(result);
 						setListaProcesos();
+						setListaUsuariosBasicos();
+						setListaPruebas();
 					}
 
 					@Override
@@ -647,6 +651,7 @@ public class Maestro implements EntryPoint {
 
 					@Override
 					public void onSuccess(Integer result) {
+						setListaProcesos();
 					}
 
 					@Override

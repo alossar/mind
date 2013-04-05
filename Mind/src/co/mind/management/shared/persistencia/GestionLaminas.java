@@ -44,6 +44,7 @@ public class GestionLaminas implements IGestionLaminas {
 			}
 		} catch (Exception exception) {
 			// Exception has occurred, roll-back the transaction.
+			exception.printStackTrace();
 			userTransaction.rollback();
 			return Convencion.INCORRECTO;
 		}
@@ -63,6 +64,7 @@ public class GestionLaminas implements IGestionLaminas {
 			return Convencion.CORRECTO;
 		} catch (Exception exception) {
 			// Exception has occurred, roll-back the transaction.
+			exception.printStackTrace();
 			userTransaction.rollback();
 			return Convencion.INCORRECTO;
 		}
@@ -94,6 +96,7 @@ public class GestionLaminas implements IGestionLaminas {
 			return Convencion.CORRECTO;
 		} catch (Exception exception) {
 			// Exception has occurred, roll-back the transaction.
+			exception.printStackTrace();
 			userTransaction.rollback();
 			return Convencion.INCORRECTO;
 		}
@@ -122,6 +125,7 @@ public class GestionLaminas implements IGestionLaminas {
 			}
 		} catch (Exception exception) {
 			// Exception has occurred, roll-back the transaction.
+			exception.printStackTrace();
 			userTransaction.rollback();
 			return 1;
 		}
@@ -144,6 +148,7 @@ public class GestionLaminas implements IGestionLaminas {
 			return Convencion.CORRECTO;
 		} catch (Exception exception) {
 			// Exception has occurred, roll-back the transaction.
+			exception.printStackTrace();
 			userTransaction.rollback();
 			return Convencion.INCORRECTO;
 		}
@@ -183,6 +188,7 @@ public class GestionLaminas implements IGestionLaminas {
 			return Convencion.CORRECTO;
 		} catch (Exception exception) {
 			// Exception has occurred, roll-back the transaction.
+			exception.printStackTrace();
 			userTransaction.rollback();
 			return Convencion.INCORRECTO;
 		}

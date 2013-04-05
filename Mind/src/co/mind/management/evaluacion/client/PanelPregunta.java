@@ -106,7 +106,7 @@ public class PanelPregunta extends Canvas {
 		textContador = new StaticTextItem();
 		textContador.setTitle("Caracteres");
 		formRespuesta.setFields(textAreaRespuesta, textContador);
-		textContador.setValue(0 + "/" + textAreaRespuesta.getLength());
+		textContador.setValue(textAreaRespuesta.getLength());
 		addChild(formRespuesta);
 
 		labelPregunta = new Canvas("Pregunta");
@@ -131,11 +131,10 @@ public class PanelPregunta extends Canvas {
 			@Override
 			public void onChanged(ChangedEvent event) {
 				if (textAreaRespuesta.getValueAsString() != null) {
-					textContador.setValue(textAreaRespuesta.getValueAsString()
-							.length() + "/" + textAreaRespuesta.getLength());
+					textContador.setValue(textAreaRespuesta.getLength()
+							- textAreaRespuesta.getValueAsString().length());
 				} else {
-					textContador.setValue(0 + "/"
-							+ textAreaRespuesta.getLength());
+					textContador.setValue(textAreaRespuesta.getLength());
 				}
 			}
 		});
@@ -202,13 +201,19 @@ public class PanelPregunta extends Canvas {
 					marco.setLineWidth(5);
 					marco.draw();
 
-					textTiempo.setContents("<p style='color:"
-							+ Convencion.rgbToString(
-									tiempoTotal - tiempoLamina, tiempoTotal)
-							+ ";font-size:15px;'>"
-							+ Convencion
-									.obtenerTiempoMinutoSegundos(tiempoLamina)
-							+ "</p>");
+					textTiempo
+							.setContents("<p style='color:#000000 ;font-size:15px;'>"
+									+ Convencion
+											.obtenerTiempoMinutoSegundos(tiempoLamina)
+									+ "</p>");
+
+					// textTiempo.setContents("<p style='color:"
+					// + Convencion.rgbToString(
+					// tiempoTotal - tiempoLamina, tiempoTotal)
+					// + ";font-size:15px;'>"
+					// + Convencion
+					// .obtenerTiempoMinutoSegundos(tiempoLamina)
+					// + "</p>");
 				}
 
 			}

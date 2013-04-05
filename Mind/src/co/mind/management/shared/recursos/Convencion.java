@@ -88,13 +88,15 @@ public class Convencion {
 
 	public static final int MAXIMA_LONGITUD_RESPUESTA = 2500;
 	public static final String DIRECCION_WEB = "http://www.mindmanagement.co";
-	public static final String CONEXION_URL = "jdbc:mysql://ec2-23-21-211-172.compute-1.amazonaws.com:3306/mind_measurement";
-	public static final String CONEXION_USER = "mindm";
-	public static final String CONEXION_PASS = "mindm";
-	
-	//Mensajes
+	//public static final String CONEXION_URL = "jdbc:mysql://192.168.13.62:3306/mind_measurement";
+	public static final String CONEXION_URL = "jdbc:mysql://localhost:3306/mind_measurement";
+	public static final String CONEXION_USER = "root";
+	//public static final String CONEXION_PASS = "WUWV1ITjkI";
+	public static final String CONEXION_PASS = "admin";
+
+	// Mensajes
 	public static final String MENSAJE_FALLO_LOGIN = "El correo o la contrase�a ingresada es incorrecta. Por favor intente de nuevo.";
-	
+
 	public static String obtenerTiempoMinutoSegundos(double tiempoLamina) {
 		int minutos = (int) tiempoLamina / 60;
 		int segundos = (int) (tiempoLamina - (minutos * 60));

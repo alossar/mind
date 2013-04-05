@@ -179,13 +179,36 @@ public class GestionPruebas implements IGestionPruebas {
 			int pruebaID) {
 		EntityTransaction userTransaction = entityManager.getTransaction();
 		try {
-			userTransaction.begin();
 			PruebaUsuario cat = entityManager.find(PruebaUsuario.class,
 					pruebaID);
-			entityManager.remove(cat);
-			entityManager.flush();
-			userTransaction.commit();
-			return Convencion.CORRECTO;
+			if (cat != null) {
+				List<ProcesoUsuarioHasPruebaUsuario> p = cat
+						.getProcesosUsuariosHasPruebasUsuarios();
+				List<PreguntaUsuario> preguntas = cat.getPreguntasUsuarios();
+				if (p != null) {
+					for (ProcesoUsuarioHasPruebaUsuario procesoUsuarioHasPruebaUsuario : p) {
+						userTransaction.begin();
+						entityManager.remove(procesoUsuarioHasPruebaUsuario);
+						entityManager.flush();
+						userTransaction.commit();
+					}
+				}
+				if (cat.getPreguntasUsuarios() != null) {
+					for (PreguntaUsuario preguntaUsuario : preguntas) {
+						userTransaction.begin();
+						entityManager.remove(preguntaUsuario);
+						entityManager.flush();
+						userTransaction.commit();
+					}
+				}
+				userTransaction.begin();
+				entityManager.remove(cat);
+				entityManager.flush();
+				userTransaction.commit();
+				return Convencion.CORRECTO;
+			} else {
+				return Convencion.INCORRECTO;
+			}
 		} catch (Exception e) {
 			userTransaction.rollback();
 			return Convencion.INCORRECTO;
@@ -276,54 +299,47 @@ public class GestionPruebas implements IGestionPruebas {
 			for (PruebaUsuario pruebaUsuario : pruebasProceso) {
 				preguntas.addAll(pruebaUsuario.getPreguntasUsuarios());
 			}
-			// Valida que se encuentre un usuario.
-			if (preguntas != null) {
-				if (preguntas.size() > 0) {
-					List<PreguntaUsuarioBO> lista = new ArrayList<PreguntaUsuarioBO>();
-					for (int i = 0; i < preguntas.size(); i++) {
-						PreguntaUsuario pregunta = preguntas.get(i);
+			if (preguntas.size() > 0) {
+				List<PreguntaUsuarioBO> lista = new ArrayList<PreguntaUsuarioBO>();
+				for (int i = 0; i < preguntas.size(); i++) {
+					PreguntaUsuario pregunta = preguntas.get(i);
 
-						PruebaUsuarioBO prueba = new PruebaUsuarioBO();
-						prueba.setDescripcion(pregunta.getPruebasUsuario()
-								.getDescripcion());
-						prueba.setIdentificador(pregunta.getPruebasUsuario()
-								.getIdentificador());
-						prueba.setNombre(pregunta.getPruebasUsuario()
-								.getNombre());
-						prueba.setUsuarioAdministradorID(pregunta
-								.getPruebasUsuario().getUsuario()
-								.getIdentificador());
+					PruebaUsuarioBO prueba = new PruebaUsuarioBO();
+					prueba.setDescripcion(pregunta.getPruebasUsuario()
+							.getDescripcion());
+					prueba.setIdentificador(pregunta.getPruebasUsuario()
+							.getIdentificador());
+					prueba.setNombre(pregunta.getPruebasUsuario().getNombre());
+					prueba.setUsuarioAdministradorID(pregunta
+							.getPruebasUsuario().getUsuario()
+							.getIdentificador());
 
-						PreguntaUsuarioBO preguntaUsuario = new PreguntaUsuarioBO();
-						preguntaUsuario.setCaracteresMaximo(pregunta
-								.getCaracteresMaximo());
-						preguntaUsuario.setIdentificador(pregunta
-								.getIdentificador());
-						preguntaUsuario.setPosicionPreguntaX(pregunta
-								.getPosicionPreguntaX());
-						preguntaUsuario.setPosicionPreguntaY(pregunta
-								.getPosicionPreguntaY());
-						preguntaUsuario.setPregunta(pregunta.getPregunta());
-						preguntaUsuario.setTiempoMaximo(pregunta
-								.getTiempoMaximo());
-						ImagenUsuarioBO imagen = new ImagenUsuarioBO();
-						imagen.setIdentificador(pregunta.getImagenesUsuario()
-								.getIdentificador());
-						ImagenBO img = new ImagenBO();
-						img.setIdentificador(pregunta.getImagenesUsuario()
-								.getImagene().getIdentificador());
-						img.setImagenURI(pregunta.getImagenesUsuario()
-								.getImagene().getImagenURI());
-						imagen.setImagene(img);
-						imagen.setUsuario(usuarioAdministradorID);
-						preguntaUsuario.setImagenesUsuarioID(imagen);
-						preguntaUsuario.setPruebaUsuario(prueba);
-						lista.add(preguntaUsuario);
-					}
-					return lista;
-				} else {
-					return null;
+					PreguntaUsuarioBO preguntaUsuario = new PreguntaUsuarioBO();
+					preguntaUsuario.setCaracteresMaximo(pregunta
+							.getCaracteresMaximo());
+					preguntaUsuario.setIdentificador(pregunta
+							.getIdentificador());
+					preguntaUsuario.setPosicionPreguntaX(pregunta
+							.getPosicionPreguntaX());
+					preguntaUsuario.setPosicionPreguntaY(pregunta
+							.getPosicionPreguntaY());
+					preguntaUsuario.setPregunta(pregunta.getPregunta());
+					preguntaUsuario.setTiempoMaximo(pregunta.getTiempoMaximo());
+					ImagenUsuarioBO imagen = new ImagenUsuarioBO();
+					imagen.setIdentificador(pregunta.getImagenesUsuario()
+							.getIdentificador());
+					ImagenBO img = new ImagenBO();
+					img.setIdentificador(pregunta.getImagenesUsuario()
+							.getImagene().getIdentificador());
+					img.setImagenURI(pregunta.getImagenesUsuario().getImagene()
+							.getImagenURI());
+					imagen.setImagene(img);
+					imagen.setUsuario(usuarioAdministradorID);
+					preguntaUsuario.setImagenesUsuarioID(imagen);
+					preguntaUsuario.setPruebaUsuario(prueba);
+					lista.add(preguntaUsuario);
 				}
+				return lista;
 			} else {
 				return null;
 			}
@@ -409,12 +425,12 @@ public class GestionPruebas implements IGestionPruebas {
 			PruebaUsuarioBO prueba, ProcesoUsuarioBO proceso) {
 		EntityTransaction userTransaction = entityManager.getTransaction();
 		try {
-			userTransaction.begin();
 			PruebaUsuario c = entityManager.find(PruebaUsuario.class,
 					prueba.getIdentificador());
 			ProcesoUsuario proc = entityManager.find(ProcesoUsuario.class,
 					proceso.getIdentificador());
 			if (c == null) {
+				userTransaction.begin();
 				c = new PruebaUsuario();
 				Usuario usuario = entityManager.find(Usuario.class,
 						usuarioAdministradorID);

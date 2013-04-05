@@ -16,13 +16,13 @@ import co.mind.management.shared.bo.PreguntaUsuarioBO;
 import co.mind.management.shared.bo.ProcesoUsuarioBO;
 import co.mind.management.shared.bo.ProcesoUsuarioHasPruebaUsuarioBO;
 import co.mind.management.shared.bo.PruebaUsuarioBO;
+import co.mind.management.shared.entidades.ParticipacionEnProceso;
 import co.mind.management.shared.entidades.PreguntaUsuario;
 import co.mind.management.shared.entidades.ProcesoUsuario;
 import co.mind.management.shared.entidades.ProcesoUsuarioHasPruebaUsuario;
 import co.mind.management.shared.entidades.PruebaUsuario;
 import co.mind.management.shared.entidades.Usuario;
 import co.mind.management.shared.recursos.Convencion;
-import co.mind.management.shared.recursos.NotificadorCorreo;
 
 public class GestionProcesos implements IGestionProcesos {
 
@@ -106,6 +106,7 @@ public class GestionProcesos implements IGestionProcesos {
 			return Convencion.CORRECTO;
 		} catch (Exception exception) {
 			// Exception has occurred, roll-back the transaction.
+			exception.printStackTrace();
 			userTransaction.rollback();
 			return Convencion.INCORRECTO;
 		}
@@ -181,13 +182,38 @@ public class GestionProcesos implements IGestionProcesos {
 		try {
 			ProcesoUsuario im = entityManager.find(ProcesoUsuario.class,
 					procesoID);
-			userTransaction.begin();
-			entityManager.remove(im);
-			entityManager.flush();
-			userTransaction.commit();
-			return Convencion.CORRECTO;
+			if (im != null) {
+				List<ProcesoUsuarioHasPruebaUsuario> p = im
+						.getProcesosUsuariosHasPruebasUsuarios();
+				List<ParticipacionEnProceso> participaciones = im
+						.getParticipacionEnProcesos();
+				if (p != null) {
+					for (ProcesoUsuarioHasPruebaUsuario procesoUsuarioHasPruebaUsuario : p) {
+						userTransaction.begin();
+						entityManager.remove(procesoUsuarioHasPruebaUsuario);
+						entityManager.flush();
+						userTransaction.commit();
+					}
+				}
+				if (participaciones != null) {
+					for (ParticipacionEnProceso participacionEnProceso : participaciones) {
+						userTransaction.begin();
+						entityManager.remove(participacionEnProceso);
+						entityManager.flush();
+						userTransaction.commit();
+					}
+				}
+				userTransaction.begin();
+				entityManager.remove(im);
+				entityManager.flush();
+				userTransaction.commit();
+				return Convencion.CORRECTO;
+			} else {
+				return Convencion.INCORRECTO;
+			}
 		} catch (Exception exception) {
 			// Exception has occurred, roll-back the transaction.
+			exception.printStackTrace();
 			userTransaction.rollback();
 			return Convencion.INCORRECTO;
 		}

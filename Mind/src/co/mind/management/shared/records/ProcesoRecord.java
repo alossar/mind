@@ -31,6 +31,7 @@ public class ProcesoRecord extends ListGridRecord {
 		List<ProcesoRecord> resultado = new ArrayList<ProcesoRecord>();
 		if (procesos != null) {
 			for (ProcesoUsuarioBO procesoUsuario : procesos) {
+				int tiempo = procesoUsuario.duracionProceso();
 				ProcesoRecord imagen = new ProcesoRecord(
 						procesoUsuario.getIdentificador(),
 						procesoUsuario.getNombre(),
@@ -39,8 +40,7 @@ public class ProcesoRecord extends ListGridRecord {
 						procesoUsuario.getFechaInicio(),
 						procesoUsuario.getFechaFinalizacion(),
 						procesoUsuario.getEstadoValoracion(),
-						procesoUsuario.getSolicitudValoracion(),
-						procesoUsuario.duracionPrueba(),
+						procesoUsuario.getSolicitudValoracion(), tiempo,
 						procesoUsuario.cantidadDePreguntas());
 				resultado.add(imagen);
 			}
@@ -64,7 +64,7 @@ public class ProcesoRecord extends ListGridRecord {
 		proceso.setIdentificador(record.getAttributeAsInt("idProceso"));
 		proceso.setNombre(record.getAttribute("nombreProceso"));
 		proceso.setSolicitudValoracion(record
-				.getAttribute("solicitudValoracion"));		
+				.getAttribute("solicitudValoracion"));
 		return proceso;
 	}
 }

@@ -34,6 +34,7 @@ public class PanelEvaluados extends VLayout {
 
 		titulo.setContents("<h1>" + "Evaluados" + "</h1>");
 		subtitulo.setContents("Personas para evaluar");
+		imagenLogo.setSrc("insumos/evaluados/logoEvaluados.png");
 
 		addMember(canvasEncabezado);
 		addMember(panelContenidoEvaluados);
@@ -62,8 +63,7 @@ public class PanelEvaluados extends VLayout {
 
 	}
 
-	public void actualizarListaUsuariosBasicos(
-			List<EvaluadoBO> result) {
+	public void actualizarListaUsuariosBasicos(List<EvaluadoBO> result) {
 		panelContenidoEvaluados.actualizarUsuariosBasicos(result);
 
 	}

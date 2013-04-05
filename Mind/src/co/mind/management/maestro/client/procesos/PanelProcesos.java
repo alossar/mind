@@ -38,6 +38,7 @@ public class PanelProcesos extends VLayout {
 
 		titulo.setContents("<h1>" + "Procesos de Evaluación" + "</h1>");
 		subtitulo.setContents("Programe sus pruebas a su criterio");
+		imagenLogo.setSrc("insumos/procesos/logoProceso.png");
 
 		addMember(canvasEncabezado);
 		addMember(panelContenidoProcesos);
@@ -77,16 +78,12 @@ public class PanelProcesos extends VLayout {
 		panelContenidoProcesos.actualizarListaUsuariosBasicos(usuarios);
 	}
 
-	public void actualizarParticipaciones(
-List<ParticipacionEnProcesoBO> result) {
-		panelContenidoProcesos
-				.actualizarParticipaciones(result);
+	public void actualizarParticipaciones(List<ParticipacionEnProcesoBO> result) {
+		panelContenidoProcesos.actualizarParticipaciones(result);
 	}
 
-	public void actualizarResultados(
-			List<ParticipacionEnProcesoBO> result) {
-		panelContenidoProcesos
-				.actualizarResultados(result);
+	public void actualizarResultados(List<ParticipacionEnProcesoBO> result) {
+		panelContenidoProcesos.actualizarResultados(result);
 	}
 
 	public void setEstadoInicial() {
@@ -95,7 +92,7 @@ List<ParticipacionEnProcesoBO> result) {
 
 	public void actualizarTemasProceso(List<PruebaUsuarioBO> result) {
 		panelContenidoProcesos.actualizarTemasProceso(result);
-		
+
 	}
 
 }

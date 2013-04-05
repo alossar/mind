@@ -41,10 +41,10 @@ public class GestionEvaluacion implements IGestionEvaluacion {
 			ParticipacionEnProcesoBO participacion) {
 		EntityTransaction userTransaction = entityManager.getTransaction();
 		try {
-			userTransaction.begin();
 			Evaluado evaluado = entityManager.find(Evaluado.class,
 					usuarioBasicoID);
 			if (evaluado == null) {
+				userTransaction.begin();
 				evaluado = new Evaluado();
 				Usuario usuario = entityManager.find(Usuario.class,
 						usuarioAdministradorBO);
@@ -62,6 +62,7 @@ public class GestionEvaluacion implements IGestionEvaluacion {
 				userTransaction.commit();
 				entityManager.refresh(evaluado);
 			}
+			userTransaction.begin();
 			ProcesoUsuario proceso = entityManager.find(ProcesoUsuario.class,
 					procesoID);
 			ParticipacionEnProceso par = new ParticipacionEnProceso();
@@ -98,13 +99,18 @@ public class GestionEvaluacion implements IGestionEvaluacion {
 					ParticipacionEnProceso.class,
 					participacion.getIdentificador());
 			par.setEstado(participacion.getEstado());
-			par.setFechaFinalizacion(participacion.getFechaFinalizacion());
-			par.setFechaInicio(participacion.getFechaInicio());
+			if (participacion.getFechaFinalizacion() != null) {
+				par.setFechaFinalizacion(participacion.getFechaFinalizacion());
+			}
+			if (participacion.getFechaInicio() != null) {
+				par.setFechaInicio(participacion.getFechaInicio());
+			}
 			entityManager.merge(par);
 			entityManager.flush();
 			userTransaction.commit();
 			return Convencion.CORRECTO;
 		} catch (Exception e) {
+			e.printStackTrace();
 			userTransaction.rollback();
 			return Convencion.INCORRECTO;
 		}
@@ -122,6 +128,7 @@ public class GestionEvaluacion implements IGestionEvaluacion {
 			userTransaction.commit();
 			return Convencion.CORRECTO;
 		} catch (Exception e) {
+			e.printStackTrace();
 			userTransaction.rollback();
 			return Convencion.INCORRECTO;
 		}
@@ -220,8 +227,6 @@ public class GestionEvaluacion implements IGestionEvaluacion {
 	public int agregarResultadoParticipacionEnProceso(
 			int usuarioAdministradorID, int usuarioBasicoID, int procesoID,
 			int participacionID, ResultadoBO resultado) {
-		emf = Persistence.createEntityManagerFactory(JTA_PU_NAME);
-		entityManager = emf.createEntityManager();
 		EntityTransaction userTransaction = entityManager.getTransaction();
 		try {
 			userTransaction.begin();
@@ -243,6 +248,7 @@ public class GestionEvaluacion implements IGestionEvaluacion {
 			}
 		} catch (Exception exception) {
 			// Exception has occurred, roll-back the transaction.
+			exception.printStackTrace();
 			userTransaction.rollback();
 			return Convencion.INCORRECTO;
 		}
@@ -260,6 +266,7 @@ public class GestionEvaluacion implements IGestionEvaluacion {
 			userTransaction.commit();
 			return Convencion.CORRECTO;
 		} catch (Exception e) {
+			e.printStackTrace();
 			userTransaction.rollback();
 			return Convencion.INCORRECTO;
 		}

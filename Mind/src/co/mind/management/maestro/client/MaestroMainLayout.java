@@ -2,13 +2,13 @@ package co.mind.management.maestro.client;
 
 import java.util.List;
 
-import co.mind.management.maestro.client.administradores.PanelAdministradores;
+import co.mind.management.maestro.client.administradores.PanelClientes;
 import co.mind.management.maestro.client.cuenta.PanelCuenta;
 import co.mind.management.maestro.client.evaluados.PanelEvaluados;
 import co.mind.management.maestro.client.imagenes.PanelImagenes;
 import co.mind.management.maestro.client.procesos.PanelProcesos;
 import co.mind.management.maestro.client.programadores.PanelProgramadores;
-import co.mind.management.maestro.client.temas.PanelTemas;
+import co.mind.management.maestro.client.pruebas.PanelPruebas;
 import co.mind.management.shared.bo.EvaluadoBO;
 import co.mind.management.shared.bo.ImagenUsuarioBO;
 import co.mind.management.shared.bo.ParticipacionEnProcesoBO;
@@ -42,10 +42,10 @@ public class MaestroMainLayout extends VLayout {
 	private UsuarioBO usuario;
 	private VLayout layoutContenido;
 	private PanelProcesos panelVerProcesos;
-	private PanelTemas panelCategorias;
+	private PanelPruebas panelPruebas;
 	private PanelEvaluados panelEvaluados;
 	private PanelProgramadores panelProgramadores;
-	private PanelAdministradores panelClientes;
+	private PanelClientes panelClientes;
 	private PanelImagenes panelImagenes;
 	private PanelCuenta panelCuenta;
 	private VLayout panelDashboard;
@@ -63,7 +63,7 @@ public class MaestroMainLayout extends VLayout {
 
 		cargarLayouts();
 
-		Img imagenLogo = new Img("img/Admin/logo.png");
+		Img imagenLogo = new Img("insumos/navegador/logo.png");
 		ToolStrip menuBarUsuarioBasico = new ToolStrip();
 
 		Menu menuUsuario = new Menu();
@@ -72,8 +72,8 @@ public class MaestroMainLayout extends VLayout {
 
 			@Override
 			public void onClick(MenuItemClickEvent event) {
+				estadoInicial();
 				cargarLayoutCuenta();
-
 			}
 		});
 		MenuItem menuItemCerrarSesion = new MenuItem("Cerrar Sesi\u00f3n");
@@ -91,23 +91,26 @@ public class MaestroMainLayout extends VLayout {
 				usuario.getNombres() + " " + usuario.getApellidos(),
 				menuUsuario);
 
-		ToolStripButton toolStripButtonProcesosEvaluacion = new ToolStripButton(
-				"Procesos de Evaluaci\u00f3n");
+		ToolStripButton toolStripButtonProcesosEvaluacion = new ToolStripButton();
+		toolStripButtonProcesosEvaluacion
+				.setSrc("insumos/navegador/procesos.png");
 		toolStripButtonProcesosEvaluacion
 				.addClickHandler(new com.smartgwt.client.widgets.events.ClickHandler() {
 
 					@Override
 					public void onClick(ClickEvent event) {
+						estadoInicial();
 						cargarLayoutProcesos();
 					}
 				});
 
-		ToolStripButton toolStripButtonTemas = new ToolStripButton("Temas");
+		ToolStripButton toolStripButtonTemas = new ToolStripButton("Pruebas");
 		toolStripButtonTemas
 				.addClickHandler(new com.smartgwt.client.widgets.events.ClickHandler() {
 
 					@Override
 					public void onClick(ClickEvent event) {
+						estadoInicial();
 						cargarLayoutTemas();
 					}
 				});
@@ -118,6 +121,7 @@ public class MaestroMainLayout extends VLayout {
 
 					@Override
 					public void onClick(ClickEvent event) {
+						estadoInicial();
 						cargarLayoutEvaluados();
 					}
 				});
@@ -128,6 +132,7 @@ public class MaestroMainLayout extends VLayout {
 
 					@Override
 					public void onClick(ClickEvent event) {
+						estadoInicial();
 						cargarLayoutClientes();
 					}
 				});
@@ -138,6 +143,7 @@ public class MaestroMainLayout extends VLayout {
 
 					@Override
 					public void onClick(ClickEvent event) {
+						estadoInicial();
 						cargarLayoutProgramadores();
 					}
 				});
@@ -147,6 +153,7 @@ public class MaestroMainLayout extends VLayout {
 
 					@Override
 					public void onClick(ClickEvent event) {
+						estadoInicial();
 						cargarLayoutImagenes();
 					}
 				});
@@ -156,16 +163,8 @@ public class MaestroMainLayout extends VLayout {
 
 					@Override
 					public void onClick(ClickEvent event) {
+						estadoInicial();
 						cargarLayoutHome();
-					}
-				});
-
-		ToolStripButton toolStripButtonPregunta = new ToolStripButton("FAQ");
-		toolStripButtonHome
-				.addClickHandler(new com.smartgwt.client.widgets.events.ClickHandler() {
-
-					@Override
-					public void onClick(ClickEvent event) {
 					}
 				});
 
@@ -180,7 +179,6 @@ public class MaestroMainLayout extends VLayout {
 		menuBarUsuarioBasico.addButton(toolStripButtonLaminas);
 		menuBarUsuarioBasico.addFill();
 		menuBarUsuarioBasico.addMember(toolStripButtonHome);
-		menuBarUsuarioBasico.addMember(toolStripButtonPregunta);
 		menuBarUsuarioBasico.addSeparator();
 		menuBarUsuarioBasico.addMember(toolStripMenuUsuario);
 
@@ -195,10 +193,10 @@ public class MaestroMainLayout extends VLayout {
 		layoutContenido.setSize("100%", "100%");
 
 		panelVerProcesos = new PanelProcesos();
-		panelCategorias = new PanelTemas();
+		panelPruebas = new PanelPruebas();
 		panelEvaluados = new PanelEvaluados();
 		panelProgramadores = new PanelProgramadores();
-		panelClientes = new PanelAdministradores();
+		panelClientes = new PanelClientes();
 		panelImagenes = new PanelImagenes();
 		panelCuenta = new PanelCuenta(usuario);
 
@@ -218,7 +216,7 @@ public class MaestroMainLayout extends VLayout {
 		h.addMember(imagenDashboard);
 		panelDashboard.addMember(h);
 
-		layoutContenido.addMember(panelCategorias);
+		layoutContenido.addMember(panelPruebas);
 		layoutContenido.addMember(panelVerProcesos);
 		layoutContenido.addMember(panelCuenta);
 		layoutContenido.addMember(panelImagenes);
@@ -227,7 +225,7 @@ public class MaestroMainLayout extends VLayout {
 		layoutContenido.addMember(panelProgramadores);
 		layoutContenido.addMember(panelDashboard);
 
-		panelCategorias.setVisible(false);
+		panelPruebas.setVisible(false);
 		panelVerProcesos.setVisible(false);
 		panelCuenta.setVisible(false);
 		panelEvaluados.setVisible(false);
@@ -239,7 +237,7 @@ public class MaestroMainLayout extends VLayout {
 
 	private void cargarLayoutClientes() {
 		panelCuenta.setVisible(false);
-		panelCategorias.setVisible(false);
+		panelPruebas.setVisible(false);
 		panelVerProcesos.setVisible(false);
 		panelDashboard.setVisible(false);
 		panelEvaluados.setVisible(false);
@@ -250,7 +248,7 @@ public class MaestroMainLayout extends VLayout {
 
 	private void cargarLayoutCuenta() {
 		panelCuenta.setVisible(true);
-		panelCategorias.setVisible(false);
+		panelPruebas.setVisible(false);
 		panelVerProcesos.setVisible(false);
 		panelDashboard.setVisible(false);
 		panelEvaluados.setVisible(false);
@@ -261,7 +259,7 @@ public class MaestroMainLayout extends VLayout {
 
 	private void cargarLayoutProcesos() {
 		panelCuenta.setVisible(false);
-		panelCategorias.setVisible(false);
+		panelPruebas.setVisible(false);
 		panelVerProcesos.setVisible(true);
 		panelDashboard.setVisible(false);
 		panelEvaluados.setVisible(false);
@@ -272,7 +270,7 @@ public class MaestroMainLayout extends VLayout {
 
 	private void cargarLayoutTemas() {
 		panelCuenta.setVisible(false);
-		panelCategorias.setVisible(true);
+		panelPruebas.setVisible(true);
 		panelVerProcesos.setVisible(false);
 		panelDashboard.setVisible(false);
 		panelEvaluados.setVisible(false);
@@ -283,7 +281,7 @@ public class MaestroMainLayout extends VLayout {
 
 	private void cargarLayoutHome() {
 		panelCuenta.setVisible(false);
-		panelCategorias.setVisible(false);
+		panelPruebas.setVisible(false);
 		panelVerProcesos.setVisible(false);
 		panelDashboard.setVisible(true);
 		panelEvaluados.setVisible(false);
@@ -295,7 +293,7 @@ public class MaestroMainLayout extends VLayout {
 
 	private void cargarLayoutEvaluados() {
 		panelCuenta.setVisible(false);
-		panelCategorias.setVisible(false);
+		panelPruebas.setVisible(false);
 		panelVerProcesos.setVisible(false);
 		panelDashboard.setVisible(false);
 		panelEvaluados.setVisible(true);
@@ -306,7 +304,7 @@ public class MaestroMainLayout extends VLayout {
 
 	private void cargarLayoutProgramadores() {
 		panelCuenta.setVisible(false);
-		panelCategorias.setVisible(false);
+		panelPruebas.setVisible(false);
 		panelVerProcesos.setVisible(false);
 		panelDashboard.setVisible(false);
 		panelEvaluados.setVisible(false);
@@ -317,7 +315,7 @@ public class MaestroMainLayout extends VLayout {
 
 	private void cargarLayoutImagenes() {
 		panelCuenta.setVisible(false);
-		panelCategorias.setVisible(false);
+		panelPruebas.setVisible(false);
 		panelVerProcesos.setVisible(false);
 		panelDashboard.setVisible(false);
 		panelEvaluados.setVisible(false);
@@ -327,7 +325,7 @@ public class MaestroMainLayout extends VLayout {
 	}
 
 	private void estadoInicial() {
-		panelCategorias.setEstadoInicial();
+		panelPruebas.setEstadoInicial();
 		panelVerProcesos.setEstadoInicial();
 	}
 
@@ -341,12 +339,12 @@ public class MaestroMainLayout extends VLayout {
 	}
 
 	public void actualizarImagenesUsuario(List<ImagenUsuarioBO> result) {
-		panelCategorias.actualizarImagenesUsuario(result);
 		panelImagenes.actualizarImagenesUsuario(result);
+		panelPruebas.actualizarImagenesUsuario(result);
 	}
 
 	public void actualizarPreguntasPrueba(List<PreguntaUsuarioBO> result) {
-		panelCategorias.actualizarPreguntasCategoria(result);
+		panelPruebas.actualizarPreguntasCategoria(result);
 	}
 
 	public void actualizarResultados(List<ParticipacionEnProcesoBO> result) {
@@ -358,7 +356,7 @@ public class MaestroMainLayout extends VLayout {
 	}
 
 	public void actualizarPruebas(List<PruebaUsuarioBO> result) {
-		panelCategorias.actualizarPruebas(result);
+		panelPruebas.actualizarPruebas(result);
 		panelVerProcesos.actualizarListaPruebas(result);
 	}
 

@@ -65,7 +65,7 @@ public class EvaluacionServiceImpl extends RemoteServiceServlet implements
 	@Override
 	public List<PreguntaUsuarioBO> preguntasPrueba(ProcesoUsuarioBO proceso,
 			EvaluadoBO usuarioBasico) {
-		return gestionPruebas.listarPreguntasPrueba(
+		return gestionPruebas.listarPreguntasPorProceso(
 				usuarioBasico.getIdentificadorUsuarioAdministrador(),
 				proceso.getIdentificador());
 

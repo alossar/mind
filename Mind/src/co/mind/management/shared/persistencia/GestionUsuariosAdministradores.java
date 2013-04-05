@@ -28,7 +28,7 @@ public class GestionUsuariosAdministradores implements
 	}
 
 	@Override
-	// Deben pasarle la contraseña generada.
+	// Deben pasarle la contraseï¿½a generada.
 	public int agregarUsuarioAdministrador(
 			UsuarioAdministradorBO usuarioAdministrador) {
 		EntityTransaction userTransaction = entityManager.getTransaction();
@@ -63,6 +63,7 @@ public class GestionUsuariosAdministradores implements
 			}
 		} catch (Exception exception) {
 			// Exception has occurred, roll-back the transaction.
+			exception.printStackTrace();
 			userTransaction.rollback();
 			return Convencion.INCORRECTO;
 		}
@@ -100,6 +101,7 @@ public class GestionUsuariosAdministradores implements
 			return Convencion.CORRECTO;
 		} catch (Exception exception) {
 			// Exception has occurred, roll-back the transaction.
+			exception.printStackTrace();
 			userTransaction.rollback();
 			return Convencion.INCORRECTO;
 		}
@@ -130,7 +132,7 @@ public class GestionUsuariosAdministradores implements
 			resultado.setPais(usuario.getPais());
 			resultado.setTelefono(usuario.getTelefono());
 			resultado.setTelefono_Celular(usuario.getTelefono_Celular());
-			resultado.setTipo(usuario.getTipo());		
+			resultado.setTipo(usuario.getTipo());
 
 			return resultado;
 		}
@@ -149,6 +151,7 @@ public class GestionUsuariosAdministradores implements
 			return Convencion.CORRECTO;
 		} catch (Exception exception) {
 			// Exception has occurred, roll-back the transaction.
+			exception.printStackTrace();
 			userTransaction.rollback();
 			return Convencion.INCORRECTO;
 		}
@@ -184,7 +187,7 @@ public class GestionUsuariosAdministradores implements
 					resultado.setTelefono(usuario.getTelefono());
 					resultado
 							.setTelefono_Celular(usuario.getTelefono_Celular());
-					resultado.setTipo(usuario.getTipo());					
+					resultado.setTipo(usuario.getTipo());
 
 					lista.add(resultado);
 				}

@@ -59,7 +59,7 @@ public class PruebaUsuarioBO implements Serializable {
 	public int duracionPrueba() {
 		int duracion = 0;
 		for (int i = 0; i < preguntas.size(); i++) {
-			duracion *= preguntas.get(i).getTiempoMaximo();
+			duracion += preguntas.get(i).getTiempoMaximo();
 		}
 		return duracion;
 	}

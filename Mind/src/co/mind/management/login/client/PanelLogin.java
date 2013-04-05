@@ -1,9 +1,6 @@
 package co.mind.management.login.client;
 
-import com.smartgwt.client.data.DataSource;
-import com.smartgwt.client.data.fields.DataSourceTextField;
 import com.smartgwt.client.types.Alignment;
-import com.smartgwt.client.widgets.Canvas;
 import com.smartgwt.client.widgets.IButton;
 import com.smartgwt.client.widgets.events.ClickEvent;
 import com.smartgwt.client.widgets.events.ClickHandler;
@@ -12,8 +9,6 @@ import com.smartgwt.client.widgets.form.fields.PasswordItem;
 import com.smartgwt.client.widgets.form.fields.TextItem;
 import com.smartgwt.client.widgets.form.fields.events.KeyDownEvent;
 import com.smartgwt.client.widgets.form.fields.events.KeyDownHandler;
-import com.smartgwt.client.widgets.form.fields.events.KeyPressEvent;
-import com.smartgwt.client.widgets.form.fields.events.KeyPressHandler;
 import com.smartgwt.client.widgets.form.validator.RegExpValidator;
 import com.smartgwt.client.widgets.layout.VLayout;
 
@@ -76,7 +71,6 @@ public class PanelLogin extends VLayout {
 
 		formLogin = new DynamicForm();
 		formLogin.setSize("250px", "150px");
-		formLogin.setIsGroup(true);
 
 		// form.setBorder("1px solid blue");
 		formLogin.setFields(textCorreo, textPassword);

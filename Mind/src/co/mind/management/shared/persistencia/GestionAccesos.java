@@ -39,9 +39,9 @@ public class GestionAccesos implements IGestionAccesos {
 		Query qs = entityManager.createQuery(query);
 		qs.setParameter("correo", usuarioBasico.getCorreoElectronico());
 		qs.setParameter("codigo", participacion.getCodigo_Acceso());
-		List<ParticipacionEnProceso> participaciones = qs.getResultList();
-		if (participaciones.size() > 0) {
-			ParticipacionEnProceso par = participaciones.get(0);
+		ParticipacionEnProceso par = (ParticipacionEnProceso) qs
+				.getResultList().get(0);
+		if (participacion != null) {
 			entityManager.refresh(par);
 			Date fechaInicio = par.getProcesosUsuario().getFechaInicio();
 			Date fechaFinal = par.getProcesosUsuario().getFechaFinalizacion();
@@ -49,9 +49,14 @@ public class GestionAccesos implements IGestionAccesos {
 			if (fechaFinal != null) {
 				if (fechaActual.compareTo(fechaInicio) <= 0
 						|| fechaActual.compareTo(fechaFinal) >= 0) {
+					System.out.println("fecha final");
 					return Convencion.VERIFICACION_USUARIO_BASICO_PARTICIPACION_NO_EXISTE;
 				}
 			} else if (fechaActual.compareTo(fechaInicio) <= 0) {
+				System.out.println("fecha inicial");
+				System.out.println(fechaActual);
+				System.out.println(fechaInicio);
+				System.out.println(fechaActual.compareTo(fechaInicio));
 				return Convencion.VERIFICACION_USUARIO_BASICO_PARTICIPACION_NO_EXISTE;
 			}
 
@@ -65,9 +70,11 @@ public class GestionAccesos implements IGestionAccesos {
 					Convencion.ESTADO_PARTICIPACION_EN_PROCESO_EN_EJECUCION)) {
 				return Convencion.VERIFICACION_USUARIO_BASICO_SIN_TERMINAR_PRUEBA;
 			} else {
+				System.out.println("estados");
 				return Convencion.VERIFICACION_USUARIO_BASICO_PARTICIPACION_NO_EXISTE;
 			}
 		} else {
+			System.out.println("participacion null");
 			return Convencion.VERIFICACION_USUARIO_BASICO_PARTICIPACION_NO_EXISTE;
 		}
 

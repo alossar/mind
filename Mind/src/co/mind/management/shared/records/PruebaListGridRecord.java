@@ -24,12 +24,12 @@ public class PruebaListGridRecord extends ListGridRecord {
 		if (pruebas != null) {
 			List<PruebaListGridRecord> resultado = new ArrayList<PruebaListGridRecord>();
 			for (PruebaUsuarioBO pruebaUsuario : pruebas) {
+				int tiempo = pruebaUsuario.duracionPrueba() / 60;
 				PruebaListGridRecord imagen = new PruebaListGridRecord(
 						pruebaUsuario.getIdentificador(),
 						pruebaUsuario.getUsuarioAdministradorID(),
 						pruebaUsuario.getNombre(),
-						pruebaUsuario.getDescripcion(),
-						pruebaUsuario.duracionPrueba(),
+						pruebaUsuario.getDescripcion(), tiempo,
 						pruebaUsuario.cantidadDePreguntas());
 				resultado.add(imagen);
 			}
@@ -57,7 +57,22 @@ public class PruebaListGridRecord extends ListGridRecord {
 	}
 
 	public static List<PruebaUsuarioBO> getBO(PruebaListGridRecord[] pruebasR) {
-		// TODO Auto-generated method stub
+		if (pruebasR != null) {
+			List<PruebaUsuarioBO> listaResultado = new ArrayList<PruebaUsuarioBO>();
+			for (PruebaListGridRecord pruebaListGridRecord : pruebasR) {
+				PruebaUsuarioBO resultado = new PruebaUsuarioBO();
+				resultado.setDescripcion(pruebaListGridRecord
+						.getAttribute("descripcion"));
+				resultado.setIdentificador(pruebaListGridRecord
+						.getAttributeAsInt("pruebaID"));
+				resultado
+						.setNombre(pruebaListGridRecord.getAttribute("nombre"));
+				resultado.setUsuarioAdministradorID(pruebaListGridRecord
+						.getAttributeAsInt("usuarioID"));
+				listaResultado.add(resultado);
+			}
+			return listaResultado;
+		}
 		return null;
 	}
 }

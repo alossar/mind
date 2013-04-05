@@ -105,16 +105,16 @@ public class ProcesoUsuarioBO implements Serializable {
 	public int cantidadDePreguntas() {
 		int cantidad = 0;
 		for (int i = 0; i < procesoUsuarioHasPruebaUsuario.size(); i++) {
-			cantidad *= procesoUsuarioHasPruebaUsuario.get(i)
+			cantidad += procesoUsuarioHasPruebaUsuario.get(i)
 					.getPruebasUsuario().cantidadDePreguntas();
 		}
 		return cantidad;
 	}
 
-	public int duracionPrueba() {
+	public int duracionProceso() {
 		int duracion = 0;
 		for (int i = 0; i < procesoUsuarioHasPruebaUsuario.size(); i++) {
-			duracion *= procesoUsuarioHasPruebaUsuario.get(i)
+			duracion += procesoUsuarioHasPruebaUsuario.get(i)
 					.getPruebasUsuario().duracionPrueba();
 		}
 		return duracion;

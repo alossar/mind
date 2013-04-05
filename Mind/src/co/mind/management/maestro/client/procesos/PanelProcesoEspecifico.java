@@ -9,7 +9,6 @@ import co.mind.management.maestro.client.PanelEncabezadoDialogo;
 import co.mind.management.shared.bo.EvaluadoBO;
 import co.mind.management.shared.bo.ParticipacionEnProcesoBO;
 import co.mind.management.shared.bo.ProcesoUsuarioBO;
-import co.mind.management.shared.bo.ProcesoUsuarioHasPruebaUsuarioBO;
 import co.mind.management.shared.bo.PruebaUsuarioBO;
 import co.mind.management.shared.records.ParticipacionEnProcesoListGridRecord;
 import co.mind.management.shared.records.PruebaListGridRecord;
@@ -75,14 +74,13 @@ public class PanelProcesoEspecifico extends HLayout {
 	private ProcesoUsuarioBO procesoActual;
 	private DynamicForm formTemas;
 	private ListGrid listGridPruebas;
-	private List<PruebaUsuarioBO> listaPruebas;
-	private List<EvaluadoBO> listaEvaluados;
+	private List<PruebaUsuarioBO> listaPruebasRestantes;
+	private List<EvaluadoBO> listaEvaluadosRestantes;
 	private ListGrid listGridUsuariosBasicos;
 	private TextItem textNombreCategoriaNueva;
 	private TextAreaItem textAreaDescripcionCategoriaNueva;
 	private boolean nuevaParticipacion;
 	private boolean nuevoTema;
-	private List<PruebaUsuarioBO> listaPruebasDeProceso;
 
 	public PanelProcesoEspecifico() {
 		setWidth("100%");
@@ -184,11 +182,12 @@ public class PanelProcesoEspecifico extends HLayout {
 		ListGridField nombreField = new ListGridField("nombre", "Nombre");
 		ListGridField apellidoField = new ListGridField("apellidos",
 				"Apellidos");
+		ListGridField correoField = new ListGridField("correo", "Correo");
 		ListGridField codigoField = new ListGridField("codigo",
 				"C\u00F3digo Acceso");
 		ListGridField estadoField = new ListGridField("estado", "Estado");
 		listGridParticipaciones.setFields(idField, nombreField, apellidoField,
-				codigoField, estadoField);
+				correoField, codigoField, estadoField);
 		listGridParticipaciones.setCanResizeFields(true);
 		listGridParticipaciones.setAutoFetchData(true);
 		listGridParticipaciones.setShowFilterEditor(true);
@@ -205,7 +204,7 @@ public class PanelProcesoEspecifico extends HLayout {
 		listGridResultados.setHeight100();
 		listGridResultados.setShowAllRecords(true);
 		listGridResultados.setFields(idField, nombreField, apellidoField,
-				codigoField, estadoField);
+				correoField, codigoField, estadoField);
 		listGridResultados.setCanResizeFields(true);
 		listGridResultados
 				.setEmptyMessage("No hay resultados en este proceso.");
@@ -229,9 +228,9 @@ public class PanelProcesoEspecifico extends HLayout {
 		ListGridField nombrePruebaField = new ListGridField("nombre", "Nombre");
 		ListGridField apellidosField = new ListGridField("descripcion",
 				"Descripci\u00F3n");
-		ListGridField preguntasField = new ListGridField("preguntas",
+		ListGridField preguntasField = new ListGridField("cantidadPreguntas",
 				"Preguntas");
-		ListGridField tiempoField = new ListGridField("tiempo",
+		ListGridField tiempoField = new ListGridField("tiempoPrueba",
 				"Tiempo (Segundos)");
 		listGridTemasDeProceso.setFields(nombrePruebaField, apellidosField,
 				preguntasField, tiempoField);
@@ -328,12 +327,16 @@ public class PanelProcesoEspecifico extends HLayout {
 
 			@Override
 			public void onClick(ClickEvent event) {
-				ParticipacionEnProcesoListGridRecord[] records = (ParticipacionEnProcesoListGridRecord[]) listGridParticipaciones
+				ListGridRecord[] records = listGridParticipaciones
 						.getSelectedRecords();
 				if (records != null) {
-					List<ParticipacionEnProcesoBO> p = ParticipacionEnProcesoListGridRecord
-							.getBO(records);
-					Maestro.enviarNotificacionesCorreo(p);
+					ParticipacionEnProcesoListGridRecord[] participacionRecords = new ParticipacionEnProcesoListGridRecord[records.length];
+					for (int i = 0; i < records.length; i++) {
+						participacionRecords[i] = (ParticipacionEnProcesoListGridRecord) records[i];
+					}
+					List<ParticipacionEnProcesoBO> participacionesBO = ParticipacionEnProcesoListGridRecord
+							.getBO(participacionRecords);
+					Maestro.enviarNotificacionesCorreo(participacionesBO);
 				} else {
 					SC.warn("Seleccione a los evaluados que desea que reciban la notificacion de correo");
 				}
@@ -570,7 +573,7 @@ public class PanelProcesoEspecifico extends HLayout {
 		listGridUsuariosBasicos.setFields(idField, nombreField, apellidosField,
 				correoField);
 		listGridUsuariosBasicos.setData(UsuarioBasicoListGridRecord
-				.getRecords(listaEvaluados));
+				.getRecords(listaEvaluadosRestantes));
 		listGridUsuariosBasicos.setAutoFetchData(true);
 		listGridUsuariosBasicos.setShowFilterEditor(true);
 		listGridUsuariosBasicos
@@ -729,7 +732,8 @@ public class PanelProcesoEspecifico extends HLayout {
 		listGridPruebas.setAutoFetchData(true);
 		listGridPruebas.setShowFilterEditor(true);
 		listGridPruebas.setSelectionAppearance(SelectionAppearance.CHECKBOX);
-		listGridPruebas.setData(PruebaListGridRecord.getRecords(listaPruebas));
+		listGridPruebas.setData(PruebaListGridRecord
+				.getRecords(listaPruebasRestantes));
 
 		winModal.addItem(listGridPruebas);
 		winModal.addItem(boton);
@@ -753,21 +757,11 @@ public class PanelProcesoEspecifico extends HLayout {
 	}
 
 	public void actualizarListaPruebas(List<PruebaUsuarioBO> pruebas) {
-		listaPruebas = obtenerPruebasNoEnProceso(pruebas);
-	}
-
-	private List<PruebaUsuarioBO> obtenerPruebasNoEnProceso(
-			List<PruebaUsuarioBO> pruebas) {
-		for (PruebaUsuarioBO pruebaUsuarioBO : pruebas) {
-			if (listaPruebasDeProceso.contains(pruebaUsuarioBO)) {
-				pruebas.remove(pruebaUsuarioBO);
-			}
-		}
-		return pruebas;
+		listaPruebasRestantes = pruebas;
 	}
 
 	public void actualizarEvaluados(List<EvaluadoBO> usuarios) {
-		listaEvaluados = usuarios;
+		listaEvaluadosRestantes = usuarios;
 	}
 
 	public void actualizarParticipaciones(List<ParticipacionEnProcesoBO> result) {
@@ -781,9 +775,7 @@ public class PanelProcesoEspecifico extends HLayout {
 	}
 
 	public void actualizarTemasProceso(List<PruebaUsuarioBO> result) {
-		listaPruebasDeProceso = result;
-		listGridTemasDeProceso.setData(PruebaListGridRecord
-				.getRecords(listaPruebasDeProceso));
+		listGridTemasDeProceso.setData(PruebaListGridRecord.getRecords(result));
 	}
 
 	private void agregarNuevaParticipacionAProceso() {

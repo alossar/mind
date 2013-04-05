@@ -16,6 +16,7 @@ import co.mind.management.shared.bo.PruebaUsuarioBO;
 import co.mind.management.shared.entidades.ImagenUsuario;
 import co.mind.management.shared.entidades.PreguntaUsuario;
 import co.mind.management.shared.entidades.PruebaUsuario;
+import co.mind.management.shared.entidades.Resultado;
 import co.mind.management.shared.entidades.Usuario;
 import co.mind.management.shared.recursos.Convencion;
 
@@ -134,11 +135,25 @@ public class GestionPreguntas implements IGestionPreguntas {
 		try {
 			PreguntaUsuario im = entityManager.find(PreguntaUsuario.class,
 					preguntaUsuarioID);
-			userTransaction.begin();
-			entityManager.remove(im);
-			entityManager.flush();
-			userTransaction.commit();
-			return Convencion.CORRECTO;
+			if (im != null) {
+				List<Resultado> resultados = im.getResultados();
+				if (resultados != null) {
+					for (Resultado resultado : resultados) {
+						userTransaction.begin();
+						entityManager.remove(resultado);
+						entityManager.flush();
+						userTransaction.commit();
+					}
+				}
+				userTransaction.begin();
+				entityManager.remove(im);
+				entityManager.flush();
+				userTransaction.commit();
+				return Convencion.CORRECTO;
+
+			} else {
+				return Convencion.INCORRECTO;
+			}
 		} catch (Exception exception) {
 			// Exception has occurred, roll-back the transaction.
 			exception.printStackTrace();

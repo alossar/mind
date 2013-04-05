@@ -1,6 +1,5 @@
 package co.mind.management.maestro.server;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -30,9 +29,9 @@ import co.mind.management.shared.persistencia.GestionPreguntas;
 import co.mind.management.shared.persistencia.GestionProcesos;
 import co.mind.management.shared.persistencia.GestionPruebas;
 import co.mind.management.shared.persistencia.GestionUsuariosAdministradores;
-import co.mind.management.shared.persistencia.GestionUsuariosBasicos;
+import co.mind.management.shared.persistencia.GestionEvaluados;
 import co.mind.management.shared.recursos.Convencion;
-import co.mind.management.shared.recursos.NotificadorCorreo;
+import co.mind.management.shared.recursos.SMTPSender;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
@@ -47,7 +46,7 @@ public class UsuarioMaestroServiceImpl extends RemoteServiceServlet implements
 	private GestionLaminas gestionLaminas = new GestionLaminas();
 	private GestionPreguntas gestionPreguntas = new GestionPreguntas();
 	private GestionPruebas gestionPruebas = new GestionPruebas();
-	private GestionUsuariosBasicos gestionUsuariosBasicos;
+	private GestionEvaluados gestionUsuariosBasicos;
 	private GestionProcesos gestionProcesos;
 	private GestionEvaluacion gestionEvaluacion;
 
@@ -56,7 +55,7 @@ public class UsuarioMaestroServiceImpl extends RemoteServiceServlet implements
 		gestionLaminas = new GestionLaminas();
 		gestionPreguntas = new GestionPreguntas();
 		gestionPruebas = new GestionPruebas();
-		gestionUsuariosBasicos = new GestionUsuariosBasicos();
+		gestionUsuariosBasicos = new GestionEvaluados();
 		gestionProcesos = new GestionProcesos();
 		gestionEvaluacion = new GestionEvaluacion();
 	}
@@ -298,12 +297,16 @@ public class UsuarioMaestroServiceImpl extends RemoteServiceServlet implements
 	@Override
 	public int agregarPruebasAProceso(UsuarioBO usuarioAdministrador,
 			ProcesoUsuarioBO proceso, List<PruebaUsuarioBO> pruebas) {
-		for (PruebaUsuarioBO pruebaUsuarioBO : pruebas) {
-			gestionPruebas.agregarPruebaAProceso(
-					usuarioAdministrador.getIdentificador(), pruebaUsuarioBO,
-					proceso);
+		if (pruebas != null) {
+			for (PruebaUsuarioBO pruebaUsuarioBO : pruebas) {
+				gestionPruebas.agregarPruebaAProceso(
+						usuarioAdministrador.getIdentificador(),
+						pruebaUsuarioBO, proceso);
+			}
+			return Convencion.CORRECTO;
+		} else {
+			return Convencion.INCORRECTO;
 		}
-		return 0;
 	}
 
 	@Override
@@ -384,6 +387,7 @@ public class UsuarioMaestroServiceImpl extends RemoteServiceServlet implements
 			}
 			return Convencion.CORRECTO;
 		} catch (Exception e) {
+			e.printStackTrace();
 			return Convencion.INCORRECTO;
 		}
 	}
@@ -462,10 +466,27 @@ public class UsuarioMaestroServiceImpl extends RemoteServiceServlet implements
 	public int enviarNotificacionesParticipacionesProceso(
 			UsuarioMaestroBO usuarioMaestro, List<ParticipacionEnProcesoBO> p) {
 		for (ParticipacionEnProcesoBO participacionEnProcesoBO : p) {
-			NotificadorCorreo
-					.enviarCorreoParticipacionAProceso(participacionEnProcesoBO);
-		}
-		return 0;
-	}
+			ParticipacionEnProcesoBO parti = gestionEvaluacion
+					.consultarParticipacionAProceso(usuarioMaestro
+							.getIdentificador(), participacionEnProcesoBO
+							.getUsuarioBasico().getIdentificador(), 0,
+							participacionEnProcesoBO.getIdentificador());
+			if (parti.getEstado().equalsIgnoreCase(
+					Convencion.ESTADO_PARTICIPACION_EN_PROCESO_EN_EJECUCION)
+					|| parti.getEstado()
+							.equalsIgnoreCase(
+									Convencion.ESTADO_PARTICIPACION_EN_PROCESO_EN_ESPERA)) {
+				SMTPSender
+						.enviarCorreoParticipacionAProceso(participacionEnProcesoBO);
+				participacionEnProcesoBO
+						.setEstado(Convencion.ESTADO_PARTICIPACION_EN_PROCESO_EN_ESPERA);
+				gestionEvaluacion.editarParticipacionEnProceso(usuarioMaestro
+						.getIdentificador(), participacionEnProcesoBO
+						.getUsuarioBasico().getIdentificador(), 0,
+						participacionEnProcesoBO);
+			}
 
+		}
+		return Convencion.CORRECTO;
+	}
 }
