@@ -2,10 +2,10 @@ package co.mind.management.maestro.client.procesos;
 
 import java.util.List;
 
-import co.mind.management.shared.bo.EvaluadoBO;
-import co.mind.management.shared.bo.ParticipacionEnProcesoBO;
-import co.mind.management.shared.bo.PruebaUsuarioBO;
-import co.mind.management.shared.bo.UsuarioBO;
+import co.mind.management.shared.dto.EvaluadoBO;
+import co.mind.management.shared.dto.ParticipacionEnProcesoBO;
+import co.mind.management.shared.dto.PruebaUsuarioBO;
+import co.mind.management.shared.dto.UsuarioBO;
 import co.mind.management.shared.records.ParticipacionEnProcesoListGridRecord;
 import co.mind.management.shared.records.ProcesoRecord;
 import co.mind.management.shared.records.PruebaListGridRecord;
@@ -38,7 +38,7 @@ public class PanelProcesos extends VLayout {
 
 		titulo.setContents("<h1>" + "Procesos de Evaluación" + "</h1>");
 		subtitulo.setContents("Programe sus pruebas a su criterio");
-		imagenLogo.setSrc("insumos/procesos/logoProceso.png");
+		imagenLogo.setSrc("insumos/procesos/logoProcesos.png");
 
 		addMember(canvasEncabezado);
 		addMember(panelContenidoProcesos);

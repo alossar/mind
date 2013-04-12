@@ -2,7 +2,7 @@ package co.mind.management.shared.persistencia;
 
 import java.util.List;
 
-import co.mind.management.shared.bo.EvaluadoBO;
+import co.mind.management.shared.dto.EvaluadoBO;
 
 public interface IGestionEvaluados {
 	/**

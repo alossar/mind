@@ -3,10 +3,11 @@ package co.mind.management.maestro.client.pruebas.contenedores;
 import java.util.List;
 
 import co.mind.management.maestro.client.pruebas.PanelContenidoPruebas;
-import co.mind.management.shared.bo.ImagenUsuarioBO;
-import co.mind.management.shared.bo.PreguntaUsuarioBO;
+import co.mind.management.shared.dto.ImagenUsuarioBO;
+import co.mind.management.shared.dto.PreguntaUsuarioBO;
 import co.mind.management.shared.records.ImagenRecord;
 import co.mind.management.shared.records.PreguntaCategoriaListGridRecord;
+import co.mind.management.shared.recursos.Convencion;
 
 import com.smartgwt.client.types.Alignment;
 import com.smartgwt.client.types.Overflow;
@@ -87,6 +88,8 @@ public class PanelAgregarPregunta extends HLayout {
 		richTextEditorPregunta = new RichTextItem();
 		richTextEditorPregunta.setWidth(600);
 		richTextEditorPregunta.setRequired(true);
+		richTextEditorPregunta.setControlGroups(new String[] {
+				"formatControls", "styleControls" });
 		richTextEditorPregunta.addChangedHandler(new ChangedHandler() {
 
 			@Override
@@ -209,23 +212,30 @@ public class PanelAgregarPregunta extends HLayout {
 
 	private void agregarPregunta() {
 		if (imagenSeleccionada != null && formInformacionLamina.validate()) {
-			int posicionX = panelPregunta.obtenerPosicionX();
-			int posicionY = panelPregunta.obtenerPosicionY();
-			int tiempo = Integer.parseInt(integerItemTiempoMaximo
-					.getValueAsString());
-			int caracteres = Integer.parseInt(integerItemRespuestaMaxima
-					.getValueAsString());
-			String pregunta = (String) richTextEditorPregunta.getValue();
-			ImagenUsuarioBO imagen = ImagenRecord.getBO(imagenSeleccionada);
 
-			PreguntaUsuarioBO bo = new PreguntaUsuarioBO();
-			bo.setCaracteresMaximo(caracteres);
-			bo.setPosicionPreguntaX(posicionX);
-			bo.setPosicionPreguntaY(posicionY);
-			bo.setPregunta(pregunta);
-			bo.setTiempoMaximo(tiempo);
-			bo.setImagenesUsuarioID(imagen);
-			panelPruebas.agregarPreguntaPrueba(bo);
+			String pregunta = (String) richTextEditorPregunta.getValue();
+			if (pregunta.length() < Convencion.MAXIMA_LONGITUD_PREGUNTA) {
+				int posicionX = panelPregunta.obtenerPosicionX();
+				int posicionY = panelPregunta.obtenerPosicionY();
+				int tiempo = Integer.parseInt(integerItemTiempoMaximo
+						.getValueAsString());
+				int caracteres = Integer.parseInt(integerItemRespuestaMaxima
+						.getValueAsString());
+				ImagenUsuarioBO imagen = ImagenRecord.getBO(imagenSeleccionada);
+
+				PreguntaUsuarioBO bo = new PreguntaUsuarioBO();
+				bo.setCaracteresMaximo(caracteres);
+				bo.setPosicionPreguntaX(posicionX);
+				bo.setPosicionPreguntaY(posicionY);
+				bo.setPregunta(pregunta);
+				bo.setTiempoMaximo(tiempo);
+				bo.setImagenesUsuarioID(imagen);
+				panelPruebas.agregarPreguntaPrueba(bo);
+			} else {
+				SC.warn("La pregunta excede la longitud de caracteres máxima. "
+						+ pregunta.length() + " de"
+						+ Convencion.MAXIMA_LONGITUD_PREGUNTA + " Carecteres.");
+			}
 		} else {
 			SC.warn("La informaci\u00F3n de la l\u00E1mina se encuentra incompleta.");
 		}

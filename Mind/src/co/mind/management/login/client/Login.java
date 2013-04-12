@@ -18,7 +18,7 @@ import java.util.Date;
 
 import co.mind.management.login.client.servicios.LoginService;
 import co.mind.management.login.client.servicios.LoginServiceAsync;
-import co.mind.management.shared.bo.UsuarioBO;
+import co.mind.management.shared.dto.UsuarioBO;
 import co.mind.management.shared.recursos.Convencion;
 
 import com.google.gwt.core.client.EntryPoint;
@@ -36,7 +36,7 @@ public class Login implements EntryPoint {
 	private static PanelLogin panelLogin;
 	private static LoginServiceAsync loginService = GWT
 			.create(LoginService.class);
-	private static String urlAplicacion = "/Mind/Tarmin.html";
+	private static String urlAplicacion = "/Mind/Main.html";
 	private static String urlMaster = "/Mind/Maestro.html";
 
 	public void onModuleLoad() {

@@ -2,7 +2,7 @@ package co.mind.management.maestro.client.imagenes;
 
 import java.util.List;
 
-import co.mind.management.shared.bo.ImagenUsuarioBO;
+import co.mind.management.shared.dto.ImagenUsuarioBO;
 import co.mind.management.shared.records.ImagenRecord;
 
 import com.smartgwt.client.widgets.Canvas;

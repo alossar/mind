@@ -4,6 +4,7 @@
 	<source path="persistencia" />
 	<source path="entidades" />
 	<source path="recursos" />
-	<source path="bo" />
+	<source path="dto" />
 	<source path="records" />
+	<source path="datasources" />
 </module>

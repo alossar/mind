@@ -5,10 +5,10 @@ import java.util.List;
 
 import com.smartgwt.client.widgets.tile.TileRecord;
 
-import co.mind.management.shared.bo.ImagenBO;
-import co.mind.management.shared.bo.ImagenUsuarioBO;
-import co.mind.management.shared.bo.PreguntaUsuarioBO;
-import co.mind.management.shared.bo.PruebaUsuarioBO;
+import co.mind.management.shared.dto.ImagenBO;
+import co.mind.management.shared.dto.ImagenUsuarioBO;
+import co.mind.management.shared.dto.PreguntaUsuarioBO;
+import co.mind.management.shared.dto.PruebaUsuarioBO;
 
 public class PreguntaCategoriaTileRecord extends TileRecord {
 

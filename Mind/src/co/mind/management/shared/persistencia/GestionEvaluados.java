@@ -8,7 +8,7 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
 
-import co.mind.management.shared.bo.EvaluadoBO;
+import co.mind.management.shared.dto.EvaluadoBO;
 import co.mind.management.shared.entidades.Evaluado;
 import co.mind.management.shared.entidades.ParticipacionEnProceso;
 import co.mind.management.shared.entidades.Usuario;
@@ -57,6 +57,7 @@ public class GestionEvaluados implements IGestionEvaluados {
 			}
 		} catch (Exception exception) {
 			// Exception has occurred, roll-back the transaction.
+			exception.printStackTrace();
 			userTransaction.rollback();
 			return 1;
 		}
@@ -67,6 +68,7 @@ public class GestionEvaluados implements IGestionEvaluados {
 			EvaluadoBO Evaluado) {
 		EntityTransaction userTransaction = entityManager.getTransaction();
 		try {
+			userTransaction.begin();
 			Usuario usuario = entityManager.find(Usuario.class,
 					usuarioAdministradorID);
 			Evaluado u = entityManager.find(Evaluado.class,
@@ -82,7 +84,7 @@ public class GestionEvaluados implements IGestionEvaluados {
 			userTransaction.commit();
 			return Convencion.CORRECTO;
 		} catch (Exception e) {
-
+			e.printStackTrace();
 			userTransaction.rollback();
 			return Convencion.INCORRECTO;
 		}
@@ -136,6 +138,7 @@ public class GestionEvaluados implements IGestionEvaluados {
 				return Convencion.INCORRECTO;
 			}
 		} catch (Exception e) {
+			e.printStackTrace();
 			userTransaction.rollback();
 			return Convencion.INCORRECTO;
 		}

@@ -8,15 +8,15 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.persistence.Query;
 
-import co.mind.management.shared.bo.ParticipacionEnProcesoBO;
-import co.mind.management.shared.bo.UsuarioAdministradorBO;
-import co.mind.management.shared.bo.UsuarioBO;
-import co.mind.management.shared.bo.EvaluadoBO;
-import co.mind.management.shared.bo.UsuarioMaestroBO;
-import co.mind.management.shared.bo.UsuarioProgramadorBO;
 import co.mind.management.shared.recursos.Convencion;
 import co.mind.management.shared.recursos.Generador;
 
+import co.mind.management.shared.dto.EvaluadoBO;
+import co.mind.management.shared.dto.ParticipacionEnProcesoBO;
+import co.mind.management.shared.dto.UsuarioAdministradorBO;
+import co.mind.management.shared.dto.UsuarioBO;
+import co.mind.management.shared.dto.UsuarioMaestroBO;
+import co.mind.management.shared.dto.UsuarioProgramadorBO;
 import co.mind.management.shared.entidades.ParticipacionEnProceso;
 
 import co.mind.management.shared.entidades.Usuario;

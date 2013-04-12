@@ -20,7 +20,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import co.mind.management.shared.bo.ParticipacionEnProcesoBO;
+import co.mind.management.shared.dto.ParticipacionEnProcesoBO;
 
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRExporterParameter;
@@ -113,6 +113,7 @@ public class ExcelReportServlet extends HttpServlet {
 					bit = in.read();
 					sos.write(bit);
 				}
+				session.removeAttribute("participaciones");
 
 				sos.flush();
 				sos.close();

@@ -23,11 +23,11 @@ import java.util.NoSuchElementException;
 
 import co.mind.management.evaluacion.client.servicios.EvaluacionService;
 import co.mind.management.evaluacion.client.servicios.EvaluacionServiceAsync;
-import co.mind.management.shared.bo.ParticipacionEnProcesoBO;
-import co.mind.management.shared.bo.PreguntaUsuarioBO;
-import co.mind.management.shared.bo.ProcesoUsuarioBO;
-import co.mind.management.shared.bo.PruebaUsuarioBO;
-import co.mind.management.shared.bo.ResultadoBO;
+import co.mind.management.shared.dto.ParticipacionEnProcesoBO;
+import co.mind.management.shared.dto.PreguntaUsuarioBO;
+import co.mind.management.shared.dto.ProcesoUsuarioBO;
+import co.mind.management.shared.dto.PruebaUsuarioBO;
+import co.mind.management.shared.dto.ResultadoBO;
 import co.mind.management.shared.recursos.Convencion;
 
 import com.google.gwt.core.client.EntryPoint;

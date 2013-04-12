@@ -1,3 +1,3 @@
 # Module co.mind.management.login.Login
 # RPC service class, partial path of RPC policy file
-co.mind.management.login.client.servicios.LoginService, 75FBECBC738273F406DDB7A014EDD163.gwt.rpc
+co.mind.management.login.client.servicios.LoginService, AD69D2A1563145503966749F098A2732.gwt.rpc

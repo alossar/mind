@@ -8,12 +8,12 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
 
-import co.mind.management.shared.bo.ImagenBO;
-import co.mind.management.shared.bo.ImagenUsuarioBO;
-import co.mind.management.shared.bo.PreguntaUsuarioBO;
-import co.mind.management.shared.bo.ProcesoUsuarioBO;
-import co.mind.management.shared.bo.ProcesoUsuarioHasPruebaUsuarioBO;
-import co.mind.management.shared.bo.PruebaUsuarioBO;
+import co.mind.management.shared.dto.ImagenBO;
+import co.mind.management.shared.dto.ImagenUsuarioBO;
+import co.mind.management.shared.dto.PreguntaUsuarioBO;
+import co.mind.management.shared.dto.ProcesoUsuarioBO;
+import co.mind.management.shared.dto.ProcesoUsuarioHasPruebaUsuarioBO;
+import co.mind.management.shared.dto.PruebaUsuarioBO;
 import co.mind.management.shared.entidades.ImagenUsuario;
 import co.mind.management.shared.entidades.PreguntaUsuario;
 import co.mind.management.shared.entidades.ProcesoUsuario;
@@ -78,26 +78,11 @@ public class GestionPruebas implements IGestionPruebas {
 				entityManager.flush();
 				userTransaction.commit();
 				entityManager.refresh(c);
+				GestionPreguntas gPreguntas = new GestionPreguntas();
 				for (PreguntaUsuarioBO preguntaBO : preguntas) {
-					PreguntaUsuario pregunta = new PreguntaUsuario();
-					pregunta.setCaracteresMaximo(preguntaBO
-							.getCaracteresMaximo());
-					ImagenUsuario imagen = entityManager.find(
-							ImagenUsuario.class, preguntaBO
-									.getImagenesUsuario().getIdentificador());
-					pregunta.setImagenesUsuario(imagen);
-					pregunta.setPosicionPreguntaX(preguntaBO
-							.getPosicionPreguntaX());
-					pregunta.setPosicionPreguntaY(preguntaBO
-							.getPosicionPreguntaY());
-					pregunta.setPregunta(preguntaBO.getPregunta());
-					pregunta.setPruebasUsuario(c);
-					pregunta.setTiempoMaximo(preguntaBO.getTiempoMaximo());
-					if (!entityManager.contains(pregunta)) {
-						entityManager.persist(pregunta);
-						entityManager.flush();
-						userTransaction.commit();
-					}
+					prueba.setIdentificador(c.getIdentificador());
+					gPreguntas.agregarPreguntaUsuarioAdministrador(
+							usuarioAdministradorID, preguntaBO, prueba);
 				}
 				return Convencion.CORRECTO;
 			} else {

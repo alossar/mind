@@ -9,12 +9,12 @@ import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
 import javax.persistence.Query;
 
-import co.mind.management.shared.bo.ImagenBO;
-import co.mind.management.shared.bo.ImagenUsuarioBO;
-import co.mind.management.shared.bo.ParticipacionEnProcesoBO;
-import co.mind.management.shared.bo.PreguntaUsuarioBO;
-import co.mind.management.shared.bo.ResultadoBO;
-import co.mind.management.shared.bo.EvaluadoBO;
+import co.mind.management.shared.dto.EvaluadoBO;
+import co.mind.management.shared.dto.ImagenBO;
+import co.mind.management.shared.dto.ImagenUsuarioBO;
+import co.mind.management.shared.dto.ParticipacionEnProcesoBO;
+import co.mind.management.shared.dto.PreguntaUsuarioBO;
+import co.mind.management.shared.dto.ResultadoBO;
 import co.mind.management.shared.entidades.ParticipacionEnProceso;
 import co.mind.management.shared.entidades.PreguntaUsuario;
 import co.mind.management.shared.entidades.ProcesoUsuario;

@@ -1,0 +1,2 @@
+serviceClass: co.mind.management.main.client.servicios.MainService
+path: 25AEC1BE29ED32E1224F8B234CA3C986.gwt.rpc

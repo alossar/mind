@@ -6,21 +6,21 @@ import java.util.List;
 
 import co.mind.management.maestro.client.Maestro;
 import co.mind.management.maestro.client.PanelEncabezadoDialogo;
-import co.mind.management.shared.bo.EvaluadoBO;
-import co.mind.management.shared.bo.ParticipacionEnProcesoBO;
-import co.mind.management.shared.bo.ProcesoUsuarioBO;
-import co.mind.management.shared.bo.PruebaUsuarioBO;
+import co.mind.management.shared.datasources.ProcesosDataSource;
+import co.mind.management.shared.dto.EvaluadoBO;
+import co.mind.management.shared.dto.ParticipacionEnProcesoBO;
+import co.mind.management.shared.dto.ProcesoUsuarioBO;
+import co.mind.management.shared.dto.PruebaUsuarioBO;
 import co.mind.management.shared.records.ProcesoRecord;
 import co.mind.management.shared.recursos.Convencion;
 
+import com.smartgwt.client.types.ListGridEditEvent;
 import com.smartgwt.client.types.SelectionStyle;
 import com.smartgwt.client.types.VerticalAlignment;
 import com.smartgwt.client.util.SC;
 import com.smartgwt.client.widgets.Window;
 import com.smartgwt.client.widgets.events.CloseClickEvent;
 import com.smartgwt.client.widgets.events.CloseClickHandler;
-import com.smartgwt.client.widgets.events.DoubleClickEvent;
-import com.smartgwt.client.widgets.events.DoubleClickHandler;
 import com.smartgwt.client.widgets.form.DynamicForm;
 import com.smartgwt.client.widgets.form.FormItemIfFunction;
 import com.smartgwt.client.widgets.form.fields.ButtonItem;
@@ -32,6 +32,17 @@ import com.smartgwt.client.widgets.form.fields.TextItem;
 import com.smartgwt.client.widgets.form.fields.events.ClickEvent;
 import com.smartgwt.client.widgets.grid.ListGrid;
 import com.smartgwt.client.widgets.grid.ListGridField;
+import com.smartgwt.client.widgets.grid.ListGridRecord;
+import com.smartgwt.client.widgets.grid.events.CellDoubleClickEvent;
+import com.smartgwt.client.widgets.grid.events.CellDoubleClickHandler;
+import com.smartgwt.client.widgets.grid.events.EditCompleteEvent;
+import com.smartgwt.client.widgets.grid.events.EditCompleteHandler;
+import com.smartgwt.client.widgets.grid.events.EditorEnterEvent;
+import com.smartgwt.client.widgets.grid.events.EditorEnterHandler;
+import com.smartgwt.client.widgets.grid.events.EditorExitEvent;
+import com.smartgwt.client.widgets.grid.events.EditorExitHandler;
+import com.smartgwt.client.widgets.grid.events.RowContextClickEvent;
+import com.smartgwt.client.widgets.grid.events.RowContextClickHandler;
 import com.smartgwt.client.widgets.layout.HLayout;
 import com.smartgwt.client.widgets.layout.VLayout;
 import com.smartgwt.client.widgets.toolbar.ToolStrip;
@@ -43,7 +54,6 @@ public class PanelContenidoProcesos extends HLayout {
 	private ToolStripButton botonRegresar;
 	private ToolStripButton botonNuevoBasico;
 	private ToolStripButton botonEliminarBasico;
-	private ToolStripButton botonEditarBasico;
 	private ToolStripButton botonDuplicarBasico;
 	private PanelProcesoEspecifico panelProcesoEspecifico;
 	private ProcesoUsuarioBO procesoSeleccionado;
@@ -55,6 +65,7 @@ public class PanelContenidoProcesos extends HLayout {
 	private CheckboxItem checkBoxHabilitarFechaFinalizacion;
 	private List<PruebaUsuarioBO> listaPruebas;
 	private List<EvaluadoBO> listaEvaluados;
+	private ProcesosDataSource procesosDataSource;
 
 	public PanelContenidoProcesos() {
 		setWidth("100%");
@@ -65,6 +76,8 @@ public class PanelContenidoProcesos extends HLayout {
 		listGridProcesos = new ListGrid();
 		listGridProcesos.setWidth100();
 		listGridProcesos.setHeight100();
+		procesosDataSource = new ProcesosDataSource("procesos");
+		listGridProcesos.setDataSource(procesosDataSource);
 		listGridProcesos.setShowAllRecords(true);
 		listGridProcesos.setSelectionType(SelectionStyle.SINGLE);
 		listGridProcesos
@@ -75,36 +88,63 @@ public class PanelContenidoProcesos extends HLayout {
 				"descripcionProceso", "Descripci\u00F3n");
 		ListGridField fechaField = new ListGridField("fechaCreacion",
 				"Fecha de Creaci\u00F3n");
+		fechaField.setCanEdit(false);
 		ListGridField preguntasField = new ListGridField("cantidadPreguntas",
 				"Preguntas");
+		preguntasField.setCanEdit(false);
 		ListGridField tiempoField = new ListGridField("tiempoProceso",
 				"Tiempo (Segundos)");
+		tiempoField.setCanEdit(false);
 		listGridProcesos.setFields(nombreField, descripcionField, fechaField,
 				preguntasField, tiempoField);
 		listGridProcesos.setCanEdit(true);
+		listGridProcesos.setEditEvent(ListGridEditEvent.NONE);
 		listGridProcesos.setCanResizeFields(true);
-		listGridProcesos.setAutoFetchData(true);
 		listGridProcesos.setShowFilterEditor(true);
+		listGridProcesos.setAutoFetchData(true);
 
-		listGridProcesos.addDoubleClickHandler(new DoubleClickHandler() {
+		listGridProcesos
+				.addCellDoubleClickHandler(new CellDoubleClickHandler() {
+
+					@Override
+					public void onCellDoubleClick(CellDoubleClickEvent event) {
+						botonRegresar.setVisible(true);
+						ProcesoRecord p = (ProcesoRecord) event.getRecord();
+						if (p != null) {
+							procesoSeleccionado = ProcesoRecord.getBO(p);
+							Maestro.obtenerParticipantesProceso(procesoSeleccionado);
+							Maestro.obtenerTemasProceso(procesoSeleccionado);
+							panelProcesoEspecifico.deseleccionarTodo();
+							panelProcesoEspecifico
+									.actualizarDatosProceso(procesoSeleccionado);
+							listGridProcesos.setVisible(false);
+							panelProcesoEspecifico.setVisible(true);
+							botonNuevoBasico.setVisible(false);
+							botonEliminarBasico.setVisible(false);
+							botonDuplicarBasico.setVisible(false);
+						}
+					}
+				});
+
+		listGridProcesos
+				.addRowContextClickHandler(new RowContextClickHandler() {
+					public void onRowContextClick(RowContextClickEvent event) {
+						if (listGridProcesos.startEditing(event.getRowNum(),
+								event.getColNum(), false)) {
+						}
+						event.cancel();
+					}
+				});
+
+		listGridProcesos.addEditCompleteHandler(new EditCompleteHandler() {
 
 			@Override
-			public void onDoubleClick(DoubleClickEvent event) {
-				botonRegresar.enable();
-				ProcesoRecord p = (ProcesoRecord) listGridProcesos
-						.getSelectedRecord();
-				if (p != null) {
-					procesoSeleccionado = ProcesoRecord.getBO(p);
-					Maestro.obtenerParticipantesProceso(procesoSeleccionado);
-					Maestro.obtenerTemasProceso(procesoSeleccionado);
-					panelProcesoEspecifico.deseleccionarTodo();
-					panelProcesoEspecifico
-							.actualizarDatosProceso(procesoSeleccionado);
-					listGridProcesos.setVisible(false);
-					panelProcesoEspecifico.setVisible(true);
-					botonNuevoBasico.disable();
-					botonEliminarBasico.disable();
-				}
+			public void onEditComplete(EditCompleteEvent event) {
+				ListGridRecord[] r = listGridProcesos.getRecords();
+				ProcesoRecord procesoRecord = (ProcesoRecord) r[event
+						.getRowNum()];
+				ProcesoUsuarioBO proceso = ProcesoRecord.getBO(procesoRecord);
+				Maestro.editarProceso(proceso);
 			}
 		});
 
@@ -169,19 +209,15 @@ public class PanelContenidoProcesos extends HLayout {
 					@Override
 					public void onClick(
 							com.smartgwt.client.widgets.events.ClickEvent event) {
-
-					}
-				});
-
-		botonEditarBasico = new ToolStripButton("Duplicar Proceso",
-				"icons/16/document_plain_new.png");
-
-		botonEditarBasico
-				.addClickHandler(new com.smartgwt.client.widgets.events.ClickHandler() {
-					@Override
-					public void onClick(
-							com.smartgwt.client.widgets.events.ClickEvent event) {
-
+						ProcesoRecord record = (ProcesoRecord) listGridProcesos
+								.getSelectedRecord();
+						if (record != null) {
+							ProcesoUsuarioBO categoria = ProcesoRecord
+									.getBO(record);
+							Maestro.duplicarProceso(categoria);
+						} else {
+							SC.warn("Debe seleccionar el proceso que desea eliminar.");
+						}
 					}
 				});
 
@@ -190,11 +226,10 @@ public class PanelContenidoProcesos extends HLayout {
 		menuBarUsuarioBasico.addButton(botonRegresar);
 		menuBarUsuarioBasico.addButton(botonNuevoBasico);
 		menuBarUsuarioBasico.addFill();
-		menuBarUsuarioBasico.addButton(botonEditarBasico);
 		menuBarUsuarioBasico.addButton(botonDuplicarBasico);
 		menuBarUsuarioBasico.addButton(botonEliminarBasico);
 		menuBarUsuarioBasico.addSeparator();
-		botonRegresar.disable();
+		botonRegresar.setVisible(false);
 
 		VLayout vl1 = new VLayout();
 		vl1.setWidth100();
@@ -209,6 +244,7 @@ public class PanelContenidoProcesos extends HLayout {
 	}
 
 	public void actualizarProcesos(ProcesoRecord[] records) {
+		procesosDataSource.setTestData(records);
 		listGridProcesos.setData(records);
 	}
 
@@ -285,11 +321,6 @@ public class PanelContenidoProcesos extends HLayout {
 					}
 				});
 
-		// timeHoraFinalizacionNuevo = new TimeItem("timeItem",
-		// "Hora Finalizaci\u00F3n");
-		// timeHoraFinalizacionNuevo.setUseMask(true);
-		// timeHoraFinalizacionNuevo.setRequired(false);
-
 		ButtonItem boton = new ButtonItem("Crear");
 		boton.addClickHandler(new com.smartgwt.client.widgets.form.fields.events.ClickHandler() {
 			@Override
@@ -348,11 +379,12 @@ public class PanelContenidoProcesos extends HLayout {
 
 	public void setEstadoInicial() {
 		Maestro.setListaProcesos();
-		botonRegresar.disable();
+		botonRegresar.setVisible(false);
 		listGridProcesos.setVisible(true);
 		panelProcesoEspecifico.setVisible(false);
-		botonNuevoBasico.enable();
-		botonEliminarBasico.enable();
+		botonNuevoBasico.setVisible(true);
+		botonEliminarBasico.setVisible(true);
+		botonDuplicarBasico.setVisible(true);
 	}
 
 	public void actualizarTemasProceso(List<PruebaUsuarioBO> result) {

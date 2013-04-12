@@ -3,7 +3,7 @@ package co.mind.management.shared.records;
 import java.util.ArrayList;
 import java.util.List;
 
-import co.mind.management.shared.bo.ImagenUsuarioBO;
+import co.mind.management.shared.dto.ImagenUsuarioBO;
 
 import com.smartgwt.client.widgets.tile.TileRecord;
 

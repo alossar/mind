@@ -2,8 +2,8 @@ package co.mind.management.maestro.client.evaluados;
 
 import java.util.List;
 
-import co.mind.management.shared.bo.EvaluadoBO;
-import co.mind.management.shared.bo.UsuarioBO;
+import co.mind.management.shared.dto.EvaluadoBO;
+import co.mind.management.shared.dto.UsuarioBO;
 import co.mind.management.shared.records.UsuarioBasicoListGridRecord;
 
 import com.smartgwt.client.widgets.Canvas;

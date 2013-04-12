@@ -3,10 +3,11 @@ package co.mind.management.maestro.client.pruebas.contenedores;
 import java.util.List;
 
 import co.mind.management.maestro.client.pruebas.PanelContenidoPruebas;
-import co.mind.management.shared.bo.ImagenUsuarioBO;
-import co.mind.management.shared.bo.PreguntaUsuarioBO;
+import co.mind.management.shared.dto.ImagenUsuarioBO;
+import co.mind.management.shared.dto.PreguntaUsuarioBO;
 import co.mind.management.shared.records.ImagenRecord;
 import co.mind.management.shared.records.PreguntaCategoriaListGridRecord;
+import co.mind.management.shared.recursos.Convencion;
 
 import com.smartgwt.client.types.Alignment;
 import com.smartgwt.client.types.Overflow;
@@ -214,23 +215,33 @@ public class PanelEditarPregunta extends HLayout {
 	}
 
 	private void editarPregunta() {
-		if (imagenSeleccionada != null && formInformacionLamina.validate()) {
-			int posicionX = panelPregunta.obtenerPosicionX();
-			int posicionY = panelPregunta.obtenerPosicionY();
-			int tiempo = Integer.parseInt(integerItemTiempoMaximo
-					.getValueAsString());
-			int caracteres = Integer.parseInt(integerItemRespuestaMaxima
-					.getValueAsString());
+		if (formInformacionLamina.validate()) {
 			String preguntaS = (String) richTextEditorPregunta.getValue();
-			ImagenUsuarioBO imagen = ImagenRecord.getBO(imagenSeleccionada);
+			if (preguntaS.length() < Convencion.MAXIMA_LONGITUD_PREGUNTA) {
 
-			pregunta.setCaracteresMaximo(caracteres);
-			pregunta.setPosicionPreguntaX(posicionX);
-			pregunta.setPosicionPreguntaY(posicionY);
-			pregunta.setPregunta(preguntaS);
-			pregunta.setTiempoMaximo(tiempo);
-			pregunta.setImagenesUsuarioID(imagen);
-			panelPruebas.editarPreguntaCategoria(pregunta);
+				int posicionX = panelPregunta.obtenerPosicionX();
+				int posicionY = panelPregunta.obtenerPosicionY();
+				int tiempo = Integer.parseInt(integerItemTiempoMaximo
+						.getValueAsString());
+				int caracteres = Integer.parseInt(integerItemRespuestaMaxima
+						.getValueAsString());
+				if (imagenSeleccionada != null) {
+					ImagenUsuarioBO imagen = ImagenRecord
+							.getBO(imagenSeleccionada);
+					pregunta.setImagenesUsuarioID(imagen);
+				}
+
+				pregunta.setCaracteresMaximo(caracteres);
+				pregunta.setPosicionPreguntaX(posicionX);
+				pregunta.setPosicionPreguntaY(posicionY);
+				pregunta.setPregunta(preguntaS);
+				pregunta.setTiempoMaximo(tiempo);
+				panelPruebas.editarPreguntaCategoria(pregunta);
+			} else {
+				SC.warn("La pregunta excede la longitud de caracteres máxima. "
+						+ preguntaS.length() + " de"
+						+ Convencion.MAXIMA_LONGITUD_PREGUNTA + " Carecteres.");
+			}
 		} else {
 			SC.warn("La informaci\u00F3n de la l\u00E1mina se encuentra incompleta.");
 		}

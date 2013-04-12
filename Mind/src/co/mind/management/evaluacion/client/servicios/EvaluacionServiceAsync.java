@@ -2,11 +2,11 @@ package co.mind.management.evaluacion.client.servicios;
 
 import java.util.List;
 
-import co.mind.management.shared.bo.ParticipacionEnProcesoBO;
-import co.mind.management.shared.bo.PreguntaUsuarioBO;
-import co.mind.management.shared.bo.ProcesoUsuarioBO;
-import co.mind.management.shared.bo.ResultadoBO;
-import co.mind.management.shared.bo.EvaluadoBO;
+import co.mind.management.shared.dto.EvaluadoBO;
+import co.mind.management.shared.dto.ParticipacionEnProcesoBO;
+import co.mind.management.shared.dto.PreguntaUsuarioBO;
+import co.mind.management.shared.dto.ProcesoUsuarioBO;
+import co.mind.management.shared.dto.ResultadoBO;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 

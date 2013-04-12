@@ -1,0 +1,2 @@
+serviceClass: co.mind.management.login.client.servicios.LoginService
+path: AD69D2A1563145503966749F098A2732.gwt.rpc

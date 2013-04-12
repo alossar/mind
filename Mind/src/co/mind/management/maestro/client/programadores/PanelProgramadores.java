@@ -1,6 +1,6 @@
 package co.mind.management.maestro.client.programadores;
 
-import co.mind.management.shared.bo.UsuarioBO;
+import co.mind.management.shared.dto.UsuarioBO;
 
 import com.smartgwt.client.widgets.Canvas;
 import com.smartgwt.client.widgets.HTMLFlow;

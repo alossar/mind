@@ -2,9 +2,9 @@ package co.mind.management.shared.persistencia;
 
 import java.util.List;
 
-import co.mind.management.shared.bo.PreguntaUsuarioBO;
-import co.mind.management.shared.bo.ProcesoUsuarioBO;
-import co.mind.management.shared.bo.PruebaUsuarioBO;
+import co.mind.management.shared.dto.PreguntaUsuarioBO;
+import co.mind.management.shared.dto.ProcesoUsuarioBO;
+import co.mind.management.shared.dto.PruebaUsuarioBO;
 
 public interface IGestionPruebas {
 	public int agregarPruebaUsuarioAdministrador(int usuarioAdministradorID,

@@ -9,10 +9,10 @@ import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
 import javax.persistence.Query;
 
-import co.mind.management.shared.bo.ImagenBO;
-import co.mind.management.shared.bo.ImagenUsuarioBO;
-import co.mind.management.shared.bo.PreguntaUsuarioBO;
-import co.mind.management.shared.bo.PruebaUsuarioBO;
+import co.mind.management.shared.dto.ImagenBO;
+import co.mind.management.shared.dto.ImagenUsuarioBO;
+import co.mind.management.shared.dto.PreguntaUsuarioBO;
+import co.mind.management.shared.dto.PruebaUsuarioBO;
 import co.mind.management.shared.entidades.ImagenUsuario;
 import co.mind.management.shared.entidades.PreguntaUsuario;
 import co.mind.management.shared.entidades.PruebaUsuario;
@@ -106,6 +106,8 @@ public class GestionPreguntas implements IGestionPreguntas {
 			resultado.setIdentificador(im.getIdentificador());
 			resultado.setPregunta(im.getPregunta());
 			resultado.setTiempoMaximo(im.getTiempoMaximo());
+			resultado.setPosicionPreguntaX(im.getPosicionPreguntaX());
+			resultado.setPosicionPreguntaY(im.getPosicionPreguntaY());
 			ImagenUsuarioBO imagen = new ImagenUsuarioBO();
 			imagen.setIdentificador(im.getImagenesUsuario().getIdentificador());
 			imagen.setUsuario(im.getImagenesUsuario().getUsuario()
@@ -183,6 +185,10 @@ public class GestionPreguntas implements IGestionPreguntas {
 						resultado.setIdentificador(im.getIdentificador());
 						resultado.setPregunta(im.getPregunta());
 						resultado.setTiempoMaximo(im.getTiempoMaximo());
+						resultado.setPosicionPreguntaX(im
+								.getPosicionPreguntaX());
+						resultado.setPosicionPreguntaY(im
+								.getPosicionPreguntaY());
 						ImagenUsuarioBO imagen = new ImagenUsuarioBO();
 						imagen.setIdentificador(im.getImagenesUsuario()
 								.getIdentificador());

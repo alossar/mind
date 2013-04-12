@@ -3,9 +3,9 @@ package co.mind.management.shared.records;
 import java.util.ArrayList;
 import java.util.List;
 
-import co.mind.management.shared.bo.ImagenUsuarioBO;
-import co.mind.management.shared.bo.PreguntaUsuarioBO;
-import co.mind.management.shared.bo.PruebaUsuarioBO;
+import co.mind.management.shared.dto.ImagenUsuarioBO;
+import co.mind.management.shared.dto.PreguntaUsuarioBO;
+import co.mind.management.shared.dto.PruebaUsuarioBO;
 
 import com.smartgwt.client.widgets.grid.ListGridRecord;
 

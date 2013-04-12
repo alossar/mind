@@ -3,30 +3,30 @@ package co.mind.management.maestro.client.servicios;
 import java.util.Date;
 import java.util.List;
 
-import co.mind.management.shared.bo.ImagenBO;
-import co.mind.management.shared.bo.ImagenUsuarioBO;
-import co.mind.management.shared.bo.ParticipacionEnProcesoBO;
-import co.mind.management.shared.bo.PermisoBO;
-import co.mind.management.shared.bo.PreguntaUsuarioBO;
-import co.mind.management.shared.bo.ProcesoUsuarioBO;
-import co.mind.management.shared.bo.PruebaUsuarioBO;
-import co.mind.management.shared.bo.SolicitudCambioPlanBO;
-import co.mind.management.shared.bo.SolicitudEliminacionCuentaBO;
-import co.mind.management.shared.bo.SolicitudIncrementoUsosBO;
-import co.mind.management.shared.bo.SolicitudPlanBO;
-import co.mind.management.shared.bo.SolicitudValoracionBO;
-import co.mind.management.shared.bo.UsuarioBO;
-import co.mind.management.shared.bo.UsuarioBO;
-import co.mind.management.shared.bo.EvaluadoBO;
-import co.mind.management.shared.bo.UsuarioMaestroBO;
+import co.mind.management.shared.dto.EvaluadoBO;
+import co.mind.management.shared.dto.ImagenBO;
+import co.mind.management.shared.dto.ImagenUsuarioBO;
+import co.mind.management.shared.dto.ParticipacionEnProcesoBO;
+import co.mind.management.shared.dto.PermisoBO;
+import co.mind.management.shared.dto.PreguntaUsuarioBO;
+import co.mind.management.shared.dto.ProcesoUsuarioBO;
+import co.mind.management.shared.dto.PruebaUsuarioBO;
+import co.mind.management.shared.dto.SolicitudCambioPlanBO;
+import co.mind.management.shared.dto.SolicitudEliminacionCuentaBO;
+import co.mind.management.shared.dto.SolicitudIncrementoUsosBO;
+import co.mind.management.shared.dto.SolicitudPlanBO;
+import co.mind.management.shared.dto.SolicitudValoracionBO;
+import co.mind.management.shared.dto.UsuarioAdministradorBO;
+import co.mind.management.shared.dto.UsuarioBO;
+import co.mind.management.shared.dto.UsuarioMaestroBO;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public interface UsuarioMaestroServiceAsync {
 
-	void crearCuenta(UsuarioBO usuarioAdministrador,
-			SolicitudPlanBO solicitud, PermisoBO plan, Date fechaFinalizacion,
-			int usosTotal, AsyncCallback<Integer> callback);
+	void crearCuenta(UsuarioBO usuarioAdministrador, SolicitudPlanBO solicitud,
+			PermisoBO plan, Date fechaFinalizacion, int usosTotal,
+			AsyncCallback<Integer> callback);
 
 	void activarCuenta(int usuarioAdministradorID,
 			AsyncCallback<Integer> callback);
@@ -35,8 +35,8 @@ public interface UsuarioMaestroServiceAsync {
 			AsyncCallback<Integer> callback);
 
 	void agregarImagenPredeterminadaAUsuarios(
-			List<UsuarioBO> usuariosAdministradores,
-			ImagenBO imagen, AsyncCallback<Integer> callback);
+			List<UsuarioBO> usuariosAdministradores, ImagenBO imagen,
+			AsyncCallback<Integer> callback);
 
 	void agregarPlan(PermisoBO plan, AsyncCallback<Integer> callback);
 
@@ -93,8 +93,8 @@ public interface UsuarioMaestroServiceAsync {
 			AsyncCallback<List<ImagenUsuarioBO>> callback);
 
 	void agregarParticipacionDeUsuarioBasicoAProceso(
-			UsuarioBO usuarioAdministrador,
-			ProcesoUsuarioBO proceso, List<ParticipacionEnProcesoBO> evaluados,
+			UsuarioBO usuarioAdministrador, ProcesoUsuarioBO proceso,
+			List<ParticipacionEnProcesoBO> evaluados,
 			AsyncCallback<Integer> callback);
 
 	void agregarPreguntaAPrueba(UsuarioBO usuarioAdministrador,
@@ -115,8 +115,7 @@ public interface UsuarioMaestroServiceAsync {
 			ProcesoUsuarioBO proceso,
 			AsyncCallback<List<ParticipacionEnProcesoBO>> callback);
 
-	void consultarValoracionesProceso(
-			UsuarioBO usuarioAdministrador,
+	void consultarValoracionesProceso(UsuarioBO usuarioAdministrador,
 			ProcesoUsuarioBO proceso,
 			AsyncCallback<List<ParticipacionEnProcesoBO>> callback);
 
@@ -158,5 +157,31 @@ public interface UsuarioMaestroServiceAsync {
 	void enviarNotificacionesParticipacionesProceso(
 			UsuarioMaestroBO usuarioMaestro, List<ParticipacionEnProcesoBO> p,
 			AsyncCallback<Integer> asyncCallback);
+
+	void consultarPermisos(AsyncCallback<List<PermisoBO>> asyncCallback);
+
+	void agregarCuenta(UsuarioBO usuarioMaestro, UsuarioBO usuario,
+			List<PruebaUsuarioBO> pruebas, AsyncCallback<Integer> asyncCallback);
+
+	void editarPregunta(UsuarioBO usuarioMaestro, PreguntaUsuarioBO bo,
+			PruebaUsuarioBO prueba, AsyncCallback<Integer> asyncCallback);
+
+	void duplicarProceso(UsuarioBO usuarioMaestro, ProcesoUsuarioBO proceso,
+			AsyncCallback<Integer> asyncCallback);
+
+	void duplicarPrueba(UsuarioBO usuarioMaestro, PruebaUsuarioBO prueba,
+			AsyncCallback<Integer> asyncCallback);
+
+	void editarProceso(UsuarioBO usuarioMaestro, ProcesoUsuarioBO proceso,
+			AsyncCallback<Integer> asyncCallback);
+
+	void editarPrueba(UsuarioBO usuarioMaestro, PruebaUsuarioBO prueba,
+			AsyncCallback<Integer> asyncCallback);
+
+	void editarEvaluado(UsuarioBO usuarioMaestro, EvaluadoBO evaluado,
+			AsyncCallback<Integer> asyncCallback);
+
+	void editarCliente(UsuarioBO usuarioMaestro,
+			UsuarioAdministradorBO cliente, AsyncCallback<Integer> asyncCallback);
 
 }

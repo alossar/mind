@@ -5,17 +5,17 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import co.mind.management.shared.bo.ParticipacionEnProcesoBO;
-import co.mind.management.shared.bo.PreguntaUsuarioBO;
-import co.mind.management.shared.bo.ProcesoUsuarioBO;
-import co.mind.management.shared.bo.ResultadoBO;
-import co.mind.management.shared.bo.UsuarioAdministradorBO;
-import co.mind.management.shared.bo.EvaluadoBO;
+import co.mind.management.shared.dto.EvaluadoBO;
+import co.mind.management.shared.dto.ParticipacionEnProcesoBO;
+import co.mind.management.shared.dto.PreguntaUsuarioBO;
+import co.mind.management.shared.dto.ProcesoUsuarioBO;
+import co.mind.management.shared.dto.ResultadoBO;
+import co.mind.management.shared.dto.UsuarioAdministradorBO;
 import co.mind.management.evaluacion.client.servicios.EvaluacionService;
 import co.mind.management.shared.persistencia.GestionAccesos;
 import co.mind.management.shared.persistencia.GestionEvaluacion;
 import co.mind.management.shared.persistencia.GestionPruebas;
-import co.mind.management.shared.persistencia.GestionUsuariosAdministradores;
+import co.mind.management.shared.persistencia.GestionClientes;
 import co.mind.management.shared.recursos.Convencion;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
@@ -30,7 +30,7 @@ public class EvaluacionServiceImpl extends RemoteServiceServlet implements
 	private GestionAccesos g = new GestionAccesos();
 	private GestionEvaluacion gestionEvaluacion = new GestionEvaluacion();
 	private GestionPruebas gestionPruebas = new GestionPruebas();
-	private GestionUsuariosAdministradores gestionUsuariosAdministradores = new GestionUsuariosAdministradores();
+	private GestionClientes gestionUsuariosAdministradores = new GestionClientes();
 
 	@Override
 	public int comenzarPrueba(EvaluadoBO usuarioBasico,

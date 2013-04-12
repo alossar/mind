@@ -1,6 +1,6 @@
 package co.mind.management.maestro.client.cuenta;
 
-import co.mind.management.shared.bo.UsuarioBO;
+import co.mind.management.shared.dto.UsuarioBO;
 
 import com.smartgwt.client.widgets.form.DynamicForm;
 import com.smartgwt.client.widgets.form.fields.TextItem;

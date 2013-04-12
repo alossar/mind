@@ -3,7 +3,7 @@ package co.mind.management.shared.records;
 import java.util.ArrayList;
 import java.util.List;
 
-import co.mind.management.shared.bo.EvaluadoBO;
+import co.mind.management.shared.dto.EvaluadoBO;
 
 import com.smartgwt.client.widgets.grid.ListGridRecord;
 
@@ -42,8 +42,7 @@ public class UsuarioBasicoListGridRecord extends ListGridRecord {
 		}
 	}
 
-	public static List<EvaluadoBO> getBO(
-			UsuarioBasicoListGridRecord[] records) {
+	public static List<EvaluadoBO> getBO(UsuarioBasicoListGridRecord[] records) {
 		List<EvaluadoBO> resultado = new ArrayList<EvaluadoBO>();
 		if (records != null) {
 			for (UsuarioBasicoListGridRecord usuario : records) {
@@ -65,4 +64,18 @@ public class UsuarioBasicoListGridRecord extends ListGridRecord {
 		}
 	}
 
+	public static EvaluadoBO getBO(UsuarioBasicoListGridRecord usuario) {
+		if (usuario != null) {
+			EvaluadoBO usuarioBasico = new EvaluadoBO();
+			usuarioBasico.setApellidos(usuario.getAttribute("apellidos"));
+			usuarioBasico.setCorreoElectronico(usuario.getAttribute("correo"));
+			usuarioBasico.setEdad(usuario.getAttributeAsInt("edad"));
+			usuarioBasico.setIdentificador(usuario.getAttributeAsInt("id"));
+			usuarioBasico.setNombres(usuario.getAttribute("nombre"));
+			usuarioBasico.setIdentificadorUsuarioAdministrador(usuario
+					.getAttributeAsInt("idUsuario"));
+			return usuarioBasico;
+		}
+		return null;
+	}
 }

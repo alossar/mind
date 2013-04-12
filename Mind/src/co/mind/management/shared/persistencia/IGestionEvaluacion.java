@@ -2,8 +2,8 @@ package co.mind.management.shared.persistencia;
 
 import java.util.List;
 
-import co.mind.management.shared.bo.ParticipacionEnProcesoBO;
-import co.mind.management.shared.bo.ResultadoBO;
+import co.mind.management.shared.dto.ParticipacionEnProcesoBO;
+import co.mind.management.shared.dto.ResultadoBO;
 
 public interface IGestionEvaluacion {
 

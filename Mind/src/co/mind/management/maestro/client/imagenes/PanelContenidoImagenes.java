@@ -4,7 +4,7 @@ import java.util.List;
 
 import co.mind.management.maestro.client.Maestro;
 import co.mind.management.maestro.client.PanelEncabezadoDialogo;
-import co.mind.management.shared.bo.ImagenUsuarioBO;
+import co.mind.management.shared.dto.ImagenUsuarioBO;
 import co.mind.management.shared.records.ImagenRecord;
 
 import com.google.gwt.core.client.GWT;

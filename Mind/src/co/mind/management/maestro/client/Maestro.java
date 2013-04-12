@@ -6,15 +6,16 @@ import java.util.List;
 
 import co.mind.management.maestro.client.servicios.UsuarioMaestroService;
 import co.mind.management.maestro.client.servicios.UsuarioMaestroServiceAsync;
-import co.mind.management.shared.bo.EvaluadoBO;
-import co.mind.management.shared.bo.ImagenUsuarioBO;
-import co.mind.management.shared.bo.ParticipacionEnProcesoBO;
-import co.mind.management.shared.bo.PreguntaUsuarioBO;
-import co.mind.management.shared.bo.ProcesoUsuarioBO;
-import co.mind.management.shared.bo.ProcesoUsuarioHasPruebaUsuarioBO;
-import co.mind.management.shared.bo.PruebaUsuarioBO;
-import co.mind.management.shared.bo.UsuarioBO;
-import co.mind.management.shared.bo.UsuarioMaestroBO;
+import co.mind.management.shared.dto.EvaluadoBO;
+import co.mind.management.shared.dto.ImagenUsuarioBO;
+import co.mind.management.shared.dto.ParticipacionEnProcesoBO;
+import co.mind.management.shared.dto.PermisoBO;
+import co.mind.management.shared.dto.PreguntaUsuarioBO;
+import co.mind.management.shared.dto.ProcesoUsuarioBO;
+import co.mind.management.shared.dto.ProcesoUsuarioHasPruebaUsuarioBO;
+import co.mind.management.shared.dto.PruebaUsuarioBO;
+import co.mind.management.shared.dto.UsuarioBO;
+import co.mind.management.shared.dto.UsuarioMaestroBO;
 import co.mind.management.shared.recursos.Convencion;
 
 import com.google.gwt.core.client.EntryPoint;
@@ -97,6 +98,8 @@ public class Maestro implements EntryPoint {
 		setListaPruebas();
 		setListaUsuariosBasicos();
 		setListaImagenesUsuario();
+		setListaPermisos();
+		setListaClientes();
 	}
 
 	private void actualizarCookie() {
@@ -121,6 +124,42 @@ public class Maestro implements EntryPoint {
 					public void onFailure(Throwable caught) {
 						caught.printStackTrace();
 						System.out.println("Error Cargando las imagenes");
+					}
+				});
+	}
+
+	public static void setListaPermisos() {
+		usuarioMaestroService.consultarPermisos(
+
+		new AsyncCallback<List<PermisoBO>>() {
+
+			@Override
+			public void onSuccess(List<PermisoBO> result) {
+				mainLayout.actualizarListaPermisos(result);
+			}
+
+			@Override
+			public void onFailure(Throwable caught) {
+				caught.printStackTrace();
+
+			}
+		});
+	}
+
+	public static void setListaClientes() {
+		usuarioMaestroService
+				.consultarUsuariosAdministradores(new AsyncCallback<List<UsuarioBO>>() {
+
+					@Override
+					public void onSuccess(List<UsuarioBO> result) {
+						mainLayout.actualizarClientes(result);
+
+					}
+
+					@Override
+					public void onFailure(Throwable caught) {
+						caught.printStackTrace();
+
 					}
 				});
 	}
@@ -563,8 +602,23 @@ public class Maestro implements EntryPoint {
 
 	}
 
-	public static void editarPreguntaUsuario(PreguntaUsuarioBO bo) {
-		// TODO Auto-generated method stub
+	public static void editarPreguntaUsuario(PreguntaUsuarioBO bo,
+			PruebaUsuarioBO prueba) {
+		pruebaTemp = prueba;
+		usuarioMaestroService.editarPregunta((UsuarioBO) usuarioMaestro, bo,
+				prueba, new AsyncCallback<Integer>() {
+
+					@Override
+					public void onFailure(Throwable caught) {
+						caught.printStackTrace();
+
+					}
+
+					@Override
+					public void onSuccess(Integer result) {
+						obtenerPreguntasPorPrueba(pruebaTemp.getIdentificador());
+					}
+				});
 
 	}
 
@@ -662,4 +716,108 @@ public class Maestro implements EntryPoint {
 
 	}
 
+	public static void agregarCliente(UsuarioBO usuario,
+			List<PruebaUsuarioBO> pruebas) {
+
+		usuarioMaestroService.agregarCuenta(usuarioMaestro, usuario, pruebas,
+				new AsyncCallback<Integer>() {
+
+					@Override
+					public void onSuccess(Integer result) {
+						setListaClientes();
+					}
+
+					@Override
+					public void onFailure(Throwable caught) {
+						caught.printStackTrace();
+					}
+				});
+
+	}
+
+	public static void duplicarProceso(ProcesoUsuarioBO proceso) {
+		usuarioMaestroService.duplicarProceso((UsuarioBO) usuarioMaestro,
+				proceso, new AsyncCallback<Integer>() {
+
+					@Override
+					public void onSuccess(Integer result) {
+						setListaProcesos();
+					}
+
+					@Override
+					public void onFailure(Throwable caught) {
+						caught.printStackTrace();
+					}
+				});
+	}
+
+	public static void duplicarPrueba(PruebaUsuarioBO prueba) {
+		usuarioMaestroService.duplicarPrueba((UsuarioBO) usuarioMaestro,
+				prueba, new AsyncCallback<Integer>() {
+
+					@Override
+					public void onSuccess(Integer result) {
+						setListaPruebas();
+					}
+
+					@Override
+					public void onFailure(Throwable caught) {
+						caught.printStackTrace();
+					}
+				});
+
+	}
+
+	public static void editarProceso(ProcesoUsuarioBO proceso) {
+		usuarioMaestroService.editarProceso((UsuarioBO) usuarioMaestro,
+				proceso, new AsyncCallback<Integer>() {
+
+					@Override
+					public void onSuccess(Integer result) {
+						setListaProcesos();
+						Notification n = new Notification("Proceso Editado");
+						n.show();
+					}
+
+					@Override
+					public void onFailure(Throwable caught) {
+						caught.printStackTrace();
+					}
+				});
+	}
+
+	public static void editarPrueba(PruebaUsuarioBO prueba) {
+		usuarioMaestroService.editarPrueba((UsuarioBO) usuarioMaestro, prueba,
+				new AsyncCallback<Integer>() {
+
+					@Override
+					public void onSuccess(Integer result) {
+						setListaPruebas();
+						Notification n = new Notification("Prueba Editada");
+						n.show();
+					}
+
+					@Override
+					public void onFailure(Throwable caught) {
+						caught.printStackTrace();
+					}
+				});
+	}
+
+	public static void editarEvaluado(EvaluadoBO proceso) {
+		usuarioMaestroService.editarEvaluado(usuarioMaestro, proceso,
+				new AsyncCallback<Integer>() {
+
+					@Override
+					public void onSuccess(Integer result) {
+						setListaUsuariosBasicos();
+					}
+
+					@Override
+					public void onFailure(Throwable caught) {
+						caught.printStackTrace();
+					}
+				});
+
+	}
 }

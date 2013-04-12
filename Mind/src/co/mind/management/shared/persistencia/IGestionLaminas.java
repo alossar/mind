@@ -2,8 +2,8 @@ package co.mind.management.shared.persistencia;
 
 import java.util.List;
 
-import co.mind.management.shared.bo.ImagenBO;
-import co.mind.management.shared.bo.ImagenUsuarioBO;
+import co.mind.management.shared.dto.ImagenBO;
+import co.mind.management.shared.dto.ImagenUsuarioBO;
 
 public interface IGestionLaminas {
 

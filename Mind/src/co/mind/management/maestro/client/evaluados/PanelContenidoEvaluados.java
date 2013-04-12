@@ -3,8 +3,8 @@ package co.mind.management.maestro.client.evaluados;
 import java.util.List;
 
 import co.mind.management.maestro.client.Maestro;
-import co.mind.management.shared.bo.EvaluadoBO;
-import co.mind.management.shared.records.UsuarioAdministradorListGridRecord;
+import co.mind.management.shared.datasources.EvaluadosDataSource;
+import co.mind.management.shared.dto.EvaluadoBO;
 import co.mind.management.shared.records.UsuarioBasicoListGridRecord;
 
 import com.smartgwt.client.types.SelectionAppearance;
@@ -24,9 +24,12 @@ import com.smartgwt.client.widgets.form.validator.RegExpValidator;
 import com.smartgwt.client.widgets.grid.ListGrid;
 import com.smartgwt.client.widgets.grid.ListGridField;
 import com.smartgwt.client.widgets.grid.ListGridRecord;
+import com.smartgwt.client.widgets.grid.events.EditCompleteEvent;
+import com.smartgwt.client.widgets.grid.events.EditCompleteHandler;
+import com.smartgwt.client.widgets.grid.events.RowContextClickEvent;
+import com.smartgwt.client.widgets.grid.events.RowContextClickHandler;
 import com.smartgwt.client.widgets.layout.HLayout;
 import com.smartgwt.client.widgets.layout.VLayout;
-import com.smartgwt.client.widgets.tab.Tab;
 import com.smartgwt.client.widgets.tab.TabSet;
 import com.smartgwt.client.widgets.toolbar.ToolStrip;
 import com.smartgwt.client.widgets.toolbar.ToolStripButton;
@@ -39,6 +42,7 @@ public class PanelContenidoEvaluados extends HLayout {
 	private TextItem textCorreoUsuarioBasico;
 	private IntegerItem textIdentificadorUsuarioBasico;
 	private DynamicForm formUsuarioBasico;
+	private EvaluadosDataSource evaluadosDataSource;
 
 	public PanelContenidoEvaluados() {
 		setWidth("100%");
@@ -55,12 +59,50 @@ public class PanelContenidoEvaluados extends HLayout {
 		listGridUsuariosBasicos = new ListGrid();
 		listGridUsuariosBasicos.setWidth100();
 		listGridUsuariosBasicos.setHeight100();
+		evaluadosDataSource = new EvaluadosDataSource("evaluados");
+		listGridUsuariosBasicos.setDataSource(evaluadosDataSource);
 		listGridUsuariosBasicos.setShowAllRecords(true);
 		listGridUsuariosBasicos.setSelectionType(SelectionStyle.SIMPLE);
 		listGridUsuariosBasicos
 				.setEmptyMessage("No hay evaluados en su cuenta.");
+		listGridUsuariosBasicos
+				.addRowContextClickHandler(new RowContextClickHandler() {
+					public void onRowContextClick(RowContextClickEvent event) {
+						if (listGridUsuariosBasicos.startEditing(
+								event.getRowNum(), event.getColNum(), false)) {
+						}
+						event.cancel();
+					}
+				});
+
+		listGridUsuariosBasicos
+				.addEditCompleteHandler(new EditCompleteHandler() {
+
+					@Override
+					public void onEditComplete(EditCompleteEvent event) {
+						String nombre = (String) event.getNewValues().get(
+								"nombre");
+						String apellidos = (String) event.getNewValues().get(
+								"apellidos");
+
+						ListGridRecord[] r = listGridUsuariosBasicos
+								.getRecords();
+						UsuarioBasicoListGridRecord procesoRecord = (UsuarioBasicoListGridRecord) r[event
+								.getRowNum()];
+						EvaluadoBO proceso = UsuarioBasicoListGridRecord
+								.getBO(procesoRecord);
+						if (nombre != null) {
+							proceso.setNombres(nombre);
+						}
+						if (apellidos != null) {
+							proceso.setApellidos(apellidos);
+						}
+						Maestro.editarEvaluado(proceso);
+					}
+				});
 
 		ListGridField idField = new ListGridField("id", "C\u00E9dula");
+		idField.setCanEdit(false);
 		ListGridField nombreField = new ListGridField("nombre", "Nombre");
 		ListGridField apellidosField = new ListGridField("apellidos",
 				"Apellidos");
@@ -70,8 +112,7 @@ public class PanelContenidoEvaluados extends HLayout {
 		listGridUsuariosBasicos.setCanResizeFields(true);
 		listGridUsuariosBasicos.setAutoFetchData(true);
 		listGridUsuariosBasicos.setShowFilterEditor(true);
-		listGridUsuariosBasicos
-				.setSelectionAppearance(SelectionAppearance.CHECKBOX);
+		listGridUsuariosBasicos.setCanEdit(true);
 
 		ToolStripButton botonNuevoBasico = new ToolStripButton(
 				"Nuevo Evaluado", "icons/16/document_plain_new.png");
@@ -130,6 +171,8 @@ public class PanelContenidoEvaluados extends HLayout {
 	}
 
 	public void actualizarUsuariosBasicos(List<EvaluadoBO> result) {
+		evaluadosDataSource.setTestData(UsuarioBasicoListGridRecord
+				.getRecords(result));
 		listGridUsuariosBasicos.setData(UsuarioBasicoListGridRecord
 				.getRecords(result));
 	}

@@ -2,8 +2,8 @@ package co.mind.management.shared.persistencia;
 
 import java.util.List;
 
-import co.mind.management.shared.bo.PreguntaUsuarioBO;
-import co.mind.management.shared.bo.PruebaUsuarioBO;
+import co.mind.management.shared.dto.PreguntaUsuarioBO;
+import co.mind.management.shared.dto.PruebaUsuarioBO;
 
 public interface IGestionPreguntas {
 

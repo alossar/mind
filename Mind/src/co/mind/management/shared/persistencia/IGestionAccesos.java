@@ -1,8 +1,8 @@
 package co.mind.management.shared.persistencia;
 
-import co.mind.management.shared.bo.ParticipacionEnProcesoBO;
-import co.mind.management.shared.bo.UsuarioBO;
-import co.mind.management.shared.bo.EvaluadoBO;
+import co.mind.management.shared.dto.EvaluadoBO;
+import co.mind.management.shared.dto.ParticipacionEnProcesoBO;
+import co.mind.management.shared.dto.UsuarioBO;
 
 public interface IGestionAccesos {
 	

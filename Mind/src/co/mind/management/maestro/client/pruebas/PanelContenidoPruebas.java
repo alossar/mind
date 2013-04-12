@@ -6,13 +6,18 @@ import co.mind.management.maestro.client.Maestro;
 import co.mind.management.maestro.client.PanelEncabezadoDialogo;
 import co.mind.management.maestro.client.pruebas.contenedores.PanelAgregarPregunta;
 import co.mind.management.maestro.client.pruebas.contenedores.PanelEditarPregunta;
-import co.mind.management.shared.bo.ImagenUsuarioBO;
-import co.mind.management.shared.bo.PreguntaUsuarioBO;
-import co.mind.management.shared.bo.PruebaUsuarioBO;
+import co.mind.management.shared.datasources.ProcesosDataSource;
+import co.mind.management.shared.datasources.PruebasDataSource;
+import co.mind.management.shared.dto.ImagenUsuarioBO;
+import co.mind.management.shared.dto.PreguntaUsuarioBO;
+import co.mind.management.shared.dto.ProcesoUsuarioBO;
+import co.mind.management.shared.dto.PruebaUsuarioBO;
 import co.mind.management.shared.records.PreguntaCategoriaTileRecord;
+import co.mind.management.shared.records.ProcesoRecord;
 import co.mind.management.shared.records.PruebaListGridRecord;
 
 import com.google.gwt.event.shared.UmbrellaException;
+import com.smartgwt.client.types.ListGridEditEvent;
 import com.smartgwt.client.types.SelectionStyle;
 import com.smartgwt.client.types.VerticalAlignment;
 import com.smartgwt.client.util.SC;
@@ -30,6 +35,17 @@ import com.smartgwt.client.widgets.form.fields.TextAreaItem;
 import com.smartgwt.client.widgets.form.fields.TextItem;
 import com.smartgwt.client.widgets.grid.ListGrid;
 import com.smartgwt.client.widgets.grid.ListGridField;
+import com.smartgwt.client.widgets.grid.ListGridRecord;
+import com.smartgwt.client.widgets.grid.events.CellDoubleClickEvent;
+import com.smartgwt.client.widgets.grid.events.CellDoubleClickHandler;
+import com.smartgwt.client.widgets.grid.events.EditCompleteEvent;
+import com.smartgwt.client.widgets.grid.events.EditCompleteHandler;
+import com.smartgwt.client.widgets.grid.events.EditorEnterEvent;
+import com.smartgwt.client.widgets.grid.events.EditorEnterHandler;
+import com.smartgwt.client.widgets.grid.events.EditorExitEvent;
+import com.smartgwt.client.widgets.grid.events.EditorExitHandler;
+import com.smartgwt.client.widgets.grid.events.RowContextClickEvent;
+import com.smartgwt.client.widgets.grid.events.RowContextClickHandler;
 import com.smartgwt.client.widgets.layout.HLayout;
 import com.smartgwt.client.widgets.layout.VLayout;
 import com.smartgwt.client.widgets.tile.TileGrid;
@@ -48,7 +64,6 @@ public class PanelContenidoPruebas extends HLayout {
 	private ToolStripButton botonRegresar;
 	private ToolStripButton botonNuevoBasico;
 	private ToolStripButton botonEliminarBasico;
-	private ToolStripButton botonEditarBasico;
 	private ToolStripButton botonDuplicarBasico;
 	private TileGrid tileGridImagenesUsuario;
 	private DynamicForm formularioLamina;
@@ -61,6 +76,7 @@ public class PanelContenidoPruebas extends HLayout {
 	private Window windowCrearLamina;
 	private List<ImagenUsuarioBO> listaImagenesUsuario;
 	private PanelEditarPregunta panelEditarPregunta;
+	private PruebasDataSource pruebasDataSource;
 
 	public PanelContenidoPruebas() {
 		setWidth("100%");
@@ -71,6 +87,8 @@ public class PanelContenidoPruebas extends HLayout {
 		listGridPruebas = new ListGrid();
 		listGridPruebas.setWidth100();
 		listGridPruebas.setHeight100();
+		pruebasDataSource = new PruebasDataSource("pruebas");
+		listGridPruebas.setDataSource(pruebasDataSource);
 		listGridPruebas.setShowAllRecords(true);
 		listGridPruebas.setSelectionType(SelectionStyle.SINGLE);
 		listGridPruebas.setEmptyMessage("No hay pruebas en su cuenta.");
@@ -80,18 +98,22 @@ public class PanelContenidoPruebas extends HLayout {
 				"Descripci\u00F3n");
 		ListGridField preguntasField = new ListGridField("cantidadPreguntas",
 				"Preguntas");
+		preguntasField.setCanEdit(false);
 		ListGridField tiempoField = new ListGridField("tiempoPrueba",
 				"Tiempo (min)");
+		tiempoField.setCanEdit(false);
 		listGridPruebas.setFields(nombreField, apellidosField, preguntasField,
 				tiempoField);
+		listGridPruebas.setCanEdit(true);
+		listGridPruebas.setEditEvent(ListGridEditEvent.NONE);
 		listGridPruebas.setCanResizeFields(true);
-		listGridPruebas.setAutoFetchData(true);
 		listGridPruebas.setShowFilterEditor(true);
+		listGridPruebas.setAutoFetchData(true);
 
-		listGridPruebas.addDoubleClickHandler(new DoubleClickHandler() {
+		listGridPruebas.addCellDoubleClickHandler(new CellDoubleClickHandler() {
 
 			@Override
-			public void onDoubleClick(DoubleClickEvent event) {
+			public void onCellDoubleClick(CellDoubleClickEvent event) {
 				PruebaListGridRecord p = (PruebaListGridRecord) listGridPruebas
 						.getSelectedRecord();
 				pruebaSeleccionada = PruebaListGridRecord.getBO(p);
@@ -103,7 +125,7 @@ public class PanelContenidoPruebas extends HLayout {
 							"Prueba " + pruebaSeleccionada.getNombre(),
 							pruebaSeleccionada.getDescripcion(),
 							"img/check.png");
-					botonRegresar.enable();
+					botonRegresar.setVisible(true);
 					listGridPruebas.setVisible(false);
 					tileGridImagenesUsuario.setVisible(true);
 					formularioLamina.setVisible(true);
@@ -111,8 +133,41 @@ public class PanelContenidoPruebas extends HLayout {
 					// limpiarFormularioLamina();
 					botonNuevoBasico.setTitle("Nueva Pregunta");
 					botonEliminarBasico.setTitle("Eliminar Pregunta");
+					botonDuplicarBasico.setVisible(false);
 
 				}
+			}
+		});
+
+		listGridPruebas.addRowContextClickHandler(new RowContextClickHandler() {
+			public void onRowContextClick(RowContextClickEvent event) {
+				if (listGridPruebas.startEditing(event.getRowNum(),
+						event.getColNum(), false)) {
+				}
+				event.cancel();
+			}
+		});
+
+		listGridPruebas.addEditCompleteHandler(new EditCompleteHandler() {
+
+			@Override
+			public void onEditComplete(EditCompleteEvent event) {
+				String nombre = (String) event.getNewValues().get("nombre");
+				String descripcion = (String) event.getNewValues().get(
+						"descripcion");
+
+				ListGridRecord[] r = listGridPruebas.getRecords();
+				PruebaListGridRecord procesoRecord = (PruebaListGridRecord) r[event
+						.getRowNum()];
+				PruebaUsuarioBO prueba = PruebaListGridRecord
+						.getBO(procesoRecord);
+				if (nombre != null && descripcion != "") {
+					prueba.setNombre(nombre);
+				}
+				if (descripcion != null && descripcion != "") {
+					prueba.setDescripcion(descripcion);
+				}
+				Maestro.editarPrueba(prueba);
 			}
 		});
 
@@ -141,7 +196,9 @@ public class PanelContenidoPruebas extends HLayout {
 
 			@Override
 			public void onDoubleClick(DoubleClickEvent event) {
-				// TODO Auto-generated method stub
+				PreguntaCategoriaTileRecord record = (PreguntaCategoriaTileRecord) tileGridImagenesUsuario
+						.getSelectedRecord();
+				mostrarDialogoCrearLamina(record);
 
 			}
 		});
@@ -245,18 +302,6 @@ public class PanelContenidoPruebas extends HLayout {
 					}
 				});
 
-		botonEditarBasico = new ToolStripButton("Editar Prueba",
-				"icons/16/document_plain_new.png");
-
-		botonEditarBasico
-				.addClickHandler(new com.smartgwt.client.widgets.events.ClickHandler() {
-					@Override
-					public void onClick(
-							com.smartgwt.client.widgets.events.ClickEvent event) {
-
-					}
-				});
-
 		botonDuplicarBasico = new ToolStripButton("Duplicar Prueba",
 				"icons/16/document_plain_new.png");
 
@@ -265,7 +310,15 @@ public class PanelContenidoPruebas extends HLayout {
 					@Override
 					public void onClick(
 							com.smartgwt.client.widgets.events.ClickEvent event) {
-
+						PruebaListGridRecord record = (PruebaListGridRecord) listGridPruebas
+								.getSelectedRecord();
+						if (record != null) {
+							PruebaUsuarioBO categoria = PruebaListGridRecord
+									.getBO(record);
+							Maestro.duplicarPrueba(categoria);
+						} else {
+							SC.warn("Debe seleccionar el proceso que desea eliminar.");
+						}
 					}
 				});
 
@@ -275,11 +328,10 @@ public class PanelContenidoPruebas extends HLayout {
 		menuBarUsuarioBasico.addButton(botonNuevoBasico);
 		menuBarUsuarioBasico.addFill();
 		menuBarUsuarioBasico.addSeparator();
-		menuBarUsuarioBasico.addButton(botonEditarBasico);
 		menuBarUsuarioBasico.addButton(botonDuplicarBasico);
 		menuBarUsuarioBasico.addButton(botonEliminarBasico);
 		menuBarUsuarioBasico.addSeparator();
-		botonRegresar.disable();
+		botonRegresar.setVisible(false);
 
 		VLayout vl1 = new VLayout();
 		vl1.setWidth100();
@@ -400,6 +452,7 @@ public class PanelContenidoPruebas extends HLayout {
 	}
 
 	public void actualizarPruebas(List<PruebaUsuarioBO> result) {
+		pruebasDataSource.setTestData(PruebaListGridRecord.getRecords(result));
 		listGridPruebas.setData(PruebaListGridRecord.getRecords(result));
 	}
 
@@ -418,7 +471,8 @@ public class PanelContenidoPruebas extends HLayout {
 	}
 
 	public void editarPreguntaCategoria(PreguntaUsuarioBO bo) {
-		Maestro.editarPreguntaUsuario(bo);
+		Maestro.editarPreguntaUsuario(bo, pruebaSeleccionada);
+		windowCrearLamina.destroy();
 	}
 
 	private void limpiarFormularioLamina() {
@@ -428,7 +482,7 @@ public class PanelContenidoPruebas extends HLayout {
 	}
 
 	public void setEstadoInicial() {
-		botonRegresar.disable();
+		botonRegresar.setVisible(false);
 		listGridPruebas.setVisible(true);
 		tileGridImagenesUsuario.setVisible(false);
 		formularioLamina.setVisible(false);
@@ -437,6 +491,7 @@ public class PanelContenidoPruebas extends HLayout {
 		botonEliminarBasico.setTitle("Eliminar Prueba");
 		PanelPruebas.setEncabezadoPredeterminado();
 		Maestro.setListaPruebas();
+		botonDuplicarBasico.setVisible(true);
 
 	}
 }

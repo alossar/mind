@@ -3,23 +3,22 @@ package co.mind.management.maestro.client.servicios;
 import java.util.Date;
 import java.util.List;
 
-import co.mind.management.shared.bo.ImagenBO;
-import co.mind.management.shared.bo.ImagenUsuarioBO;
-import co.mind.management.shared.bo.ParticipacionEnProcesoBO;
-import co.mind.management.shared.bo.PermisoBO;
-import co.mind.management.shared.bo.PreguntaUsuarioBO;
-import co.mind.management.shared.bo.ProcesoUsuarioBO;
-import co.mind.management.shared.bo.PruebaUsuarioBO;
-import co.mind.management.shared.bo.SolicitudCambioPlanBO;
-import co.mind.management.shared.bo.SolicitudEliminacionCuentaBO;
-import co.mind.management.shared.bo.SolicitudIncrementoUsosBO;
-import co.mind.management.shared.bo.SolicitudPlanBO;
-import co.mind.management.shared.bo.SolicitudValoracionBO;
-import co.mind.management.shared.bo.UsuarioAdministradorBO;
-import co.mind.management.shared.bo.UsuarioBO;
-import co.mind.management.shared.bo.UsuarioBO;
-import co.mind.management.shared.bo.EvaluadoBO;
-import co.mind.management.shared.bo.UsuarioMaestroBO;
+import co.mind.management.shared.dto.EvaluadoBO;
+import co.mind.management.shared.dto.ImagenBO;
+import co.mind.management.shared.dto.ImagenUsuarioBO;
+import co.mind.management.shared.dto.ParticipacionEnProcesoBO;
+import co.mind.management.shared.dto.PermisoBO;
+import co.mind.management.shared.dto.PreguntaUsuarioBO;
+import co.mind.management.shared.dto.ProcesoUsuarioBO;
+import co.mind.management.shared.dto.PruebaUsuarioBO;
+import co.mind.management.shared.dto.SolicitudCambioPlanBO;
+import co.mind.management.shared.dto.SolicitudEliminacionCuentaBO;
+import co.mind.management.shared.dto.SolicitudIncrementoUsosBO;
+import co.mind.management.shared.dto.SolicitudPlanBO;
+import co.mind.management.shared.dto.SolicitudValoracionBO;
+import co.mind.management.shared.dto.UsuarioAdministradorBO;
+import co.mind.management.shared.dto.UsuarioBO;
+import co.mind.management.shared.dto.UsuarioMaestroBO;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
@@ -151,5 +150,25 @@ public interface UsuarioMaestroService extends RemoteService {
 
 	int enviarNotificacionesParticipacionesProceso(
 			UsuarioMaestroBO usuarioMaestro, List<ParticipacionEnProcesoBO> p);
+
+	List<PermisoBO> consultarPermisos();
+
+	int agregarCuenta(UsuarioBO usuarioMaestro, UsuarioBO usuario,
+			List<PruebaUsuarioBO> pruebas);
+
+	int editarPregunta(UsuarioBO usuarioMaestro, PreguntaUsuarioBO bo,
+			PruebaUsuarioBO prueba);
+
+	int duplicarProceso(UsuarioBO usuarioMaestro, ProcesoUsuarioBO proceso);
+
+	int editarProceso(UsuarioBO usuarioMaestro, ProcesoUsuarioBO proceso);
+
+	int editarPrueba(UsuarioBO usuarioMaestro, PruebaUsuarioBO prueba);
+
+	int duplicarPrueba(UsuarioBO usuarioMaestro, PruebaUsuarioBO prueba);
+
+	int editarCliente(UsuarioBO usuarioMaestro, UsuarioAdministradorBO cliente);
+
+	int editarEvaluado(UsuarioBO usuarioMaestro, EvaluadoBO evaluado);
 
 }

@@ -5,7 +5,7 @@ import javax.servlet.http.HttpSession;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
-import co.mind.management.shared.bo.UsuarioBO;
+import co.mind.management.shared.dto.UsuarioBO;
 import co.mind.management.login.client.servicios.LoginService;
 import co.mind.management.shared.persistencia.GestionAccesos;
 import co.mind.management.shared.recursos.Convencion;

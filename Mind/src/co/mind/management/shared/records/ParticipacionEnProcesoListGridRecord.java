@@ -3,8 +3,8 @@ package co.mind.management.shared.records;
 import java.util.ArrayList;
 import java.util.List;
 
-import co.mind.management.shared.bo.ParticipacionEnProcesoBO;
-import co.mind.management.shared.bo.EvaluadoBO;
+import co.mind.management.shared.dto.EvaluadoBO;
+import co.mind.management.shared.dto.ParticipacionEnProcesoBO;
 
 import com.smartgwt.client.widgets.grid.ListGridRecord;
 

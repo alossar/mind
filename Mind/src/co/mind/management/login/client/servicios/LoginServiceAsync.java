@@ -1,6 +1,6 @@
 package co.mind.management.login.client.servicios;
 
-import co.mind.management.shared.bo.UsuarioBO;
+import co.mind.management.shared.dto.UsuarioBO;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 

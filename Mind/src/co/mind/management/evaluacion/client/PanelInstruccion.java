@@ -2,7 +2,7 @@ package co.mind.management.evaluacion.client;
 
 import java.util.List;
 
-import co.mind.management.shared.bo.ResultadoBO;
+import co.mind.management.shared.dto.ResultadoBO;
 import co.mind.management.shared.recursos.Convencion;
 
 import com.google.gwt.user.client.Timer;

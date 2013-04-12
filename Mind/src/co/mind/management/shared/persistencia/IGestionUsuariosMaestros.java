@@ -2,7 +2,7 @@ package co.mind.management.shared.persistencia;
 
 import java.util.List;
 
-import co.mind.management.shared.bo.UsuarioMaestroBO;
+import co.mind.management.shared.dto.UsuarioMaestroBO;
 
 public interface IGestionUsuariosMaestros {
 	/**
@@ -30,7 +30,7 @@ public interface IGestionUsuariosMaestros {
 	 * @param usuarioMaestro
 	 *            Datos del Usuario Maestro contenidos en un Business
 	 *            Object.
-	 * @return 0 si el objeto se editó correctamente.
+	 * @return 0 si el objeto se editï¿½ correctamente.
 	 */
 	public int editarUsuarioMaestro(
 			UsuarioMaestroBO usuarioMaestro);
@@ -45,7 +45,7 @@ public interface IGestionUsuariosMaestros {
 	 * 
 	 * @param usuarioMaestroID
 	 *            Identificador del Usuario Maestro.
-	 * @return Un Business Object si el objeto se encontró. null en caso
+	 * @return Un Business Object si el objeto se encontrï¿½. null en caso
 	 *         contrario.
 	 */
 	public UsuarioMaestroBO consultarUsuarioMaestro(
@@ -62,7 +62,7 @@ public interface IGestionUsuariosMaestros {
 	 * 
 	 * @param usuarioMaestroID
 	 *            Identificador del Usuario Maestro.
-	 * @return 0 si el objeto se eliminó correctamente.
+	 * @return 0 si el objeto se eliminï¿½ correctamente.
 	 */
 	public int eliminarUsuarioMaestro(int usuarioMaestroID);
 

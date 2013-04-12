@@ -1,6 +1,5 @@
 package co.mind.management.shared.recursos;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -17,13 +16,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import co.mind.management.shared.bo.ParticipacionEnProcesoBO;
-
-import net.sf.jasperreports.engine.JREmptyDataSource;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.JasperRunManager;
+import co.mind.management.shared.dto.ParticipacionEnProcesoBO;
 
 public class PDFReportServlet extends HttpServlet {
 	/**
@@ -59,6 +56,7 @@ public class PDFReportServlet extends HttpServlet {
 								.getRealPath("/reports/reporte.jrxml"));
 				bytes = JasperRunManager.runReportToPdf(jasperReport,
 						parametros, jdbcConnection);
+				session.removeAttribute("participaciones");
 
 				response.setContentType("application/pdf");
 				response.setContentLength(bytes.length);

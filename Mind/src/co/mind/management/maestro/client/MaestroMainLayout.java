@@ -2,30 +2,27 @@ package co.mind.management.maestro.client;
 
 import java.util.List;
 
-import co.mind.management.maestro.client.administradores.PanelClientes;
+import co.mind.management.maestro.client.clientes.PanelClientes;
 import co.mind.management.maestro.client.cuenta.PanelCuenta;
 import co.mind.management.maestro.client.evaluados.PanelEvaluados;
 import co.mind.management.maestro.client.imagenes.PanelImagenes;
 import co.mind.management.maestro.client.procesos.PanelProcesos;
 import co.mind.management.maestro.client.programadores.PanelProgramadores;
 import co.mind.management.maestro.client.pruebas.PanelPruebas;
-import co.mind.management.shared.bo.EvaluadoBO;
-import co.mind.management.shared.bo.ImagenUsuarioBO;
-import co.mind.management.shared.bo.ParticipacionEnProcesoBO;
-import co.mind.management.shared.bo.PreguntaUsuarioBO;
-import co.mind.management.shared.bo.ProcesoUsuarioBO;
-import co.mind.management.shared.bo.PruebaUsuarioBO;
-import co.mind.management.shared.bo.UsuarioBO;
-import co.mind.management.shared.records.ImagenRecord;
-import co.mind.management.shared.records.ParticipacionEnProcesoListGridRecord;
-import co.mind.management.shared.records.PreguntaCategoriaTileRecord;
+import co.mind.management.shared.dto.EvaluadoBO;
+import co.mind.management.shared.dto.ImagenUsuarioBO;
+import co.mind.management.shared.dto.ParticipacionEnProcesoBO;
+import co.mind.management.shared.dto.PermisoBO;
+import co.mind.management.shared.dto.PreguntaUsuarioBO;
+import co.mind.management.shared.dto.ProcesoUsuarioBO;
+import co.mind.management.shared.dto.PruebaUsuarioBO;
+import co.mind.management.shared.dto.UsuarioBO;
 import co.mind.management.shared.records.ProcesoRecord;
-import co.mind.management.shared.records.PruebaListGridRecord;
-import co.mind.management.shared.records.UsuarioBasicoListGridRecord;
 
 import com.smartgwt.client.types.Alignment;
 import com.smartgwt.client.types.VerticalAlignment;
 import com.smartgwt.client.widgets.Img;
+import com.smartgwt.client.widgets.StretchImgButton;
 import com.smartgwt.client.widgets.events.ClickEvent;
 import com.smartgwt.client.widgets.layout.HLayout;
 import com.smartgwt.client.widgets.layout.VLayout;
@@ -63,7 +60,7 @@ public class MaestroMainLayout extends VLayout {
 
 		cargarLayouts();
 
-		Img imagenLogo = new Img("insumos/navegador/logo.png");
+		Img imagenLogo = new Img("insumos/navegador/logo.png", 62, 19);
 		ToolStrip menuBarUsuarioBasico = new ToolStrip();
 
 		Menu menuUsuario = new Menu();
@@ -91,10 +88,10 @@ public class MaestroMainLayout extends VLayout {
 				usuario.getNombres() + " " + usuario.getApellidos(),
 				menuUsuario);
 
-		ToolStripButton toolStripButtonProcesosEvaluacion = new ToolStripButton();
-		toolStripButtonProcesosEvaluacion
-				.setSrc("insumos/navegador/procesos.png");
-		toolStripButtonProcesosEvaluacion
+		ToolStripButton toolStripButtonProcesos = new ToolStripButton();
+		toolStripButtonProcesos.setIcon("insumos/navegador/procesos.png");
+		toolStripButtonProcesos.setTooltip("Procesos");
+		toolStripButtonProcesos
 				.addClickHandler(new com.smartgwt.client.widgets.events.ClickHandler() {
 
 					@Override
@@ -104,7 +101,9 @@ public class MaestroMainLayout extends VLayout {
 					}
 				});
 
-		ToolStripButton toolStripButtonTemas = new ToolStripButton("Pruebas");
+		ToolStripButton toolStripButtonTemas = new ToolStripButton();
+		toolStripButtonTemas.setIcon("insumos/navegador/temas.png");
+		toolStripButtonTemas.setTooltip("Pruebas");
 		toolStripButtonTemas
 				.addClickHandler(new com.smartgwt.client.widgets.events.ClickHandler() {
 
@@ -114,8 +113,9 @@ public class MaestroMainLayout extends VLayout {
 						cargarLayoutTemas();
 					}
 				});
-		ToolStripButton toolStripButtonEvaluados = new ToolStripButton(
-				"Evaluados");
+		ToolStripButton toolStripButtonEvaluados = new ToolStripButton();
+		toolStripButtonEvaluados.setIcon("insumos/navegador/evaluados.png");
+		toolStripButtonEvaluados.setTooltip("Evaluados");
 		toolStripButtonEvaluados
 				.addClickHandler(new com.smartgwt.client.widgets.events.ClickHandler() {
 
@@ -125,8 +125,9 @@ public class MaestroMainLayout extends VLayout {
 						cargarLayoutEvaluados();
 					}
 				});
-		ToolStripButton toolStripButtonClientes = new ToolStripButton(
-				"Clientes");
+		ToolStripButton toolStripButtonClientes = new ToolStripButton();
+		toolStripButtonClientes.setIcon("insumos/navegador/evaluados.png");
+		toolStripButtonClientes.setTooltip("Clientes");
 		toolStripButtonClientes
 				.addClickHandler(new com.smartgwt.client.widgets.events.ClickHandler() {
 
@@ -136,8 +137,10 @@ public class MaestroMainLayout extends VLayout {
 						cargarLayoutClientes();
 					}
 				});
-		ToolStripButton toolStripButtonProgramadores = new ToolStripButton(
-				"Programadores");
+		ToolStripButton toolStripButtonProgramadores = new ToolStripButton();
+		toolStripButtonProgramadores
+				.setIcon("insumos/navegador/programadores.png");
+		toolStripButtonProgramadores.setTooltip("Programadores");
 		toolStripButtonProgramadores
 				.addClickHandler(new com.smartgwt.client.widgets.events.ClickHandler() {
 
@@ -147,7 +150,9 @@ public class MaestroMainLayout extends VLayout {
 						cargarLayoutProgramadores();
 					}
 				});
-		ToolStripButton toolStripButtonLaminas = new ToolStripButton("Láminas");
+		ToolStripButton toolStripButtonLaminas = new ToolStripButton();
+		toolStripButtonLaminas.setIcon("insumos/navegador/laminas.png");
+		toolStripButtonLaminas.setTooltip("Imágenes");
 		toolStripButtonLaminas
 				.addClickHandler(new com.smartgwt.client.widgets.events.ClickHandler() {
 
@@ -157,7 +162,9 @@ public class MaestroMainLayout extends VLayout {
 						cargarLayoutImagenes();
 					}
 				});
-		ToolStripButton toolStripButtonHome = new ToolStripButton("Home");
+		ToolStripButton toolStripButtonHome = new ToolStripButton();
+		toolStripButtonHome.setIcon("insumos/navegador/home.png");
+		toolStripButtonHome.setTooltip("Home");
 		toolStripButtonHome
 				.addClickHandler(new com.smartgwt.client.widgets.events.ClickHandler() {
 
@@ -171,7 +178,7 @@ public class MaestroMainLayout extends VLayout {
 		menuBarUsuarioBasico.setWidth100();
 		menuBarUsuarioBasico.addMember(imagenLogo);
 		menuBarUsuarioBasico.addSeparator();
-		menuBarUsuarioBasico.addButton(toolStripButtonProcesosEvaluacion);
+		menuBarUsuarioBasico.addButton(toolStripButtonProcesos);
 		menuBarUsuarioBasico.addButton(toolStripButtonTemas);
 		menuBarUsuarioBasico.addButton(toolStripButtonEvaluados);
 		menuBarUsuarioBasico.addButton(toolStripButtonProgramadores);
@@ -210,7 +217,7 @@ public class MaestroMainLayout extends VLayout {
 		h.setAlign(Alignment.CENTER);
 		h.setAlign(VerticalAlignment.CENTER);
 
-		Img imagenDashboard = new Img("img/dashboard.png", 1024, 600);
+		Img imagenDashboard = new Img("insumos/dashboard-fondo.png", 960, 641);
 		imagenDashboard.setAlign(Alignment.CENTER);
 
 		h.addMember(imagenDashboard);
@@ -358,10 +365,20 @@ public class MaestroMainLayout extends VLayout {
 	public void actualizarPruebas(List<PruebaUsuarioBO> result) {
 		panelPruebas.actualizarPruebas(result);
 		panelVerProcesos.actualizarListaPruebas(result);
+		panelClientes.actualizarPruebas(result);
 	}
 
 	public void actualizarTemasProceso(List<PruebaUsuarioBO> result) {
 		panelVerProcesos.actualizarTemasProceso(result);
+	}
+
+	public void actualizarListaPermisos(List<PermisoBO> result) {
+		panelClientes.actualizarListaPermisos(result);
+	}
+
+	public void actualizarClientes(List<UsuarioBO> result) {
+		panelClientes.actualizarClientes(result);
+
 	}
 
 }

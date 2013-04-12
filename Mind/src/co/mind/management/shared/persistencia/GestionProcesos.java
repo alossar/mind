@@ -1,6 +1,7 @@
 package co.mind.management.shared.persistencia;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -9,13 +10,13 @@ import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
 import javax.persistence.Query;
 
-import co.mind.management.shared.bo.ImagenBO;
-import co.mind.management.shared.bo.ImagenUsuarioBO;
-import co.mind.management.shared.bo.ParticipacionEnProcesoBO;
-import co.mind.management.shared.bo.PreguntaUsuarioBO;
-import co.mind.management.shared.bo.ProcesoUsuarioBO;
-import co.mind.management.shared.bo.ProcesoUsuarioHasPruebaUsuarioBO;
-import co.mind.management.shared.bo.PruebaUsuarioBO;
+import co.mind.management.shared.dto.ImagenBO;
+import co.mind.management.shared.dto.ImagenUsuarioBO;
+import co.mind.management.shared.dto.ParticipacionEnProcesoBO;
+import co.mind.management.shared.dto.PreguntaUsuarioBO;
+import co.mind.management.shared.dto.ProcesoUsuarioBO;
+import co.mind.management.shared.dto.ProcesoUsuarioHasPruebaUsuarioBO;
+import co.mind.management.shared.dto.PruebaUsuarioBO;
 import co.mind.management.shared.entidades.ParticipacionEnProceso;
 import co.mind.management.shared.entidades.PreguntaUsuario;
 import co.mind.management.shared.entidades.ProcesoUsuario;
@@ -79,26 +80,12 @@ public class GestionProcesos implements IGestionProcesos {
 			userTransaction.begin();
 			ProcesoUsuario proc = entityManager.find(ProcesoUsuario.class,
 					proceso.getIdentificador());
-			List<ProcesoUsuarioHasPruebaUsuarioBO> procesoUsuarioHasPruebaUsuario = proceso
-					.getProcesoUsuarioHasPruebaUsuario();
-			List<PruebaUsuarioBO> pruebasUsuario = new ArrayList<PruebaUsuarioBO>();
-			for (ProcesoUsuarioHasPruebaUsuarioBO procesoUsuarioHasPruebaUsuarioBO : procesoUsuarioHasPruebaUsuario) {
-				pruebasUsuario.add(procesoUsuarioHasPruebaUsuarioBO
-						.getPruebasUsuario());
-			}
-			List<ProcesoUsuarioHasPruebaUsuario> pruebas = new ArrayList<ProcesoUsuarioHasPruebaUsuario>();
-			for (PruebaUsuarioBO pruebaUsuarioBO : pruebasUsuario) {
-				pruebas.add(entityManager.find(
-						ProcesoUsuarioHasPruebaUsuario.class,
-						pruebaUsuarioBO.getIdentificador()));
-			}
 			proc.setDescripcion(proceso.getDescripcion());
 			proc.setEstadoValoracion(proceso.getEstadoValoracion());
 			proc.setFechaCreacion(proceso.getFechaCreacion());
 			proc.setFechaFinalizacion(proceso.getFechaFinalizacion());
 			proc.setFechaInicio(proceso.getFechaInicio());
 			proc.setNombre(proceso.getNombre());
-			proc.setProcesosUsuariosHasPruebasUsuarios(pruebas);
 			proc.setEstadoValoracion(Convencion.ESTADO_SOLICITUD_NO_REALIZADA);
 			entityManager.merge(proc);
 			entityManager.flush();
@@ -302,6 +289,47 @@ public class GestionProcesos implements IGestionProcesos {
 			}
 		} else {
 			return null;
+		}
+	}
+
+	public int agregarProcesoConPruebas(
+			int identificador,
+			ProcesoUsuarioBO proceso,
+			List<ProcesoUsuarioHasPruebaUsuarioBO> procesoUsuarioHasPruebaUsuario) {
+		EntityTransaction userTransaction = entityManager.getTransaction();
+		try {
+			userTransaction.begin();
+			ProcesoUsuario proc = new ProcesoUsuario();
+			proc.setDescripcion(proceso.getDescripcion());
+			proc.setEstadoValoracion(proceso.getEstadoValoracion());
+			proc.setFechaCreacion(new Date());
+			proc.setFechaFinalizacion(proceso.getFechaFinalizacion());
+			proc.setFechaInicio(proceso.getFechaInicio());
+			proc.setNombre(proceso.getNombre());
+			Usuario user = entityManager.find(Usuario.class, identificador);
+			proc.setUsuario(user);
+			System.out.println("Agregando");
+			if (!entityManager.contains(proc)) {
+				entityManager.persist(proc);
+				entityManager.flush();
+				userTransaction.commit();
+				entityManager.refresh(proc);
+				proceso.setIdentificador(proc.getIdentificador());
+				GestionPruebas gPruebas = new GestionPruebas();
+				for (ProcesoUsuarioHasPruebaUsuarioBO procesoUsuarioHasPruebaUsuarioBO : procesoUsuarioHasPruebaUsuario) {
+					gPruebas.agregarPruebaAProceso(identificador,
+							procesoUsuarioHasPruebaUsuarioBO
+									.getPruebasUsuario(), proceso);
+				}
+				return Convencion.CORRECTO;
+			} else {
+				return Convencion.INCORRECTO;
+			}
+		} catch (Exception exception) {
+			// Exception has occurred, roll-back the transaction.
+			userTransaction.rollback();
+			exception.printStackTrace();
+			return Convencion.INCORRECTO;
 		}
 	}
 

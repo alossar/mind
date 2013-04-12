@@ -7,28 +7,29 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import co.mind.management.maestro.client.servicios.UsuarioMaestroService;
-import co.mind.management.shared.bo.EvaluadoBO;
-import co.mind.management.shared.bo.ImagenBO;
-import co.mind.management.shared.bo.ImagenUsuarioBO;
-import co.mind.management.shared.bo.ParticipacionEnProcesoBO;
-import co.mind.management.shared.bo.PermisoBO;
-import co.mind.management.shared.bo.PreguntaUsuarioBO;
-import co.mind.management.shared.bo.ProcesoUsuarioBO;
-import co.mind.management.shared.bo.PruebaUsuarioBO;
-import co.mind.management.shared.bo.SolicitudCambioPlanBO;
-import co.mind.management.shared.bo.SolicitudEliminacionCuentaBO;
-import co.mind.management.shared.bo.SolicitudIncrementoUsosBO;
-import co.mind.management.shared.bo.SolicitudPlanBO;
-import co.mind.management.shared.bo.SolicitudValoracionBO;
-import co.mind.management.shared.bo.UsuarioAdministradorBO;
-import co.mind.management.shared.bo.UsuarioBO;
-import co.mind.management.shared.bo.UsuarioMaestroBO;
+import co.mind.management.shared.dto.EvaluadoBO;
+import co.mind.management.shared.dto.ImagenBO;
+import co.mind.management.shared.dto.ImagenUsuarioBO;
+import co.mind.management.shared.dto.ParticipacionEnProcesoBO;
+import co.mind.management.shared.dto.PermisoBO;
+import co.mind.management.shared.dto.PreguntaUsuarioBO;
+import co.mind.management.shared.dto.ProcesoUsuarioBO;
+import co.mind.management.shared.dto.PruebaUsuarioBO;
+import co.mind.management.shared.dto.SolicitudCambioPlanBO;
+import co.mind.management.shared.dto.SolicitudEliminacionCuentaBO;
+import co.mind.management.shared.dto.SolicitudIncrementoUsosBO;
+import co.mind.management.shared.dto.SolicitudPlanBO;
+import co.mind.management.shared.dto.SolicitudValoracionBO;
+import co.mind.management.shared.dto.UsuarioAdministradorBO;
+import co.mind.management.shared.dto.UsuarioBO;
+import co.mind.management.shared.dto.UsuarioMaestroBO;
 import co.mind.management.shared.persistencia.GestionEvaluacion;
 import co.mind.management.shared.persistencia.GestionLaminas;
+import co.mind.management.shared.persistencia.GestionPermisos;
 import co.mind.management.shared.persistencia.GestionPreguntas;
 import co.mind.management.shared.persistencia.GestionProcesos;
 import co.mind.management.shared.persistencia.GestionPruebas;
-import co.mind.management.shared.persistencia.GestionUsuariosAdministradores;
+import co.mind.management.shared.persistencia.GestionClientes;
 import co.mind.management.shared.persistencia.GestionEvaluados;
 import co.mind.management.shared.recursos.Convencion;
 import co.mind.management.shared.recursos.SMTPSender;
@@ -42,22 +43,24 @@ public class UsuarioMaestroServiceImpl extends RemoteServiceServlet implements
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private GestionUsuariosAdministradores gestionUsuariosAdministradores = new GestionUsuariosAdministradores();
+	private GestionClientes gestionUsuariosAdministradores = new GestionClientes();
 	private GestionLaminas gestionLaminas = new GestionLaminas();
 	private GestionPreguntas gestionPreguntas = new GestionPreguntas();
 	private GestionPruebas gestionPruebas = new GestionPruebas();
 	private GestionEvaluados gestionUsuariosBasicos;
 	private GestionProcesos gestionProcesos;
 	private GestionEvaluacion gestionEvaluacion;
+	private GestionPermisos gestionPermisos;
 
 	public UsuarioMaestroServiceImpl() {
-		gestionUsuariosAdministradores = new GestionUsuariosAdministradores();
+		gestionUsuariosAdministradores = new GestionClientes();
 		gestionLaminas = new GestionLaminas();
 		gestionPreguntas = new GestionPreguntas();
 		gestionPruebas = new GestionPruebas();
 		gestionUsuariosBasicos = new GestionEvaluados();
 		gestionProcesos = new GestionProcesos();
 		gestionEvaluacion = new GestionEvaluacion();
+		gestionPermisos = new GestionPermisos();
 	}
 
 	@Override
@@ -488,5 +491,80 @@ public class UsuarioMaestroServiceImpl extends RemoteServiceServlet implements
 
 		}
 		return Convencion.CORRECTO;
+	}
+
+	@Override
+	public List<PermisoBO> consultarPermisos() {
+		Object result = gestionPermisos.listarPermisos();
+		if (result != null) {
+			return (List<PermisoBO>) result;
+		}
+		return null;
+	}
+
+	@Override
+	public int agregarCuenta(UsuarioBO usuarioMaestro, UsuarioBO usuario,
+			List<PruebaUsuarioBO> pruebas) {
+		return gestionUsuariosAdministradores.agregarUsuarioAdministrador(
+				usuarioMaestro.getIdentificador(),
+				(UsuarioAdministradorBO) usuario, pruebas);
+
+	}
+
+	@Override
+	public int editarPregunta(UsuarioBO usuarioMaestro, PreguntaUsuarioBO bo,
+			PruebaUsuarioBO prueba) {
+		bo.setPruebaUsuario(prueba);
+		return gestionPreguntas.editarPreguntaUsuarioAdministrador(
+				usuarioMaestro.getIdentificador(), bo);
+
+	}
+
+	@Override
+	public int duplicarProceso(UsuarioBO usuarioMaestro,
+			ProcesoUsuarioBO proceso) {
+		proceso = gestionProcesos.consultarProcesoUsuarioAdministrador(
+				usuarioMaestro.getIdentificador(), proceso.getIdentificador());
+		return gestionProcesos.agregarProcesoConPruebas(
+				usuarioMaestro.getIdentificador(), proceso,
+				proceso.getProcesoUsuarioHasPruebaUsuario());
+
+	}
+
+	@Override
+	public int editarProceso(UsuarioBO usuarioMaestro, ProcesoUsuarioBO proceso) {
+		return gestionProcesos.editarProcesoUsuarioAdministrador(
+				usuarioMaestro.getIdentificador(), proceso);
+
+	}
+
+	@Override
+	public int editarPrueba(UsuarioBO usuarioMaestro, PruebaUsuarioBO prueba) {
+		return gestionPruebas.editarPruebaUsuarioAdministrador(
+				usuarioMaestro.getIdentificador(), prueba);
+
+	}
+
+	@Override
+	public int duplicarPrueba(UsuarioBO usuarioMaestro, PruebaUsuarioBO prueba) {
+		List<PreguntaUsuarioBO> preguntas = gestionPruebas
+				.listarPreguntasPrueba(usuarioMaestro.getIdentificador(),
+						prueba.getIdentificador());
+		return gestionPruebas.agregarPruebaUsuarioAdministrador(
+				usuarioMaestro.getIdentificador(), prueba, preguntas);
+
+	}
+
+	@Override
+	public int editarCliente(UsuarioBO usuarioMaestro,
+			UsuarioAdministradorBO cliente) {
+		return gestionUsuariosAdministradores
+				.editarUsuarioAdministrador(cliente);
+	}
+
+	@Override
+	public int editarEvaluado(UsuarioBO usuarioMaestro, EvaluadoBO evaluado) {
+		return gestionUsuariosBasicos.editarUsuarioBasico(
+				usuarioMaestro.getIdentificador(), evaluado);
 	}
 }

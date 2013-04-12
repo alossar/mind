@@ -2,9 +2,9 @@ package co.mind.management.maestro.client.pruebas;
 
 import java.util.List;
 
-import co.mind.management.shared.bo.ImagenUsuarioBO;
-import co.mind.management.shared.bo.PreguntaUsuarioBO;
-import co.mind.management.shared.bo.PruebaUsuarioBO;
+import co.mind.management.shared.dto.ImagenUsuarioBO;
+import co.mind.management.shared.dto.PreguntaUsuarioBO;
+import co.mind.management.shared.dto.PruebaUsuarioBO;
 import co.mind.management.shared.records.ImagenRecord;
 import co.mind.management.shared.records.PreguntaCategoriaTileRecord;
 import co.mind.management.shared.records.PruebaListGridRecord;
