@@ -11,4 +11,7 @@ public interface LoginServiceAsync {
 
 	void loguearseSesionServidor(AsyncCallback<UsuarioBO> callback);
 
+	void enviarNuevaContrasena(String correo,
+			AsyncCallback<Integer> asyncCallback);
+
 }

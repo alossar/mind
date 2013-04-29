@@ -30,7 +30,6 @@ public class PreguntaUsuario implements Serializable {
 	@Column(name="posicion_pregunta_y")
 	private int posicionPreguntaY;
 
-	@Column(name="Pregunta")
 	private String pregunta;
 
 	@Column(name="TiempoMaximo")

@@ -11,7 +11,6 @@ import co.mind.management.shared.dto.EvaluadoBO;
 import co.mind.management.shared.dto.ImagenBO;
 import co.mind.management.shared.dto.ImagenUsuarioBO;
 import co.mind.management.shared.dto.ParticipacionEnProcesoBO;
-import co.mind.management.shared.dto.PermisoBO;
 import co.mind.management.shared.dto.PreguntaUsuarioBO;
 import co.mind.management.shared.dto.ProcesoUsuarioBO;
 import co.mind.management.shared.dto.PruebaUsuarioBO;
@@ -20,17 +19,20 @@ import co.mind.management.shared.dto.SolicitudEliminacionCuentaBO;
 import co.mind.management.shared.dto.SolicitudIncrementoUsosBO;
 import co.mind.management.shared.dto.SolicitudPlanBO;
 import co.mind.management.shared.dto.SolicitudValoracionBO;
+import co.mind.management.shared.dto.UsoBO;
 import co.mind.management.shared.dto.UsuarioAdministradorBO;
 import co.mind.management.shared.dto.UsuarioBO;
 import co.mind.management.shared.dto.UsuarioMaestroBO;
+import co.mind.management.shared.dto.UsuarioProgramadorBO;
+import co.mind.management.shared.persistencia.GestionClientes;
 import co.mind.management.shared.persistencia.GestionEvaluacion;
+import co.mind.management.shared.persistencia.GestionEvaluados;
 import co.mind.management.shared.persistencia.GestionLaminas;
-import co.mind.management.shared.persistencia.GestionPermisos;
 import co.mind.management.shared.persistencia.GestionPreguntas;
 import co.mind.management.shared.persistencia.GestionProcesos;
 import co.mind.management.shared.persistencia.GestionPruebas;
-import co.mind.management.shared.persistencia.GestionClientes;
-import co.mind.management.shared.persistencia.GestionEvaluados;
+import co.mind.management.shared.persistencia.GestionUsos;
+import co.mind.management.shared.persistencia.GestionUsuariosProgramadores;
 import co.mind.management.shared.recursos.Convencion;
 import co.mind.management.shared.recursos.SMTPSender;
 
@@ -50,7 +52,8 @@ public class UsuarioMaestroServiceImpl extends RemoteServiceServlet implements
 	private GestionEvaluados gestionUsuariosBasicos;
 	private GestionProcesos gestionProcesos;
 	private GestionEvaluacion gestionEvaluacion;
-	private GestionPermisos gestionPermisos;
+	private GestionUsos gestionUsos;
+	private GestionUsuariosProgramadores gestionProgramadores;
 
 	public UsuarioMaestroServiceImpl() {
 		gestionUsuariosAdministradores = new GestionClientes();
@@ -60,7 +63,8 @@ public class UsuarioMaestroServiceImpl extends RemoteServiceServlet implements
 		gestionUsuariosBasicos = new GestionEvaluados();
 		gestionProcesos = new GestionProcesos();
 		gestionEvaluacion = new GestionEvaluacion();
-		gestionPermisos = new GestionPermisos();
+		gestionUsos = new GestionUsos();
+		gestionProgramadores = new GestionUsuariosProgramadores();
 	}
 
 	@Override
@@ -93,8 +97,7 @@ public class UsuarioMaestroServiceImpl extends RemoteServiceServlet implements
 
 	@Override
 	public int crearCuenta(UsuarioBO usuarioAdministrador,
-			SolicitudPlanBO solicitud, PermisoBO plan, Date fechaFinalizacion,
-			int usosTotal) {
+			SolicitudPlanBO solicitud, Date fechaFinalizacion, int usosTotal) {
 
 		return 1;
 	}
@@ -108,7 +111,8 @@ public class UsuarioMaestroServiceImpl extends RemoteServiceServlet implements
 					Convencion.ESTADO_CUENTA_INACTIVA)) {
 				usuario.setEstado_Cuenta(Convencion.ESTADO_CUENTA_ACTIVA);
 				int resultado = gestionUsuariosAdministradores
-						.editarUsuarioAdministrador((UsuarioAdministradorBO) usuario);
+						.cambiarEstadoCUenta((UsuarioAdministradorBO) usuario,
+								Convencion.ESTADO_CUENTA_ACTIVA);
 				return resultado;
 			} else {
 				return 1;
@@ -127,7 +131,8 @@ public class UsuarioMaestroServiceImpl extends RemoteServiceServlet implements
 					Convencion.ESTADO_CUENTA_ACTIVA)) {
 				usuario.setEstado_Cuenta(Convencion.ESTADO_CUENTA_INACTIVA);
 				int resultado = gestionUsuariosAdministradores
-						.editarUsuarioAdministrador((UsuarioAdministradorBO) usuario);
+						.cambiarEstadoCUenta((UsuarioAdministradorBO) usuario,
+								Convencion.ESTADO_CUENTA_INACTIVA);
 				return resultado;
 			} else {
 				return 1;
@@ -139,34 +144,15 @@ public class UsuarioMaestroServiceImpl extends RemoteServiceServlet implements
 
 	@Override
 	public int eliminarCuenta(int usuarioAdministradorID) {
-		// TODO Auto-generated method stub
-		return 0;
+		return gestionUsuariosAdministradores
+				.eliminarUsuarioAdministrador(usuarioAdministradorID);
 	}
 
 	@Override
 	public int eliminarCuenta(int usuarioAdministradorID,
 			SolicitudEliminacionCuentaBO solicitud) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public int agregarImagenPredeterminada(ImagenBO imagen) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public int agregarImagenPredeterminadaAUsuarios(
-			List<UsuarioBO> usuariosAdministradores, ImagenBO imagen) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public int agregarPlan(PermisoBO plan) {
-		// TODO Auto-generated method stub
-		return 0;
+		return gestionUsuariosAdministradores
+				.eliminarUsuarioAdministrador(usuarioAdministradorID);
 	}
 
 	@Override
@@ -255,13 +241,6 @@ public class UsuarioMaestroServiceImpl extends RemoteServiceServlet implements
 	}
 
 	@Override
-	public List<PermisoBO> consultarPlanesUsuarioAdministrador(
-			int usuarioAdministradorID) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public List<UsuarioBO> consultarUsuariosAdministradores() {
 		Object lista = gestionUsuariosAdministradores
 				.listarUsuariosAdministradores();
@@ -287,14 +266,20 @@ public class UsuarioMaestroServiceImpl extends RemoteServiceServlet implements
 	public int agregarParticipacionDeUsuarioBasicoAProceso(
 			UsuarioBO usuarioAdministrador, ProcesoUsuarioBO proceso,
 			List<ParticipacionEnProcesoBO> evaluados) {
-		for (ParticipacionEnProcesoBO participacionEnProcesoBO : evaluados) {
-			gestionEvaluacion.agregarParticipacionEnProceso(
-					usuarioAdministrador.getIdentificador(),
-					participacionEnProcesoBO.getUsuarioBasico()
-							.getIdentificador(), proceso.getIdentificador(),
-					participacionEnProcesoBO);
+		if (gestionUsos.consultarCapacidadUsos(
+				usuarioAdministrador.getIdentificador(), evaluados.size())) {
+			for (ParticipacionEnProcesoBO participacionEnProcesoBO : evaluados) {
+				gestionEvaluacion.agregarParticipacionEnProceso(
+						usuarioAdministrador.getIdentificador(),
+						participacionEnProcesoBO.getUsuarioBasico()
+								.getIdentificador(),
+						proceso.getIdentificador(), participacionEnProcesoBO);
+			}
+			return Convencion.CORRECTO;
+		} else {
+			return Convencion.INCORRECTO;
 		}
-		return 0;
+
 	}
 
 	@Override
@@ -407,7 +392,7 @@ public class UsuarioMaestroServiceImpl extends RemoteServiceServlet implements
 	}
 
 	@Override
-	public int eliminarPregunta(UsuarioMaestroBO usuarioMaestro,
+	public int eliminarPregunta(UsuarioBO usuarioMaestro,
 			PreguntaUsuarioBO preguntaTemp) {
 		return gestionPreguntas.eliminarPreguntaUsuarioAdministrador(
 				usuarioMaestro.getIdentificador(),
@@ -415,7 +400,7 @@ public class UsuarioMaestroServiceImpl extends RemoteServiceServlet implements
 	}
 
 	@Override
-	public int eliminarPrueba(UsuarioMaestroBO usuarioMaestro,
+	public int eliminarPrueba(UsuarioBO usuarioMaestro,
 			PruebaUsuarioBO pruebaTemp) {
 		return gestionPruebas.eliminarPruebaUsuarioAdministrador(
 				usuarioMaestro.getIdentificador(),
@@ -423,7 +408,7 @@ public class UsuarioMaestroServiceImpl extends RemoteServiceServlet implements
 	}
 
 	@Override
-	public int eliminarProceso(UsuarioMaestroBO usuarioMaestro,
+	public int eliminarProceso(UsuarioBO usuarioMaestro,
 			ProcesoUsuarioBO procesoTemp) {
 		return gestionProcesos.eliminarProcesoUsuarioAdministrador(
 				usuarioMaestro.getIdentificador(),
@@ -467,7 +452,7 @@ public class UsuarioMaestroServiceImpl extends RemoteServiceServlet implements
 
 	@Override
 	public int enviarNotificacionesParticipacionesProceso(
-			UsuarioMaestroBO usuarioMaestro, List<ParticipacionEnProcesoBO> p) {
+			UsuarioBO usuarioMaestro, List<ParticipacionEnProcesoBO> p) {
 		for (ParticipacionEnProcesoBO participacionEnProcesoBO : p) {
 			ParticipacionEnProcesoBO parti = gestionEvaluacion
 					.consultarParticipacionAProceso(usuarioMaestro
@@ -494,20 +479,11 @@ public class UsuarioMaestroServiceImpl extends RemoteServiceServlet implements
 	}
 
 	@Override
-	public List<PermisoBO> consultarPermisos() {
-		Object result = gestionPermisos.listarPermisos();
-		if (result != null) {
-			return (List<PermisoBO>) result;
-		}
-		return null;
-	}
-
-	@Override
 	public int agregarCuenta(UsuarioBO usuarioMaestro, UsuarioBO usuario,
-			List<PruebaUsuarioBO> pruebas) {
+			UsoBO usos, List<PruebaUsuarioBO> pruebas) {
 		return gestionUsuariosAdministradores.agregarUsuarioAdministrador(
 				usuarioMaestro.getIdentificador(),
-				(UsuarioAdministradorBO) usuario, pruebas);
+				(UsuarioAdministradorBO) usuario, usos, pruebas);
 
 	}
 
@@ -523,11 +499,13 @@ public class UsuarioMaestroServiceImpl extends RemoteServiceServlet implements
 	@Override
 	public int duplicarProceso(UsuarioBO usuarioMaestro,
 			ProcesoUsuarioBO proceso) {
-		proceso = gestionProcesos.consultarProcesoUsuarioAdministrador(
-				usuarioMaestro.getIdentificador(), proceso.getIdentificador());
+		ProcesoUsuarioBO procesoADuplicar = gestionProcesos
+				.consultarProcesoUsuarioAdministrador(
+						usuarioMaestro.getIdentificador(),
+						proceso.getIdentificador());
 		return gestionProcesos.agregarProcesoConPruebas(
 				usuarioMaestro.getIdentificador(), proceso,
-				proceso.getProcesoUsuarioHasPruebaUsuario());
+				procesoADuplicar.getProcesoUsuarioHasPruebaUsuario());
 
 	}
 
@@ -566,5 +544,158 @@ public class UsuarioMaestroServiceImpl extends RemoteServiceServlet implements
 	public int editarEvaluado(UsuarioBO usuarioMaestro, EvaluadoBO evaluado) {
 		return gestionUsuariosBasicos.editarUsuarioBasico(
 				usuarioMaestro.getIdentificador(), evaluado);
+	}
+
+	@Override
+	public List<UsoBO> consultarUsos(UsuarioBO cliente) {
+		if (cliente != null) {
+			Object result = gestionUsos.listarUsos(cliente.getIdentificador());
+			if (result != null) {
+				return (List<UsoBO>) result;
+			}
+		}
+		return null;
+	}
+
+	@Override
+	public List<ProcesoUsuarioBO> consultarProcesosUsuarioAdministradorNombre(
+			int identificador, String keyword) {
+		Object result = gestionProcesos.listarProcesosPorNombreParcial(
+				identificador, keyword);
+		if (result != null) {
+			return (List<ProcesoUsuarioBO>) result;
+		}
+		return null;
+	}
+
+	@Override
+	public List<PruebaUsuarioBO> consultarPruebasUsuarioAdministradorNombre(
+			int identificador, String keyword) {
+		Object result = gestionPruebas.listarPruebasPorNombreParcial(
+				identificador, keyword);
+		if (result != null) {
+			return (List<PruebaUsuarioBO>) result;
+		}
+		return null;
+	}
+
+	@Override
+	public List<EvaluadoBO> consultarEvaluadoPorCedula(int identificador,
+			int valor) {
+		Object result = gestionUsuariosBasicos.listarEvaluadosPorCedula(
+				identificador, valor);
+		if (result != null) {
+			return (List<EvaluadoBO>) result;
+		}
+		return null;
+	}
+
+	@Override
+	public List<EvaluadoBO> consultarEvaluadoPorCorreo(int identificador,
+			String keyword) {
+		Object result = gestionUsuariosBasicos.listarEvaluadosPorCorreo(
+				identificador, keyword);
+		if (result != null) {
+			return (List<EvaluadoBO>) result;
+		}
+		return null;
+	}
+
+	@Override
+	public List<UsuarioBO> consultarClientePorCedula(int identificador,
+			int valor) {
+		Object result = gestionUsuariosAdministradores
+				.listarClientesPorCedulaParcial(valor);
+		if (result != null) {
+			return (List<UsuarioBO>) result;
+		}
+		return null;
+
+	}
+
+	@Override
+	public List<UsuarioBO> consultarClientePorEmpresa(int identificador,
+			String keyword) {
+		Object result = gestionUsuariosAdministradores
+				.listarClientesPorEmpresaParcial(keyword);
+		if (result != null) {
+			return (List<UsuarioBO>) result;
+		}
+		return null;
+	}
+
+	@Override
+	public void generarReporteUsos(UsuarioBO usuarioSeleccionado,
+			Date dateInicio, Date dateFinal) {
+
+		HttpServletRequest httpServletRequest = this.getThreadLocalRequest();
+		HttpSession session = httpServletRequest.getSession();
+		session.setAttribute("usuarioUsos", usuarioSeleccionado);
+		session.setAttribute("inicioUsos", dateInicio);
+		session.setAttribute("finalUsos", dateFinal);
+
+	}
+
+	@Override
+	public int eliminarParticipacionesDeProceso(UsuarioBO usuarioMaestro,
+			ProcesoUsuarioBO procesoActual, List<ParticipacionEnProcesoBO> bo) {
+		for (ParticipacionEnProcesoBO participacionEnProcesoBO : bo) {
+			gestionEvaluacion.eliminarParticipacionEnProceso(usuarioMaestro
+					.getIdentificador(), participacionEnProcesoBO
+					.getUsuarioBasico().getIdentificador(), procesoActual
+					.getIdentificador(), participacionEnProcesoBO
+					.getIdentificador());
+		}
+		return Convencion.CORRECTO;
+	}
+
+	@Override
+	public int eliminarPruebasDeProceso(UsuarioBO usuarioMaestro,
+			ProcesoUsuarioBO procesoActual, List<PruebaUsuarioBO> bo) {
+		return 0;
+	}
+
+	@Override
+	public int agregarProgramador(UsuarioBO usuarioMaestro,
+			UsuarioProgramadorBO programador) {
+		return gestionProgramadores.agregarUsuarioProgramador(
+				usuarioMaestro.getIdentificador(), programador);
+	}
+
+	@Override
+	public List<UsuarioProgramadorBO> consultarProgramadores(int identificador) {
+		Object result = gestionProgramadores
+				.listarUsuariosProgramadores(identificador);
+		if (result != null) {
+			return (List<UsuarioProgramadorBO>) result;
+		}
+		return null;
+	}
+
+	@Override
+	public int agregarUsos(UsuarioBO usuarioSeleccionado, int usos) {
+		UsoBO uso = new UsoBO();
+		uso.setUsosAsignados(usos);
+		uso.setFechaAsignacion(new Date());
+		return gestionUsos.agregarUso(usuarioSeleccionado.getIdentificador(),
+				uso);
+
+	}
+
+	@Override
+	public int cambiarContrasena(UsuarioBO usuarioMaestro, String pass) {
+		return gestionUsuariosAdministradores.cambiarContrasena(usuarioMaestro,
+				pass);
+
+	}
+
+	@Override
+	public List<ProcesoUsuarioBO> consultarProcesosParaRevisar() {
+
+		Object result = gestionProcesos.listarProcesosParaRevisar();
+		if (result != null) {
+			return (List<ProcesoUsuarioBO>) result;
+		}
+		return null;
 	}
 }

@@ -5,89 +5,90 @@ import javax.persistence.*;
 import java.util.Date;
 import java.util.List;
 
+
 /**
  * The persistent class for the usuarios database table.
  * 
  */
 @Entity
-@Table(name = "usuarios")
+@Table(name="usuarios")
 public class Usuario implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
 	private int identificador;
 
-	@Column(name = "Apellidos")
+	@Column(name="Apellidos")
 	private String apellidos;
 
-	@Column(name = "Cargo")
+	@Column(name="Cargo")
 	private String cargo;
 
-	@Column(name = "Ciudad")
+	@Column(name="Ciudad")
 	private String ciudad;
 
-	@Column(name = "Contrasena")
+	@Column(name="Contrasena")
 	private String contrasena;
 
-	@Column(name = "Correo_Electronico")
+	@Column(name="Correo_Electronico")
 	private String correo_Electronico;
 
-	@Column(name = "Empresa")
+	@Column(name="Empresa")
 	private String empresa;
 
-	@Column(name = "Estado_Cuenta")
+	@Column(name="Estado_Cuenta")
 	private String estado_Cuenta;
 
 	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name = "Fecha_Creacion")
+	@Column(name="Fecha_Creacion")
 	private Date fecha_Creacion;
 
-	@Column(name = "Nombres")
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name="fecha_vencimiento")
+	private Date fechaVencimiento;
+
+	@Column(name="Nombres")
 	private String nombres;
 
-	@Column(name = "Pais")
+	@Column(name="Pais")
 	private String pais;
 
-	@Column(name = "Telefono")
+	@Column(name="Telefono")
 	private String telefono;
 
-	@Column(name = "Telefono_Celular")
+	@Column(name="Telefono_Celular")
 	private String telefono_Celular;
 
-	@Column(name = "Tipo")
+	@Column(name="Tipo")
 	private String tipo;
 
-	@Column(name = "Usos")
-	private int usos;
-
-	// bi-directional many-to-one association to Evaluado
-	@OneToMany(mappedBy = "usuario")
+	//bi-directional many-to-one association to Evaluado
+	@OneToMany(mappedBy="usuario")
 	private List<Evaluado> evaluados;
 
-	// bi-directional many-to-one association to ImagenUsuario
-	@OneToMany(mappedBy = "usuario")
+	//bi-directional many-to-one association to ImagenUsuario
+	@OneToMany(mappedBy="usuario")
 	private List<ImagenUsuario> imagenesUsuarios;
 
-	// bi-directional many-to-one association to ProcesoUsuario
-	@OneToMany(mappedBy = "usuario")
+	//bi-directional many-to-one association to ProcesoUsuario
+	@OneToMany(mappedBy="usuario")
 	private List<ProcesoUsuario> procesosUsuarios;
 
-	// bi-directional many-to-one association to PruebaUsuario
-	@OneToMany(mappedBy = "usuario")
+	//bi-directional many-to-one association to PruebaUsuario
+	@OneToMany(mappedBy="usuario")
 	private List<PruebaUsuario> pruebasUsuarios;
 
-	// bi-directional many-to-one association to Permiso
-	@ManyToOne
-	@JoinColumn(name = "permisos_identificador")
-	private Permiso permiso;
+	//bi-directional many-to-one association to UsoUsuario
+	@OneToMany(mappedBy="usuario")
+	private List<UsoUsuario> usosUsuarios;
 
-	// bi-directional many-to-one association to Usuario
+	//bi-directional many-to-one association to Usuario
 	@ManyToOne
-	@JoinColumn(name = "usuarios_identificador")
+	@JoinColumn(name="usuarios_identificador")
 	private Usuario usuario;
 
-	// bi-directional many-to-one association to Usuario
-	@OneToMany(mappedBy = "usuario")
+	//bi-directional many-to-one association to Usuario
+	@OneToMany(mappedBy="usuario")
 	private List<Usuario> usuarios;
 
 	public Usuario() {
@@ -165,6 +166,14 @@ public class Usuario implements Serializable {
 		this.fecha_Creacion = fecha_Creacion;
 	}
 
+	public Date getFechaVencimiento() {
+		return this.fechaVencimiento;
+	}
+
+	public void setFechaVencimiento(Date fechaVencimiento) {
+		this.fechaVencimiento = fechaVencimiento;
+	}
+
 	public String getNombres() {
 		return this.nombres;
 	}
@@ -203,14 +212,6 @@ public class Usuario implements Serializable {
 
 	public void setTipo(String tipo) {
 		this.tipo = tipo;
-	}
-
-	public int getUsos() {
-		return this.usos;
-	}
-
-	public void setUsos(int usos) {
-		this.usos = usos;
 	}
 
 	public List<Evaluado> getEvaluados() {
@@ -301,12 +302,26 @@ public class Usuario implements Serializable {
 		return pruebasUsuario;
 	}
 
-	public Permiso getPermiso() {
-		return this.permiso;
+	public List<UsoUsuario> getUsosUsuarios() {
+		return this.usosUsuarios;
 	}
 
-	public void setPermiso(Permiso permiso) {
-		this.permiso = permiso;
+	public void setUsosUsuarios(List<UsoUsuario> usosUsuarios) {
+		this.usosUsuarios = usosUsuarios;
+	}
+
+	public UsoUsuario addUsosUsuario(UsoUsuario usosUsuario) {
+		getUsosUsuarios().add(usosUsuario);
+		usosUsuario.setUsuario(this);
+
+		return usosUsuario;
+	}
+
+	public UsoUsuario removeUsosUsuario(UsoUsuario usosUsuario) {
+		getUsosUsuarios().remove(usosUsuario);
+		usosUsuario.setUsuario(null);
+
+		return usosUsuario;
 	}
 
 	public Usuario getUsuario() {

@@ -4,16 +4,19 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.poi.ss.usermodel.HorizontalAlignment;
+
 import co.mind.management.maestro.client.Maestro;
 import co.mind.management.maestro.client.PanelEncabezadoDialogo;
-import co.mind.management.shared.datasources.ProcesosDataSource;
 import co.mind.management.shared.dto.EvaluadoBO;
 import co.mind.management.shared.dto.ParticipacionEnProcesoBO;
 import co.mind.management.shared.dto.ProcesoUsuarioBO;
 import co.mind.management.shared.dto.PruebaUsuarioBO;
+import co.mind.management.shared.dto.UsuarioBO;
 import co.mind.management.shared.records.ProcesoRecord;
 import co.mind.management.shared.recursos.Convencion;
 
+import com.smartgwt.client.types.Alignment;
 import com.smartgwt.client.types.ListGridEditEvent;
 import com.smartgwt.client.types.SelectionStyle;
 import com.smartgwt.client.types.VerticalAlignment;
@@ -27,9 +30,17 @@ import com.smartgwt.client.widgets.form.fields.ButtonItem;
 import com.smartgwt.client.widgets.form.fields.CheckboxItem;
 import com.smartgwt.client.widgets.form.fields.DateItem;
 import com.smartgwt.client.widgets.form.fields.FormItem;
+import com.smartgwt.client.widgets.form.fields.FormItemIcon;
+import com.smartgwt.client.widgets.form.fields.PickerIcon;
 import com.smartgwt.client.widgets.form.fields.TextAreaItem;
 import com.smartgwt.client.widgets.form.fields.TextItem;
+import com.smartgwt.client.widgets.form.fields.events.ChangedEvent;
+import com.smartgwt.client.widgets.form.fields.events.ChangedHandler;
 import com.smartgwt.client.widgets.form.fields.events.ClickEvent;
+import com.smartgwt.client.widgets.form.fields.events.IconClickEvent;
+import com.smartgwt.client.widgets.form.fields.events.IconClickHandler;
+import com.smartgwt.client.widgets.form.fields.events.KeyPressEvent;
+import com.smartgwt.client.widgets.form.fields.events.KeyPressHandler;
 import com.smartgwt.client.widgets.grid.ListGrid;
 import com.smartgwt.client.widgets.grid.ListGridField;
 import com.smartgwt.client.widgets.grid.ListGridRecord;
@@ -37,10 +48,6 @@ import com.smartgwt.client.widgets.grid.events.CellDoubleClickEvent;
 import com.smartgwt.client.widgets.grid.events.CellDoubleClickHandler;
 import com.smartgwt.client.widgets.grid.events.EditCompleteEvent;
 import com.smartgwt.client.widgets.grid.events.EditCompleteHandler;
-import com.smartgwt.client.widgets.grid.events.EditorEnterEvent;
-import com.smartgwt.client.widgets.grid.events.EditorEnterHandler;
-import com.smartgwt.client.widgets.grid.events.EditorExitEvent;
-import com.smartgwt.client.widgets.grid.events.EditorExitHandler;
 import com.smartgwt.client.widgets.grid.events.RowContextClickEvent;
 import com.smartgwt.client.widgets.grid.events.RowContextClickHandler;
 import com.smartgwt.client.widgets.layout.HLayout;
@@ -65,20 +72,23 @@ public class PanelContenidoProcesos extends HLayout {
 	private CheckboxItem checkBoxHabilitarFechaFinalizacion;
 	private List<PruebaUsuarioBO> listaPruebas;
 	private List<EvaluadoBO> listaEvaluados;
-	private ProcesosDataSource procesosDataSource;
+	private TextItem searchItem;
+	private DynamicForm formBusqueda;
+	private UsuarioBO usuario;
 
-	public PanelContenidoProcesos() {
-		setWidth("100%");
-		setHeight("80%%");
+	public PanelContenidoProcesos(UsuarioBO usuarioS) {
+		this.usuario = usuarioS;
+		setWidth("90%");
+		setHeight("80%");
 		setBackgroundColor("white");
 		setPadding(15);
 
 		listGridProcesos = new ListGrid();
 		listGridProcesos.setWidth100();
 		listGridProcesos.setHeight100();
-		procesosDataSource = new ProcesosDataSource("procesos");
-		listGridProcesos.setDataSource(procesosDataSource);
 		listGridProcesos.setShowAllRecords(true);
+		listGridProcesos.setWrapCells(true);  
+		listGridProcesos.setFixedRecordHeights(false); 
 		listGridProcesos.setSelectionType(SelectionStyle.SINGLE);
 		listGridProcesos
 				.setEmptyMessage("No se encuentran procesos en su cuenta.");
@@ -93,15 +103,17 @@ public class PanelContenidoProcesos extends HLayout {
 				"Preguntas");
 		preguntasField.setCanEdit(false);
 		ListGridField tiempoField = new ListGridField("tiempoProceso",
-				"Tiempo (Segundos)");
+				"Tiempo (Minutos)");
 		tiempoField.setCanEdit(false);
-		listGridProcesos.setFields(nombreField, descripcionField, fechaField,
-				preguntasField, tiempoField);
+
+		ListGridField estadoProceso = new ListGridField("estadoProceso",
+				"Estado del Proceso");
+		estadoProceso.setCanEdit(false);
+		listGridProcesos.setFields(nombreField, descripcionField,
+				estadoProceso, fechaField, preguntasField, tiempoField);
 		listGridProcesos.setCanEdit(true);
 		listGridProcesos.setEditEvent(ListGridEditEvent.NONE);
 		listGridProcesos.setCanResizeFields(true);
-		listGridProcesos.setShowFilterEditor(true);
-		listGridProcesos.setAutoFetchData(true);
 
 		listGridProcesos
 				.addCellDoubleClickHandler(new CellDoubleClickHandler() {
@@ -113,7 +125,7 @@ public class PanelContenidoProcesos extends HLayout {
 						if (p != null) {
 							procesoSeleccionado = ProcesoRecord.getBO(p);
 							Maestro.obtenerParticipantesProceso(procesoSeleccionado);
-							Maestro.obtenerTemasProceso(procesoSeleccionado);
+							Maestro.obtenerPruebasProceso(procesoSeleccionado);
 							panelProcesoEspecifico.deseleccionarTodo();
 							panelProcesoEspecifico
 									.actualizarDatosProceso(procesoSeleccionado);
@@ -122,6 +134,7 @@ public class PanelContenidoProcesos extends HLayout {
 							botonNuevoBasico.setVisible(false);
 							botonEliminarBasico.setVisible(false);
 							botonDuplicarBasico.setVisible(false);
+							formBusqueda.setVisible(false);
 						}
 					}
 				});
@@ -148,7 +161,7 @@ public class PanelContenidoProcesos extends HLayout {
 			}
 		});
 
-		panelProcesoEspecifico = new PanelProcesoEspecifico();
+		panelProcesoEspecifico = new PanelProcesoEspecifico(usuario);
 		panelProcesoEspecifico.setHeight100();
 		panelProcesoEspecifico.setWidth100();
 		panelProcesoEspecifico.setVisible(false);
@@ -209,12 +222,75 @@ public class PanelContenidoProcesos extends HLayout {
 					@Override
 					public void onClick(
 							com.smartgwt.client.widgets.events.ClickEvent event) {
-						ProcesoRecord record = (ProcesoRecord) listGridProcesos
+						final ProcesoRecord record = (ProcesoRecord) listGridProcesos
 								.getSelectedRecord();
 						if (record != null) {
-							ProcesoUsuarioBO categoria = ProcesoRecord
-									.getBO(record);
-							Maestro.duplicarProceso(categoria);
+
+							final Window winModal = new Window();
+
+							PanelEncabezadoDialogo p = new PanelEncabezadoDialogo(
+									"Duplicar Proceso",
+									"Duplique un proceso con sus pruebas sin los evaluados",
+									"img/admin/bot1.png");
+							p.setSize("100%", "70px");
+
+							winModal.setWidth(350);
+							winModal.setHeight(320);
+							winModal.setTitle("Duplicar el Proceso");
+							winModal.setShowMinimizeButton(false);
+							winModal.setIsModal(true);
+							winModal.setShowModalMask(true);
+							winModal.centerInPage();
+							winModal.addCloseClickHandler(new CloseClickHandler() {
+								@Override
+								public void onCloseClick(CloseClickEvent event) {
+									winModal.destroy();
+								}
+							});
+
+							formNuevoProceso = new DynamicForm();
+							formNuevoProceso.setHeight("40%");
+							formNuevoProceso.setWidth100();
+							formNuevoProceso.setPadding(5);
+							formNuevoProceso
+									.setLayoutAlign(VerticalAlignment.BOTTOM);
+
+							textNombreProcesoNuevo = new TextItem();
+							textNombreProcesoNuevo.setTitle("Nombre");
+							textNombreProcesoNuevo.setRequired(true);
+
+							textAreaDescripcionProcesoNuevo = new TextAreaItem();
+							textAreaDescripcionProcesoNuevo
+									.setTitle("Descripci\u00F3n");
+
+							ButtonItem boton = new ButtonItem("Crear");
+							boton.addClickHandler(new com.smartgwt.client.widgets.form.fields.events.ClickHandler() {
+								@Override
+								public void onClick(ClickEvent event) {
+									if (formNuevoProceso.validate()) {
+										String nombre = textNombreProcesoNuevo
+												.getValueAsString();
+										String descripcion = textAreaDescripcionProcesoNuevo
+												.getValueAsString();
+										ProcesoUsuarioBO proceso = ProcesoRecord
+												.getBO(record);
+										proceso.setNombre(nombre);
+										if (descripcion != null) {
+											proceso.setDescripcion(descripcion);
+										}
+										Maestro.duplicarProceso(proceso);
+										winModal.destroy();
+
+									}
+								}
+							});
+
+							formNuevoProceso.setFields(textNombreProcesoNuevo,
+									textAreaDescripcionProcesoNuevo, boton);
+
+							winModal.addItem(p);
+							winModal.addItem(formNuevoProceso);
+							winModal.show();
 						} else {
 							SC.warn("Debe seleccionar el proceso que desea eliminar.");
 						}
@@ -231,10 +307,63 @@ public class PanelContenidoProcesos extends HLayout {
 		menuBarUsuarioBasico.addSeparator();
 		botonRegresar.setVisible(false);
 
+		searchItem = new TextItem("description", "Buscar Proceso");
+		searchItem.addKeyPressHandler(new KeyPressHandler() {
+			public void onKeyPress(KeyPressEvent event) {
+				if ("enter".equalsIgnoreCase(event.getKeyName())) {
+					String keyword = searchItem.getValueAsString();
+					if (keyword != "" && keyword != null) {
+						Maestro.consultarProcesosClave(keyword);
+					} else {
+						Maestro.setListaProcesos();
+					}
+				}
+			}
+		});
+		final PickerIcon findIcon = new PickerIcon(PickerIcon.SEARCH);
+		final PickerIcon cancelIcon = new PickerIcon(PickerIcon.CLEAR);
+		searchItem.setIcons(findIcon, cancelIcon);
+
+		searchItem.addIconClickHandler(new IconClickHandler() {
+			public void onIconClick(IconClickEvent event) {
+				FormItemIcon icon = event.getIcon();
+				if (icon.getSrc().equals(cancelIcon.getSrc())) {
+					searchItem.setValue("");
+					Maestro.setListaProcesos();
+				} else if (icon.getSrc().equals(findIcon.getSrc())) {
+					String keyword = searchItem.getValueAsString();
+					if (keyword != "" && keyword != null) {
+						Maestro.consultarProcesosClave(keyword);
+					} else {
+						Maestro.setListaProcesos();
+					}
+				}
+			}
+		});
+
+		searchItem.addChangedHandler(new ChangedHandler() {
+
+			@Override
+			public void onChanged(ChangedEvent event) {
+				String valor = searchItem.getValueAsString();
+				if (valor == "" || valor == null) {
+					Maestro.setListaProcesos();
+				}
+			}
+		});
+
+		formBusqueda = new DynamicForm();
+		formBusqueda.setWidth100();
+		formBusqueda.setPadding(5);
+		formBusqueda.setLayoutAlign(Alignment.RIGHT);
+		formBusqueda.setAlign(Alignment.RIGHT);
+		formBusqueda.setFields(searchItem);
+
 		VLayout vl1 = new VLayout();
 		vl1.setWidth100();
 		vl1.setHeight100();
 
+		vl1.addMember(formBusqueda);
 		vl1.addMember(listGridProcesos);
 		vl1.addMember(panelProcesoEspecifico);
 		vl1.addMember(menuBarUsuarioBasico);
@@ -244,7 +373,6 @@ public class PanelContenidoProcesos extends HLayout {
 	}
 
 	public void actualizarProcesos(ProcesoRecord[] records) {
-		procesosDataSource.setTestData(records);
 		listGridProcesos.setData(records);
 	}
 
@@ -252,11 +380,11 @@ public class PanelContenidoProcesos extends HLayout {
 		final Window winModal = new Window();
 
 		PanelEncabezadoDialogo p = new PanelEncabezadoDialogo("Crear Proceso",
-				"Cree un proceso y organizelo como desee", "img/check.png");
+				"Cree un proceso y organizelo como desee", "img/admin/bot1.png");
 		p.setSize("100%", "70px");
 
-		winModal.setWidth(400);
-		winModal.setHeight(400);
+		winModal.setWidth(350);
+		winModal.setHeight(330);
 		winModal.setTitle("Crear un Proceso");
 		winModal.setShowMinimizeButton(false);
 		winModal.setIsModal(true);
@@ -279,37 +407,35 @@ public class PanelContenidoProcesos extends HLayout {
 		textNombreProcesoNuevo = new TextItem();
 		textNombreProcesoNuevo.setTitle("Nombre");
 		textNombreProcesoNuevo.setRequired(true);
-		textNombreProcesoNuevo.setWidth("*");
 
 		textAreaDescripcionProcesoNuevo = new TextAreaItem();
 		textAreaDescripcionProcesoNuevo.setTitle("Descripci\u00F3n");
 		textAreaDescripcionProcesoNuevo.setRequired(true);
-		textAreaDescripcionProcesoNuevo.setWidth("*");
 
 		dateTimeItemFechaInicioNuevo = new DateItem();
 		dateTimeItemFechaInicioNuevo.setUseTextField(false);
 		dateTimeItemFechaInicioNuevo.setTitle("Fecha Inicio");
 		dateTimeItemFechaInicioNuevo.setRequired(true);
 		dateTimeItemFechaInicioNuevo.setStartDate(new Date());
-		dateTimeItemFechaInicioNuevo.setWidth("*");
-
-		// timeHoraInicioNuevo = new TimeItem("timeItem", "Hora Inicio");
-		// timeHoraInicioNuevo.setUseMask(true);
-		// timeHoraInicioNuevo.setRequired(true);
-		// timeHoraInicioNuevo
-		// .setTimeFormatter(TimeDisplayFormat.TOSHORT24HOURTIME);
+		dateTimeItemFechaInicioNuevo.addChangedHandler(new ChangedHandler() {
+			@Override
+			public void onChanged(ChangedEvent event) {
+				dateTimeItemFechaFinalizacionNuevo
+						.setStartDate(dateTimeItemFechaInicioNuevo
+								.getValueAsDate());
+			}
+		});
 
 		dateTimeItemFechaFinalizacionNuevo = new DateItem();
 		dateTimeItemFechaFinalizacionNuevo.setUseTextField(false);
 		dateTimeItemFechaFinalizacionNuevo.setTitle("Fecha Finalizaci\u00F3n");
-		dateTimeItemFechaFinalizacionNuevo.setWidth("*");
+		dateTimeItemFechaFinalizacionNuevo.setStartDate(new Date());
 
 		checkBoxHabilitarFechaFinalizacion = new CheckboxItem();
 		checkBoxHabilitarFechaFinalizacion.setName("onOrder");
 		checkBoxHabilitarFechaFinalizacion
 				.setTitle("Habilitar fecha de finalización");
 		checkBoxHabilitarFechaFinalizacion.setRedrawOnChange(true);
-		checkBoxHabilitarFechaFinalizacion.setWidth(50);
 		checkBoxHabilitarFechaFinalizacion.setValue(false);
 
 		dateTimeItemFechaFinalizacionNuevo
@@ -385,10 +511,11 @@ public class PanelContenidoProcesos extends HLayout {
 		botonNuevoBasico.setVisible(true);
 		botonEliminarBasico.setVisible(true);
 		botonDuplicarBasico.setVisible(true);
+		formBusqueda.setVisible(true);
 	}
 
-	public void actualizarTemasProceso(List<PruebaUsuarioBO> result) {
-		panelProcesoEspecifico.actualizarTemasProceso(result);
+	public void actualizarPruebasProceso(List<PruebaUsuarioBO> result) {
+		panelProcesoEspecifico.actualizarPruebasProceso(result);
 		panelProcesoEspecifico
 				.actualizarListaPruebas(obtenerPruebasNoEnProceso(listaPruebas,
 						result));
@@ -397,8 +524,10 @@ public class PanelContenidoProcesos extends HLayout {
 	private List<EvaluadoBO> obtenerEvaluadosDeParticipacion(
 			List<ParticipacionEnProcesoBO> result) {
 		List<EvaluadoBO> resultado = new ArrayList<EvaluadoBO>();
-		for (ParticipacionEnProcesoBO participacionEnProcesoBO : result) {
-			resultado.add(participacionEnProcesoBO.getUsuarioBasico());
+		if (result != null) {
+			for (ParticipacionEnProcesoBO participacionEnProcesoBO : result) {
+				resultado.add(participacionEnProcesoBO.getUsuarioBasico());
+			}
 		}
 		return resultado;
 	}
@@ -408,18 +537,19 @@ public class PanelContenidoProcesos extends HLayout {
 			List<PruebaUsuarioBO> listaPruebasDeProceso) {
 		List<PruebaUsuarioBO> resultado = new ArrayList<PruebaUsuarioBO>();
 		boolean continuar = true;
-
-		for (int i = 0; i < pruebas.size(); i++) {
-			for (int j = 0; j < listaPruebasDeProceso.size() && continuar; j++) {
-				if (listaPruebasDeProceso.get(j).getIdentificador() == pruebas
-						.get(i).getIdentificador()) {
-					continuar = false;
+		if (pruebas != null) {
+			for (int i = 0; i < pruebas.size(); i++) {
+				for (int j = 0; j < listaPruebasDeProceso.size() && continuar; j++) {
+					if (listaPruebasDeProceso.get(j).getIdentificador() == pruebas
+							.get(i).getIdentificador()) {
+						continuar = false;
+					}
 				}
+				if (continuar) {
+					resultado.add(pruebas.get(i));
+				}
+				continuar = true;
 			}
-			if (continuar) {
-				resultado.add(pruebas.get(i));
-			}
-			continuar = true;
 		}
 		return resultado;
 	}
@@ -428,20 +558,25 @@ public class PanelContenidoProcesos extends HLayout {
 			List<EvaluadoBO> usuarios, List<EvaluadoBO> listaEvaluadosDeProceso) {
 		List<EvaluadoBO> resultado = new ArrayList<EvaluadoBO>();
 		boolean continuar = true;
-
-		for (int i = 0; i < usuarios.size(); i++) {
-			for (int j = 0; j < listaEvaluadosDeProceso.size() && continuar; j++) {
-				if (listaEvaluadosDeProceso.get(j).getIdentificador() == usuarios
-						.get(i).getIdentificador()) {
-					continuar = false;
+		if (usuarios != null) {
+			for (int i = 0; i < usuarios.size(); i++) {
+				for (int j = 0; j < listaEvaluadosDeProceso.size() && continuar; j++) {
+					if (listaEvaluadosDeProceso.get(j).getIdentificador() == usuarios
+							.get(i).getIdentificador()) {
+						continuar = false;
+					}
 				}
+				if (continuar) {
+					resultado.add(usuarios.get(i));
+				}
+				continuar = true;
 			}
-			if (continuar) {
-				resultado.add(usuarios.get(i));
-			}
-			continuar = true;
 		}
 		return resultado;
+	}
+
+	public void desactivarDialogoNotificaciones() {
+		panelProcesoEspecifico.desactivarDialogoNotificaciones();
 	}
 
 }

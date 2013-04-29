@@ -1,6 +1,7 @@
 package co.mind.management.shared.persistencia;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -19,6 +20,7 @@ import co.mind.management.shared.entidades.ParticipacionEnProceso;
 import co.mind.management.shared.entidades.PreguntaUsuario;
 import co.mind.management.shared.entidades.ProcesoUsuario;
 import co.mind.management.shared.entidades.Resultado;
+import co.mind.management.shared.entidades.UsoUsuario;
 import co.mind.management.shared.entidades.Usuario;
 import co.mind.management.shared.entidades.Evaluado;
 import co.mind.management.shared.recursos.Convencion;
@@ -52,11 +54,10 @@ public class GestionEvaluacion implements IGestionEvaluacion {
 						.getApellidos());
 				evaluado.setCorreoElectronico(participacion.getUsuarioBasico()
 						.getCorreoElectronico());
-				evaluado.setIdentificador(participacion.getUsuarioBasico()
-						.getIdentificador());
 				evaluado.setNombres(participacion.getUsuarioBasico()
 						.getNombres());
 				evaluado.setUsuario(usuario);
+				evaluado.setCedula(participacion.getUsuarioBasico().getCedula());
 				entityManager.persist(evaluado);
 				entityManager.flush();
 				userTransaction.commit();
@@ -121,6 +122,7 @@ public class GestionEvaluacion implements IGestionEvaluacion {
 			int usuarioBasicoID, int procesoID, int participacionID) {
 		EntityTransaction userTransaction = entityManager.getTransaction();
 		try {
+			userTransaction.begin();
 			ParticipacionEnProceso par = entityManager.find(
 					ParticipacionEnProceso.class, participacionID);
 			entityManager.remove(par);
@@ -198,6 +200,7 @@ public class GestionEvaluacion implements IGestionEvaluacion {
 								.getIdentificador());
 						userb.setIdentificadorUsuarioAdministrador(usuarioAdministradorBO);
 						userb.setNombres(par.getEvaluado().getNombres());
+						userb.setCedula(par.getEvaluado().getCedula());
 						resultado.setUsuarioBasico(userb);
 						lista.add(resultado);
 					}
@@ -472,7 +475,7 @@ public class GestionEvaluacion implements IGestionEvaluacion {
 	@Override
 	public ParticipacionEnProcesoBO consultarParticipacionAProceso(
 			int usuarioBasicoID, String correo, String codigoAcceso) {
-		String query = "SELECT DISTINCT(p) FROM Evaluado u, ParticipacionEnProceso p WHERE p.evaluado = u AND u.correoElectronico =:correo AND p.codigo_Acceso =:codigo AND u.identificador =:id";
+		String query = "SELECT DISTINCT(p) FROM Evaluado u, ParticipacionEnProceso p WHERE p.evaluado = u AND u.correoElectronico =:correo AND p.codigo_Acceso =:codigo AND u.cedula =:id";
 		Query qs = entityManager.createQuery(query);
 		qs.setParameter("correo", correo);
 		qs.setParameter("codigo", codigoAcceso);
@@ -556,6 +559,48 @@ public class GestionEvaluacion implements IGestionEvaluacion {
 		} else {
 			return null;
 		}
+	}
+
+	public int decrementarCantidadDeUsosUsuarios(int identificador,
+			int procesoID) {
+		EntityTransaction userTransaction = entityManager.getTransaction();
+		try {
+			ProcesoUsuario proceso = entityManager.find(ProcesoUsuario.class,
+					procesoID);
+			entityManager.refresh(proceso);
+			Usuario user = proceso.getUsuario();
+			entityManager.refresh(user);
+			List<UsoUsuario> usos = user.getUsosUsuarios();
+			boolean continuar = true;
+			for (int i = 0; i < usos.size() && continuar; i++) {
+				UsoUsuario usoUsuario = usos.get(i);
+				if (usoUsuario.getUsosAsignados() > usoUsuario
+						.getUsosRedimidos()) {
+					userTransaction.begin();
+					usoUsuario
+							.setUsosRedimidos(usoUsuario.getUsosRedimidos() + 1);
+					if (usoUsuario.getUsosAsignados() == usoUsuario
+							.getUsosRedimidos()) {
+						usoUsuario.setFechaVencimiento(new Date());
+					}
+
+					entityManager.merge(usoUsuario);
+					entityManager.flush();
+					userTransaction.commit();
+					continuar = false;
+				}
+			}
+			if (continuar) {
+				return Convencion.INCORRECTO;
+			} else {
+				return Convencion.CORRECTO;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			userTransaction.rollback();
+			return Convencion.INCORRECTO;
+		}
+
 	}
 
 }

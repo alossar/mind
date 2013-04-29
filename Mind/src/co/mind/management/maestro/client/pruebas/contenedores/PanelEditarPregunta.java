@@ -15,6 +15,7 @@ import com.smartgwt.client.util.SC;
 import com.smartgwt.client.widgets.form.DynamicForm;
 import com.smartgwt.client.widgets.form.fields.IntegerItem;
 import com.smartgwt.client.widgets.form.fields.RichTextItem;
+import com.smartgwt.client.widgets.form.fields.TextAreaItem;
 import com.smartgwt.client.widgets.form.fields.events.ChangedEvent;
 import com.smartgwt.client.widgets.form.fields.events.ChangedHandler;
 import com.smartgwt.client.widgets.grid.ListGrid;
@@ -38,7 +39,7 @@ public class PanelEditarPregunta extends HLayout {
 	private ListGrid listGridPreguntasPrueba;
 	private ToolStripButton botonNuevaPregunta;
 	private boolean nuevaPregunta = false;
-	private RichTextItem richTextEditorPregunta;
+	private TextAreaItem richTextEditorPregunta;
 	private ImagenRecord imagenSeleccionada;
 	private PanelContenidoPruebas panelPruebas;
 	private PreguntaUsuarioBO pregunta;
@@ -87,7 +88,7 @@ public class PanelEditarPregunta extends HLayout {
 		formInformacionLamina.setNumCols(6);
 		formInformacionLamina.setID("formInformacionLamina");
 
-		richTextEditorPregunta = new RichTextItem();
+		richTextEditorPregunta = new TextAreaItem();
 		richTextEditorPregunta.setWidth(600);
 		richTextEditorPregunta.setRequired(true);
 		richTextEditorPregunta.addChangedHandler(new ChangedHandler() {
@@ -103,7 +104,7 @@ public class PanelEditarPregunta extends HLayout {
 		});
 
 		integerItemTiempoMaximo = new IntegerItem();
-		integerItemTiempoMaximo.setTitle("Tiempo");
+		integerItemTiempoMaximo.setTitle("Tiempo (Segundos)");
 		integerItemTiempoMaximo.setCanEdit(false);
 		integerItemTiempoMaximo.setRequired(true);
 		integerItemTiempoMaximo.addChangedHandler(new ChangedHandler() {

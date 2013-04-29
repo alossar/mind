@@ -2,27 +2,25 @@ package co.mind.management.maestro.client.imagenes;
 
 import java.util.List;
 
-import co.mind.management.maestro.client.Maestro;
 import co.mind.management.maestro.client.PanelEncabezadoDialogo;
 import co.mind.management.shared.dto.ImagenUsuarioBO;
 import co.mind.management.shared.records.ImagenRecord;
 
-import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.ui.NamedFrame;
 import com.smartgwt.client.types.Encoding;
 import com.smartgwt.client.types.VerticalAlignment;
-import com.smartgwt.client.util.SC;
-import com.smartgwt.client.widgets.IButton;
+import com.smartgwt.client.types.Visibility;
+import com.smartgwt.client.widgets.Canvas;
 import com.smartgwt.client.widgets.Window;
-import com.smartgwt.client.widgets.events.ClickHandler;
 import com.smartgwt.client.widgets.events.CloseClickEvent;
 import com.smartgwt.client.widgets.events.CloseClickHandler;
 import com.smartgwt.client.widgets.form.DynamicForm;
+import com.smartgwt.client.widgets.form.fields.ButtonItem;
 import com.smartgwt.client.widgets.form.fields.UploadItem;
+import com.smartgwt.client.widgets.form.fields.events.ClickEvent;
 import com.smartgwt.client.widgets.layout.HLayout;
 import com.smartgwt.client.widgets.layout.VLayout;
 import com.smartgwt.client.widgets.tile.TileGrid;
-import com.smartgwt.client.widgets.tile.events.RecordClickEvent;
-import com.smartgwt.client.widgets.tile.events.RecordClickHandler;
 import com.smartgwt.client.widgets.toolbar.ToolStrip;
 import com.smartgwt.client.widgets.toolbar.ToolStripButton;
 import com.smartgwt.client.widgets.viewer.DetailViewerField;
@@ -30,10 +28,9 @@ import com.smartgwt.client.widgets.viewer.DetailViewerField;
 public class PanelContenidoImagenes extends HLayout {
 
 	private TileGrid tileGridImagenesUsuario;
-	private ImagenUsuarioBO imagenSeleccionada;
 
 	public PanelContenidoImagenes() {
-		setWidth("100%");
+		setWidth("90%");
 		setHeight("80%");
 		setBackgroundColor("white");
 		setPadding(15);
@@ -45,15 +42,7 @@ public class PanelContenidoImagenes extends HLayout {
 		tileGridImagenesUsuario.setWidth100();
 		tileGridImagenesUsuario.setCanReorderTiles(false);
 		tileGridImagenesUsuario.setShowAllRecords(false);
-		tileGridImagenesUsuario.addRecordClickHandler(new RecordClickHandler() {
 
-			@Override
-			public void onRecordClick(RecordClickEvent event) {
-				ImagenRecord record = (ImagenRecord) event.getRecord();
-				imagenSeleccionada = ImagenRecord.getBO(record);
-
-			}
-		});
 		DetailViewerField pictureField = new DetailViewerField("thumbnail");
 		pictureField.setType("image");
 		pictureField.setImageWidth(150);
@@ -63,8 +52,7 @@ public class PanelContenidoImagenes extends HLayout {
 
 		tileGridImagenesUsuario.setFields(pictureField, nameField);
 
-		ToolStripButton botonNuevoBasico = new ToolStripButton(
-				"Agregar Imagen", "icons/16/document_plain_new.png");
+		ToolStripButton botonNuevoBasico = new ToolStripButton("Agregar Imagen");
 
 		botonNuevoBasico
 				.addClickHandler(new com.smartgwt.client.widgets.events.ClickHandler() {
@@ -77,12 +65,13 @@ public class PanelContenidoImagenes extends HLayout {
 
 						final Window windowCrearLamina = new Window();
 						final PanelEncabezadoDialogo p = new PanelEncabezadoDialogo(
-								"Subir una Imagen Temas",
-								"Agregue imágenes al sistema", "img/check.png");
+								"Subir una Imagen",
+								"Agregue imágenes al sistema.",
+								"img/admin/bot3.png");
 						p.setSize("100%", "70px");
 
 						windowCrearLamina.setWidth(400);
-						windowCrearLamina.setHeight(250);
+						windowCrearLamina.setHeight(200);
 						windowCrearLamina.setTitle("Subir una Imagen");
 						windowCrearLamina.setShowMinimizeButton(false);
 						windowCrearLamina.setIsModal(true);
@@ -93,7 +82,7 @@ public class PanelContenidoImagenes extends HLayout {
 									@Override
 									public void onCloseClick(
 											CloseClickEvent event) {
-										windowCrearLamina.hide();
+										windowCrearLamina.destroy();
 									}
 								});
 
@@ -109,49 +98,50 @@ public class PanelContenidoImagenes extends HLayout {
 						uploadItem.setRequired(true);
 						uploadItem.setWidth("100%");
 
-						formUpload.setAction(GWT.getModuleBaseURL() + "upload");
+						formUpload.setAction("/Mind/FileUploadServlet");
+						formUpload.setTarget("fileUploadFrame");
 
-						formUpload.setFields(uploadItem);
+						final ButtonItem boton = new ButtonItem("Agregar");
+						boton.addClickHandler(new com.smartgwt.client.widgets.form.fields.events.ClickHandler() {
 
-						final IButton boton = new IButton("Crear");
-						boton.addClickHandler(new ClickHandler() {
 							@Override
-							public void onClick(
-									com.smartgwt.client.widgets.events.ClickEvent event) {
+							public void onClick(ClickEvent event) {
 								formUpload.submitForm();
+								windowCrearLamina.destroy();
 							}
 						});
+						formUpload.setFields(uploadItem, boton);
 
 						windowCrearLamina.addItem(p);
 						windowCrearLamina.addItem(formUpload);
-						windowCrearLamina.addItem(boton);
 
 						windowCrearLamina.show();
 
 					}
 				});
-
-		ToolStripButton botonEliminarBasico = new ToolStripButton(
-				"Eliminar Imagen", "icons/16/document_plain_new.png");
-
-		botonEliminarBasico
-				.addClickHandler(new com.smartgwt.client.widgets.events.ClickHandler() {
-
-					@Override
-					public void onClick(
-							com.smartgwt.client.widgets.events.ClickEvent event) {
-						if (imagenSeleccionada == null) {
-							SC.warn("Debe seleccionar la imagen que desea eliminar");
-						} else {
-							Maestro.eliminarImagen(imagenSeleccionada);
-						}
-					}
-				});
+		//
+		// ToolStripButton botonEliminarBasico = new ToolStripButton(
+		// "Eliminar Imagen", "icons/16/document_plain_new.png");
+		//
+		// botonEliminarBasico
+		// .addClickHandler(new
+		// com.smartgwt.client.widgets.events.ClickHandler() {
+		//
+		// @Override
+		// public void onClick(
+		// com.smartgwt.client.widgets.events.ClickEvent event) {
+		// if (imagenSeleccionada == null) {
+		// SC.warn("Debe seleccionar la imagen que desea eliminar");
+		// } else {
+		// Maestro.eliminarImagen(imagenSeleccionada);
+		// }
+		// }
+		// });
 
 		ToolStrip menuBarUsuarioBasico = new ToolStrip();
 		menuBarUsuarioBasico.setWidth100();
 		menuBarUsuarioBasico.addButton(botonNuevoBasico);
-		menuBarUsuarioBasico.addButton(botonEliminarBasico);
+		// menuBarUsuarioBasico.addButton(botonEliminarBasico);
 		menuBarUsuarioBasico.addFill();
 		menuBarUsuarioBasico.addSeparator();
 		menuBarUsuarioBasico.addSeparator();

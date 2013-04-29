@@ -7,6 +7,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
+import javax.persistence.Query;
 
 import co.mind.management.shared.dto.ImagenBO;
 import co.mind.management.shared.dto.ImagenUsuarioBO;
@@ -200,6 +201,61 @@ public class GestionPruebas implements IGestionPruebas {
 		}
 	}
 
+	public List<PruebaUsuarioBO> listarPruebasPorNombreParcial(int usuarioID,
+			String keyword) {
+		Usuario user = entityManager.find(Usuario.class, usuarioID);
+		if (user != null) {
+			entityManager.refresh(user);
+			String query = "SELECT DISTINCT(u) FROM PruebaUsuario u WHERE u.usuario =:user AND u.nombre LIKE :keyword";
+			Query q = entityManager.createQuery(query);
+			q.setParameter("user", user);
+			q.setParameter("keyword", "%" + keyword + "%");
+			List<PruebaUsuario> usuarios = q.getResultList();
+			if (usuarios != null) {
+				List<PruebaUsuarioBO> lista = new ArrayList<PruebaUsuarioBO>();
+				for (int i = 0; i < usuarios.size(); i++) {
+					PruebaUsuario prueba = usuarios.get(i);
+					PruebaUsuarioBO resultado = new PruebaUsuarioBO();
+					resultado.setDescripcion(prueba.getDescripcion());
+					resultado.setIdentificador(prueba.getIdentificador());
+					resultado.setNombre(prueba.getNombre());
+					resultado.setUsuarioAdministradorID(usuarioID);
+					List<PreguntaUsuario> preguntas = prueba
+							.getPreguntasUsuarios();
+					List<PreguntaUsuarioBO> preguntasBO = new ArrayList<>();
+					for (PreguntaUsuario pre : preguntas) {
+						PreguntaUsuarioBO pregunta = new PreguntaUsuarioBO();
+						pregunta.setCaracteresMaximo(pre.getCaracteresMaximo());
+						pregunta.setIdentificador(pre.getIdentificador());
+						pregunta.setPregunta(pre.getPregunta());
+						pregunta.setTiempoMaximo(pre.getTiempoMaximo());
+						ImagenUsuarioBO imagen = new ImagenUsuarioBO();
+						imagen.setIdentificador(pre.getImagenesUsuario()
+								.getIdentificador());
+						imagen.setUsuario(pre.getImagenesUsuario().getUsuario()
+								.getIdentificador());
+						ImagenBO ima = new ImagenBO();
+						ima.setIdentificador(pre.getImagenesUsuario()
+								.getImagene().getIdentificador());
+						ima.setImagenURI(pre.getImagenesUsuario().getImagene()
+								.getImagenURI());
+						imagen.setImagene(ima);
+						pregunta.setImagenesUsuarioID(imagen);
+						preguntasBO.add(pregunta);
+
+					}
+					resultado.setPreguntas(preguntasBO);
+					lista.add(resultado);
+				}
+				return lista;
+			} else {
+				return null;
+			}
+		} else {
+			return null;
+		}
+	}
+
 	@Override
 	public List<PruebaUsuarioBO> listarPruebasUsuarioAdministrador(
 			int usuarioAdministradorID) {
@@ -356,6 +412,7 @@ public class GestionPruebas implements IGestionPruebas {
 					List<PreguntaUsuarioBO> lista = new ArrayList<PreguntaUsuarioBO>();
 					for (int i = 0; i < preguntas.size(); i++) {
 						PreguntaUsuario pregunta = preguntas.get(i);
+						entityManager.refresh(pregunta);
 
 						PruebaUsuarioBO p = new PruebaUsuarioBO();
 						p.setDescripcion(pregunta.getPruebasUsuario()

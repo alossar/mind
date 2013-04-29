@@ -17,6 +17,8 @@ public class EvaluadoBO implements Serializable {
 
 	private String nombres;
 
+	private int cedula;
+
 	public EvaluadoBO() {
 	}
 
@@ -67,6 +69,14 @@ public class EvaluadoBO implements Serializable {
 
 	public void setNombres(String nombres) {
 		this.nombres = nombres;
+	}
+
+	public int getCedula() {
+		return this.cedula;
+	}
+
+	public void setCedula(int cedula) {
+		this.cedula = cedula;
 	}
 
 }

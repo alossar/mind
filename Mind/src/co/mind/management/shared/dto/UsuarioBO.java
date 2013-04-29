@@ -3,7 +3,7 @@ package co.mind.management.shared.dto;
 import java.io.Serializable;
 import java.util.Date;
 
-public class UsuarioBO implements Serializable{
+public class UsuarioBO implements Serializable {
 
 	private int identificador;
 	private String apellidos;
@@ -16,15 +16,15 @@ public class UsuarioBO implements Serializable{
 	private String empresa;
 	private String estado_Cuenta;
 	private Date fecha_Creacion;
+	private Date fechaVencimiento;
 	private String nombres;
 	private String pais;
 	private String telefono;
 	private String telefono_Celular;
-	private String tipo;	
-	private int usos;
+	private String tipo;
 	private String sesionID;
 	private static final long serialVersionUID = 1L;
-	
+
 	public UsuarioBO() {
 	}
 
@@ -164,12 +164,12 @@ public class UsuarioBO implements Serializable{
 		this.sesionID = sesionID;
 	}
 
-	public int getUsos() {
-		return usos;
+	public Date getFechaVencimiento() {
+		return fechaVencimiento;
 	}
 
-	public void setUsos(int usos) {
-		this.usos = usos;
+	public void setFechaVencimiento(Date fechaVencimiento) {
+		this.fechaVencimiento = fechaVencimiento;
 	}
 
 }

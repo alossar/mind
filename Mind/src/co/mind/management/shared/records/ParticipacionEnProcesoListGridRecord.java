@@ -5,18 +5,20 @@ import java.util.List;
 
 import co.mind.management.shared.dto.EvaluadoBO;
 import co.mind.management.shared.dto.ParticipacionEnProcesoBO;
+import co.mind.management.shared.recursos.Convencion;
 
 import com.smartgwt.client.widgets.grid.ListGridRecord;
 
 public class ParticipacionEnProcesoListGridRecord extends ListGridRecord {
 
-	public ParticipacionEnProcesoListGridRecord(int idEval, String nombre,
-			String apellidos, String correo, int idUsuario, int edad,
-			int idParticipacion, String codigo, String estado) {
+	public ParticipacionEnProcesoListGridRecord(int idEval, int cedula,
+			String nombre, String apellidos, String correo, int idUsuario,
+			int edad, int idParticipacion, String codigo, String estado) {
 		setAttribute("idParticipacion", idParticipacion);
 		setAttribute("codigo", codigo);
 		setAttribute("estado", estado);
-		setAttribute("idEval", idEval);
+		setAttribute("idEval", cedula);
+		setAttribute("identificadorEval", idEval);
 		setAttribute("nombre", nombre);
 		setAttribute("apellidos", apellidos);
 		setAttribute("correo", correo);
@@ -31,6 +33,7 @@ public class ParticipacionEnProcesoListGridRecord extends ListGridRecord {
 			for (ParticipacionEnProcesoBO participacion : participaciones) {
 				ParticipacionEnProcesoListGridRecord imagen = new ParticipacionEnProcesoListGridRecord(
 						participacion.getUsuarioBasico().getIdentificador(),
+						participacion.getUsuarioBasico().getCedula(),
 						participacion.getUsuarioBasico().getNombres(),
 						participacion.getUsuarioBasico().getApellidos(),
 						participacion.getUsuarioBasico().getCorreoElectronico(),
@@ -38,7 +41,8 @@ public class ParticipacionEnProcesoListGridRecord extends ListGridRecord {
 								.getIdentificadorUsuarioAdministrador(),
 						participacion.getUsuarioBasico().getEdad(),
 						participacion.getIdentificador(), participacion
-								.getCodigo_Acceso(), participacion.getEstado());
+								.getCodigo_Acceso(),
+						estadoParticipacionRecord(participacion.getEstado()));
 				resultado.add(imagen);
 			}
 			ParticipacionEnProcesoListGridRecord[] records = new ParticipacionEnProcesoListGridRecord[resultado
@@ -52,6 +56,31 @@ public class ParticipacionEnProcesoListGridRecord extends ListGridRecord {
 		}
 	}
 
+	private static String estadoParticipacionRecord(String estado) {
+		if (estado
+				.equalsIgnoreCase(Convencion.ESTADO_PARTICIPACION_EN_PROCESO_EN_EJECUCION)) {
+			return "En Proceso";
+		} else if (estado
+				.equalsIgnoreCase(Convencion.ESTADO_PARTICIPACION_EN_PROCESO_EN_ESPERA)) {
+			return "Programada";
+		} else if (estado
+				.equalsIgnoreCase(Convencion.ESTADO_PARTICIPACION_EN_PROCESO_INACTIVA)) {
+			return "Finalizada";
+		}
+		return null;
+	}
+
+	private static String estadoParticipacionBO(String estado) {
+		if (estado.equalsIgnoreCase("En Proceso")) {
+			return Convencion.ESTADO_PARTICIPACION_EN_PROCESO_EN_EJECUCION;
+		} else if (estado.equalsIgnoreCase("Programada")) {
+			return Convencion.ESTADO_PARTICIPACION_EN_PROCESO_EN_ESPERA;
+		} else if (estado.equalsIgnoreCase("Finalizada")) {
+			return Convencion.ESTADO_PARTICIPACION_EN_PROCESO_INACTIVA;
+		}
+		return null;
+	}
+
 	public static List<ParticipacionEnProcesoBO> getBO(
 			ParticipacionEnProcesoListGridRecord[] records) {
 		List<ParticipacionEnProcesoBO> resultado = new ArrayList<ParticipacionEnProcesoBO>();
@@ -63,7 +92,8 @@ public class ParticipacionEnProcesoListGridRecord extends ListGridRecord {
 						.getAttribute("correo"));
 				usuarioBasico.setEdad(usuario.getAttributeAsInt("edad"));
 				usuarioBasico.setIdentificador(usuario
-						.getAttributeAsInt("idEval"));
+						.getAttributeAsInt("identificadorEval"));
+				usuarioBasico.setCedula(usuario.getAttributeAsInt("idEval"));
 				usuarioBasico.setNombres(usuario.getAttribute("nombre"));
 				usuarioBasico.setIdentificadorUsuarioAdministrador(usuario
 						.getAttributeAsInt("idUsuario"));
@@ -71,7 +101,8 @@ public class ParticipacionEnProcesoListGridRecord extends ListGridRecord {
 				participacion.setCodigo_Acceso(usuario.getAttribute("codigo"));
 				participacion.setIdentificador(usuario
 						.getAttributeAsInt("idParticipacion"));
-				participacion.setEstado(usuario.getAttribute("estado"));
+				participacion.setEstado(estadoParticipacionBO(usuario
+						.getAttribute("estado")));
 				participacion.setUsuarioBasico(usuarioBasico);
 				resultado.add(participacion);
 			}
@@ -88,7 +119,9 @@ public class ParticipacionEnProcesoListGridRecord extends ListGridRecord {
 		usuarioBasico.setApellidos(usuario.getAttribute("apellidos"));
 		usuarioBasico.setCorreoElectronico(usuario.getAttribute("correo"));
 		usuarioBasico.setEdad(usuario.getAttributeAsInt("edad"));
-		usuarioBasico.setIdentificador(usuario.getAttributeAsInt("idEval"));
+		usuarioBasico.setIdentificador(usuario
+				.getAttributeAsInt("identificadorEval"));
+		usuarioBasico.setCedula(usuario.getAttributeAsInt("idEval"));
 		usuarioBasico.setNombres(usuario.getAttribute("nombre"));
 		usuarioBasico.setIdentificadorUsuarioAdministrador(usuario
 				.getAttributeAsInt("idUsuario"));

@@ -37,15 +37,15 @@ public class ParticipacionEnProceso implements Serializable {
 	@Column(name="fecha_realizacion")
 	private Date fechaRealizacion;
 
-	//bi-directional many-to-one association to ProcesoUsuario
-	@ManyToOne
-	@JoinColumn(name="procesos_usuarios_identificador")
-	private ProcesoUsuario procesosUsuario;
-
 	//bi-directional many-to-one association to Evaluado
 	@ManyToOne
 	@JoinColumn(name="usuarios_basicos_identificador")
 	private Evaluado evaluado;
+
+	//bi-directional many-to-one association to ProcesoUsuario
+	@ManyToOne
+	@JoinColumn(name="procesos_usuarios_identificador")
+	private ProcesoUsuario procesosUsuario;
 
 	//bi-directional many-to-one association to Resultado
 	@OneToMany(mappedBy="participacionEnProceso")
@@ -102,20 +102,20 @@ public class ParticipacionEnProceso implements Serializable {
 		this.fechaRealizacion = fechaRealizacion;
 	}
 
-	public ProcesoUsuario getProcesosUsuario() {
-		return this.procesosUsuario;
-	}
-
-	public void setProcesosUsuario(ProcesoUsuario procesosUsuario) {
-		this.procesosUsuario = procesosUsuario;
-	}
-
 	public Evaluado getEvaluado() {
 		return this.evaluado;
 	}
 
 	public void setEvaluado(Evaluado evaluado) {
 		this.evaluado = evaluado;
+	}
+
+	public ProcesoUsuario getProcesosUsuario() {
+		return this.procesosUsuario;
+	}
+
+	public void setProcesosUsuario(ProcesoUsuario procesosUsuario) {
+		this.procesosUsuario = procesosUsuario;
 	}
 
 	public List<Resultado> getResultados() {

@@ -7,7 +7,6 @@ import co.mind.management.shared.dto.EvaluadoBO;
 import co.mind.management.shared.dto.ImagenBO;
 import co.mind.management.shared.dto.ImagenUsuarioBO;
 import co.mind.management.shared.dto.ParticipacionEnProcesoBO;
-import co.mind.management.shared.dto.PermisoBO;
 import co.mind.management.shared.dto.PreguntaUsuarioBO;
 import co.mind.management.shared.dto.ProcesoUsuarioBO;
 import co.mind.management.shared.dto.PruebaUsuarioBO;
@@ -16,33 +15,24 @@ import co.mind.management.shared.dto.SolicitudEliminacionCuentaBO;
 import co.mind.management.shared.dto.SolicitudIncrementoUsosBO;
 import co.mind.management.shared.dto.SolicitudPlanBO;
 import co.mind.management.shared.dto.SolicitudValoracionBO;
+import co.mind.management.shared.dto.UsoBO;
 import co.mind.management.shared.dto.UsuarioAdministradorBO;
 import co.mind.management.shared.dto.UsuarioBO;
 import co.mind.management.shared.dto.UsuarioMaestroBO;
+import co.mind.management.shared.dto.UsuarioProgramadorBO;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public interface UsuarioMaestroServiceAsync {
 
 	void crearCuenta(UsuarioBO usuarioAdministrador, SolicitudPlanBO solicitud,
-			PermisoBO plan, Date fechaFinalizacion, int usosTotal,
+			Date fechaFinalizacion, int usosTotal,
 			AsyncCallback<Integer> callback);
 
 	void activarCuenta(int usuarioAdministradorID,
 			AsyncCallback<Integer> callback);
 
-	void agregarImagenPredeterminada(ImagenBO imagen,
-			AsyncCallback<Integer> callback);
-
-	void agregarImagenPredeterminadaAUsuarios(
-			List<UsuarioBO> usuariosAdministradores, ImagenBO imagen,
-			AsyncCallback<Integer> callback);
-
-	void agregarPlan(PermisoBO plan, AsyncCallback<Integer> callback);
-
-	void consultarPlanesUsuarioAdministrador(int usuarioAdministradorID,
-			AsyncCallback<List<PermisoBO>> callback);
-
+	
 	void consultarPreguntasUsuarioAdministrador(int usuarioAdministradorID,
 			AsyncCallback<List<PreguntaUsuarioBO>> callback);
 
@@ -132,13 +122,13 @@ public interface UsuarioMaestroServiceAsync {
 	void consultarPreguntasPorCategoria(int usuarioID, int categoriaID,
 			AsyncCallback<List<PreguntaUsuarioBO>> callback);
 
-	void eliminarPregunta(UsuarioMaestroBO usuarioMaestro,
+	void eliminarPregunta(UsuarioBO usuarioMaestro,
 			PreguntaUsuarioBO preguntaTemp, AsyncCallback<Integer> callback);
 
-	void eliminarPrueba(UsuarioMaestroBO usuarioMaestro,
-			PruebaUsuarioBO pruebaTemp, AsyncCallback<Integer> asyncCallback);
+	void eliminarPrueba(UsuarioBO usuarioMaestro, PruebaUsuarioBO pruebaTemp,
+			AsyncCallback<Integer> asyncCallback);
 
-	void eliminarProceso(UsuarioMaestroBO usuarioMaestro,
+	void eliminarProceso(UsuarioBO usuarioMaestro,
 			ProcesoUsuarioBO procesoTemp, AsyncCallback<Integer> asyncCallback);
 
 	void generarReporte(List<ParticipacionEnProcesoBO> participaciones,
@@ -154,13 +144,11 @@ public interface UsuarioMaestroServiceAsync {
 	void consultarProceso(UsuarioBO usuarioMaestro, ProcesoUsuarioBO proceso,
 			AsyncCallback<ProcesoUsuarioBO> asyncCallback);
 
-	void enviarNotificacionesParticipacionesProceso(
-			UsuarioMaestroBO usuarioMaestro, List<ParticipacionEnProcesoBO> p,
+	void enviarNotificacionesParticipacionesProceso(UsuarioBO usuarioMaestro,
+			List<ParticipacionEnProcesoBO> p,
 			AsyncCallback<Integer> asyncCallback);
 
-	void consultarPermisos(AsyncCallback<List<PermisoBO>> asyncCallback);
-
-	void agregarCuenta(UsuarioBO usuarioMaestro, UsuarioBO usuario,
+	void agregarCuenta(UsuarioBO usuarioMaestro, UsuarioBO usuario, UsoBO usos,
 			List<PruebaUsuarioBO> pruebas, AsyncCallback<Integer> asyncCallback);
 
 	void editarPregunta(UsuarioBO usuarioMaestro, PreguntaUsuarioBO bo,
@@ -183,5 +171,53 @@ public interface UsuarioMaestroServiceAsync {
 
 	void editarCliente(UsuarioBO usuarioMaestro,
 			UsuarioAdministradorBO cliente, AsyncCallback<Integer> asyncCallback);
+
+	void consultarUsos(UsuarioBO cliente,
+			AsyncCallback<List<UsoBO>> asyncCallback);
+
+	void consultarProcesosUsuarioAdministradorNombre(int identificador,
+			String keyword, AsyncCallback<List<ProcesoUsuarioBO>> asyncCallback);
+
+	void consultarPruebasUsuarioAdministradorNombre(int identificador,
+			String keyword, AsyncCallback<List<PruebaUsuarioBO>> asyncCallback);
+
+	void consultarEvaluadoPorCedula(int identificador, int valor,
+			AsyncCallback<List<EvaluadoBO>> asyncCallback);
+
+	void consultarEvaluadoPorCorreo(int identificador, String keyword,
+			AsyncCallback<List<EvaluadoBO>> asyncCallback);
+
+	void consultarClientePorCedula(int identificador, int valor,
+			AsyncCallback<List<UsuarioBO>> asyncCallback);
+
+	void consultarClientePorEmpresa(int identificador, String keyword,
+			AsyncCallback<List<UsuarioBO>> asyncCallback);
+
+	void generarReporteUsos(UsuarioBO usuarioSeleccionado, Date dateInicio,
+			Date dateFinal, AsyncCallback<Void> asyncCallback);
+
+	void eliminarParticipacionesDeProceso(UsuarioBO usuarioMaestro,
+			ProcesoUsuarioBO procesoActual, List<ParticipacionEnProcesoBO> bo,
+			AsyncCallback<Integer> asyncCallback);
+
+	void eliminarPruebasDeProceso(UsuarioBO usuarioMaestro,
+			ProcesoUsuarioBO procesoActual, List<PruebaUsuarioBO> bo,
+			AsyncCallback<Integer> asyncCallback);
+
+	void agregarProgramador(UsuarioBO usuarioMaestro,
+			UsuarioProgramadorBO programador,
+			AsyncCallback<Integer> asyncCallback);
+
+	void consultarProgramadores(int identificador,
+			AsyncCallback<List<UsuarioProgramadorBO>> asyncCallback);
+
+	void agregarUsos(UsuarioBO usuarioSeleccionado, int usos,
+			AsyncCallback<Integer> asyncCallback);
+
+	void cambiarContrasena(UsuarioBO usuarioMaestro, String pass,
+			AsyncCallback<Integer> asyncCallback);
+
+	void consultarProcesosParaRevisar(
+			AsyncCallback<List<ProcesoUsuarioBO>> asyncCallback);
 
 }

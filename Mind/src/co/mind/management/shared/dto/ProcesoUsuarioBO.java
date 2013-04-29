@@ -14,9 +14,9 @@ public class ProcesoUsuarioBO implements Serializable {
 	private Date fechaFinalizacion;
 	private Date fechaInicio;
 	private String nombre;
-	private String solicitudValoracion;
 	private String notificacionEnviada;
 	private List<ProcesoUsuarioHasPruebaUsuarioBO> procesoUsuarioHasPruebaUsuario;
+	private UsuarioBO usuario;
 
 	public ProcesoUsuarioBO() {
 	}
@@ -77,14 +77,6 @@ public class ProcesoUsuarioBO implements Serializable {
 		this.nombre = nombre;
 	}
 
-	public String getSolicitudValoracion() {
-		return this.solicitudValoracion;
-	}
-
-	public void setSolicitudValoracion(String solicitudValoracion) {
-		this.solicitudValoracion = solicitudValoracion;
-	}
-
 	public List<ProcesoUsuarioHasPruebaUsuarioBO> getProcesoUsuarioHasPruebaUsuario() {
 		return this.procesoUsuarioHasPruebaUsuario;
 	}
@@ -118,6 +110,14 @@ public class ProcesoUsuarioBO implements Serializable {
 					.getPruebasUsuario().duracionPrueba();
 		}
 		return duracion;
+	}
+
+	public UsuarioBO getUsuario() {
+		return usuario;
+	}
+
+	public void setUsuario(UsuarioBO usuario) {
+		this.usuario = usuario;
 	}
 
 }

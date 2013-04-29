@@ -1,17 +1,13 @@
 package co.mind.management.maestro.client.clientes;
 
 import java.util.Date;
-import java.util.LinkedHashMap;
 import java.util.List;
 
-import co.mind.management.maestro.client.Maestro;
 import co.mind.management.maestro.client.PanelEncabezadoDialogo;
-import co.mind.management.shared.dto.PermisoBO;
 import co.mind.management.shared.dto.PruebaUsuarioBO;
+import co.mind.management.shared.dto.UsoBO;
 import co.mind.management.shared.dto.UsuarioAdministradorBO;
-import co.mind.management.shared.records.PermisoRecord;
 import co.mind.management.shared.records.PruebaListGridRecord;
-import co.mind.management.shared.records.UsuarioBasicoListGridRecord;
 import co.mind.management.shared.recursos.Convencion;
 
 import com.smartgwt.client.types.Overflow;
@@ -23,8 +19,11 @@ import com.smartgwt.client.widgets.IButton;
 import com.smartgwt.client.widgets.events.ClickEvent;
 import com.smartgwt.client.widgets.events.ClickHandler;
 import com.smartgwt.client.widgets.form.DynamicForm;
+import com.smartgwt.client.widgets.form.FormItemIfFunction;
+import com.smartgwt.client.widgets.form.fields.CheckboxItem;
+import com.smartgwt.client.widgets.form.fields.DateItem;
+import com.smartgwt.client.widgets.form.fields.FormItem;
 import com.smartgwt.client.widgets.form.fields.IntegerItem;
-import com.smartgwt.client.widgets.form.fields.SelectItem;
 import com.smartgwt.client.widgets.form.fields.TextItem;
 import com.smartgwt.client.widgets.form.validator.RegExpValidator;
 import com.smartgwt.client.widgets.grid.ListGrid;
@@ -39,9 +38,8 @@ public class PanelAgregarCliente extends HLayout {
 
 	private VLayout panelInformacionProceso;
 	private HLayout panelListados;
-	private ListGrid listGridTemasDeProceso;
+	private ListGrid listGridPruebasDeProceso;
 	private IButton botonAgregar;
-	private SelectItem selectTipoReporte;
 	private PanelEncabezadoDialogo panelEncabezadoProceso;
 	private IntegerItem textIdentificadorUsuarioBasico;
 	private TextItem textNombreUsuarioBasico;
@@ -54,9 +52,11 @@ public class PanelAgregarCliente extends HLayout {
 	private TextItem textCargo;
 	private PanelContenidoClientes panelClientes;
 	private IntegerItem textUsos;
+	private CheckboxItem checkBoxHabilitarFechaFinalizacion;
+	private DateItem dateTimeItemFechaFinalizacionNuevo;
 
 	public PanelAgregarCliente(PanelContenidoClientes panel,
-			List<PruebaUsuarioBO> listaPruebas, List<PermisoBO> permisos) {
+			List<PruebaUsuarioBO> listaPruebas) {
 		this.panelClientes = panel;
 		setWidth("100%");
 		setHeight("80%");
@@ -119,31 +119,39 @@ public class PanelAgregarCliente extends HLayout {
 		textCelular.setAllowExpressions(false);
 		textCelular.setLength(10);
 
-		selectTipoReporte = new SelectItem("Permisos");
-		selectTipoReporte.setRequired(true);
-
-		LinkedHashMap<Integer, String> valueMap = new LinkedHashMap<Integer, String>();
-
-		if (permisos != null) {
-			for (PermisoBO permisoBO : permisos) {
-				valueMap.put(
-						permisoBO.getIdentificador(),
-						"<span style='font-family:verdana'>"
-								+ permisoBO.getNombre() + "</span>");
-			}
-		}
-		selectTipoReporte.setValueMap(valueMap);
-
 		textUsos = new IntegerItem();
 		textUsos.setRequired(true);
 		textUsos.setTitle("Usos");
 		textUsos.setAllowExpressions(false);
 		textUsos.setLength(10);
 
+		dateTimeItemFechaFinalizacionNuevo = new DateItem();
+		dateTimeItemFechaFinalizacionNuevo.setUseTextField(false);
+		dateTimeItemFechaFinalizacionNuevo.setTitle("Fecha Vencimiento");
+		dateTimeItemFechaFinalizacionNuevo.setStartDate(new Date());
+
+		checkBoxHabilitarFechaFinalizacion = new CheckboxItem();
+		checkBoxHabilitarFechaFinalizacion.setName("onOrder");
+		checkBoxHabilitarFechaFinalizacion
+				.setTitle("Habilitar fecha de Vencimiento");
+		checkBoxHabilitarFechaFinalizacion.setRedrawOnChange(true);
+		checkBoxHabilitarFechaFinalizacion.setValue(false);
+
+		dateTimeItemFechaFinalizacionNuevo
+				.setShowIfCondition(new FormItemIfFunction() {
+					@Override
+					public boolean execute(FormItem item, Object value,
+							DynamicForm form) {
+						return (Boolean) form.getValue("onOrder");
+					}
+				});
+
 		formInformacion.setFields(textIdentificadorUsuarioBasico,
 				textNombreUsuarioBasico, textApellidosUsuarioBasico,
 				textCorreoUsuarioBasico, textCiudad, textEmpresa, textCargo,
-				textTelefono, textCelular, selectTipoReporte, textUsos);
+				textTelefono, textCelular, textUsos,
+				checkBoxHabilitarFechaFinalizacion,
+				dateTimeItemFechaFinalizacionNuevo);
 
 		VLayout v2 = new VLayout();
 		v2.setWidth(200);
@@ -152,8 +160,7 @@ public class PanelAgregarCliente extends HLayout {
 		v2.addChild(formInformacion);
 
 		panelEncabezadoProceso = new PanelEncabezadoDialogo("Agregar Cliente",
-				"Informaci\u00F3n del Cliente.",
-				"insumos/clientes/logoCliente.png");
+				"Informaci\u00F3n del Cliente.", "img/admin/bot4.png");
 		panelEncabezadoProceso.setSize("100%", "70px");
 
 		panelInformacionProceso.addMember(panelEncabezadoProceso);
@@ -163,12 +170,12 @@ public class PanelAgregarCliente extends HLayout {
 		panelListados.setHeight100();
 		panelListados.setWidth("70%");
 
-		listGridTemasDeProceso = new ListGrid();
-		listGridTemasDeProceso.setWidth100();
-		listGridTemasDeProceso.setHeight100();
-		listGridTemasDeProceso.setShowAllRecords(true);
-		listGridTemasDeProceso.setSelectionType(SelectionStyle.SINGLE);
-		listGridTemasDeProceso.setEmptyMessage("No hay temas en este proceso.");
+		listGridPruebasDeProceso = new ListGrid();
+		listGridPruebasDeProceso.setWidth100();
+		listGridPruebasDeProceso.setHeight100();
+		listGridPruebasDeProceso.setShowAllRecords(true);
+		listGridPruebasDeProceso.setSelectionType(SelectionStyle.SIMPLE);
+		listGridPruebasDeProceso.setEmptyMessage("No se encuentran pruebas.");
 
 		ListGridField nombrePruebaField = new ListGridField("nombre", "Nombre");
 		ListGridField apellidosField = new ListGridField("descripcion",
@@ -177,14 +184,12 @@ public class PanelAgregarCliente extends HLayout {
 				"Preguntas");
 		ListGridField tiempoField = new ListGridField("tiempoPrueba",
 				"Tiempo (Segundos)");
-		listGridTemasDeProceso.setFields(nombrePruebaField, apellidosField,
+		listGridPruebasDeProceso.setFields(nombrePruebaField, apellidosField,
 				preguntasField, tiempoField);
-		listGridTemasDeProceso.setCanResizeFields(true);
-		listGridTemasDeProceso.setAutoFetchData(true);
-		listGridTemasDeProceso.setShowFilterEditor(true);
-		listGridTemasDeProceso
+		listGridPruebasDeProceso.setCanResizeFields(true);
+		listGridPruebasDeProceso
 				.setSelectionAppearance(SelectionAppearance.CHECKBOX);
-		listGridTemasDeProceso.setData(PruebaListGridRecord
+		listGridPruebasDeProceso.setData(PruebaListGridRecord
 				.getRecords(listaPruebas));
 
 		botonAgregar = new IButton("Agregar Cliente");
@@ -193,10 +198,10 @@ public class PanelAgregarCliente extends HLayout {
 
 			@Override
 			public void onClick(ClickEvent event) {
-				ListGridRecord[] records = listGridTemasDeProceso
+				ListGridRecord[] records = listGridPruebasDeProceso
 						.getSelectedRecords();
 
-				if (formInformacion.validate() && records.length > 0) {
+				if (formInformacion.validate()) {
 
 					UsuarioAdministradorBO usuario = new UsuarioAdministradorBO();
 					usuario.setApellidos(textApellidosUsuarioBasico
@@ -214,18 +219,22 @@ public class PanelAgregarCliente extends HLayout {
 							.getValueAsString());
 					usuario.setTelefono(textTelefono.getValueAsString());
 					usuario.setTelefono_Celular(textCelular.getValueAsString());
-					usuario.setUsos(textUsos.getValueAsInteger());
-					PermisoBO permiso = new PermisoBO();
-					permiso.setIdentificador(Integer.parseInt(selectTipoReporte
-							.getValueAsString()));
-					usuario.setPlanesDeUsuario(permiso);
-
-					PruebaListGridRecord[] recordsusuarios = new PruebaListGridRecord[records.length];
-					for (int i = 0; i < records.length; i++) {
-						recordsusuarios[i] = (PruebaListGridRecord) records[i];
+					PruebaListGridRecord[] recordsusuarios = null;
+					if (records.length > 0) {
+						recordsusuarios = new PruebaListGridRecord[records.length];
+						for (int i = 0; i < records.length; i++) {
+							recordsusuarios[i] = (PruebaListGridRecord) records[i];
+						}
 					}
-
-					panelClientes.agregarUsuarioAdministrador(usuario,
+					UsoBO usos = new UsoBO();
+					usos.setUsosAsignados(textUsos.getValueAsInteger());
+					usos.setFechaAsignacion(new Date());
+					if (checkBoxHabilitarFechaFinalizacion.getValueAsBoolean()) {
+						usuario.setFechaVencimiento(new Date(
+								dateTimeItemFechaFinalizacionNuevo
+										.getValueAsDate().getTime() + 3600 * 1000 * 12));
+					}
+					panelClientes.agregarUsuarioAdministrador(usuario, usos,
 							PruebaListGridRecord.getBO(recordsusuarios));
 				} else {
 					SC.warn("Debe completar los campos requeridos.");
@@ -237,15 +246,16 @@ public class PanelAgregarCliente extends HLayout {
 
 		SectionStack sectionStack = new SectionStack();
 		sectionStack.setWidth100();
+		sectionStack.setVertical(true);
 		sectionStack.setHeight100();
 		sectionStack.setVisibilityMode(VisibilityMode.MULTIPLE);
 		sectionStack.setAnimateSections(true);
 		sectionStack.setOverflow(Overflow.HIDDEN);
 
 		SectionStackSection summarySection = new SectionStackSection();
-		summarySection.setTitle("Temas");
+		summarySection.setTitle("Pruebas");
 		summarySection.setExpanded(true);
-		summarySection.setItems(listGridTemasDeProceso);
+		summarySection.setItems(listGridPruebasDeProceso);
 
 		sectionStack.setSections(summarySection);
 

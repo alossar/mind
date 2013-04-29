@@ -15,10 +15,13 @@ public class Evaluado implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private int identificador;
 
 	@Column(name="Apellidos")
 	private String apellidos;
+
+	private int cedula;
 
 	@Column(name="CorreoElectronico")
 	private String correoElectronico;
@@ -55,6 +58,14 @@ public class Evaluado implements Serializable {
 
 	public void setApellidos(String apellidos) {
 		this.apellidos = apellidos;
+	}
+
+	public int getCedula() {
+		return this.cedula;
+	}
+
+	public void setCedula(int cedula) {
+		this.cedula = cedula;
 	}
 
 	public String getCorreoElectronico() {

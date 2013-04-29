@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
 import javax.persistence.Query;
 
@@ -35,13 +36,14 @@ public class GestionAccesos implements IGestionAccesos {
 	@Override
 	public int verificarUsuarioBasico(EvaluadoBO usuarioBasico,
 			ParticipacionEnProcesoBO participacion) {
-		String query = "SELECT DISTINCT(p) FROM Evaluado u, ParticipacionEnProceso p WHERE p.evaluado = u AND u.correoElectronico =:correo AND p.codigo_Acceso =:codigo";
+		String query = "SELECT DISTINCT(p) FROM Evaluado u, ParticipacionEnProceso p WHERE p.evaluado = u AND u.correoElectronico =:correo AND u.cedula =:cedula AND p.codigo_Acceso =:codigo";
 		Query qs = entityManager.createQuery(query);
 		qs.setParameter("correo", usuarioBasico.getCorreoElectronico());
 		qs.setParameter("codigo", participacion.getCodigo_Acceso());
-		ParticipacionEnProceso par = (ParticipacionEnProceso) qs
-				.getResultList().get(0);
-		if (participacion != null) {
+		qs.setParameter("cedula", usuarioBasico.getCedula());
+		List<ParticipacionEnProceso> listaPar = qs.getResultList();
+		if (listaPar != null && listaPar.size() > 0) {
+			ParticipacionEnProceso par = listaPar.get(0);
 			entityManager.refresh(par);
 			Date fechaInicio = par.getProcesosUsuario().getFechaInicio();
 			Date fechaFinal = par.getProcesosUsuario().getFechaFinalizacion();
@@ -107,6 +109,9 @@ public class GestionAccesos implements IGestionAccesos {
 				} else if (u.getTipo().equalsIgnoreCase(
 						Convencion.TIPO_USUARIO_PROGRAMADOR)) {
 					resultado = new UsuarioProgramadorBO();
+					((UsuarioProgramadorBO) resultado)
+							.setUsuarioAdministradorID(u.getUsuario()
+									.getIdentificador());
 				} else {
 					resultado = new UsuarioBO();
 				}
@@ -141,4 +146,38 @@ public class GestionAccesos implements IGestionAccesos {
 		}
 	}
 
+	public String cambiarContrasenaCorreo(String correo) {
+		String query = "SELECT DISTINCT(u) FROM Usuario u WHERE u.correo_Electronico =:correo";
+		Query q = entityManager.createQuery(query);
+		q.setParameter("correo", correo);
+		List<Usuario> usuarios = q.getResultList();
+		EntityTransaction userTransaction = entityManager.getTransaction();
+		// Valida que se encuentre un usuario.
+		if (usuarios.size() > 0) {
+
+			Usuario u = usuarios.get(0);
+			Date ven = u.getFechaVencimiento();
+			if (u.getEstado_Cuenta().equalsIgnoreCase(
+					Convencion.ESTADO_CUENTA_ACTIVA)) {
+				if (ven != null) {
+					if (u.getFechaVencimiento().before(new Date())) {
+						return null;
+					}
+				}
+				userTransaction.begin();
+				String contrasena = Generador.GenerarCodigo(
+						Generador.CARACTERES, 12);
+				u.setContrasena(Generador.convertirStringmd5(contrasena));
+				entityManager.merge(u);
+				entityManager.flush();
+				userTransaction.commit();
+				return contrasena;
+			} else {
+				return null;
+			}
+		} else {
+			return null;
+		}
+
+	}
 }

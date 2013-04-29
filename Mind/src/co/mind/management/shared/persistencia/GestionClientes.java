@@ -12,13 +12,16 @@ import javax.persistence.Query;
 
 import co.mind.management.shared.dto.ImagenBO;
 import co.mind.management.shared.dto.ImagenUsuarioBO;
-import co.mind.management.shared.dto.PermisoBO;
 import co.mind.management.shared.dto.PreguntaUsuarioBO;
 import co.mind.management.shared.dto.PruebaUsuarioBO;
+import co.mind.management.shared.dto.UsoBO;
 import co.mind.management.shared.dto.UsuarioAdministradorBO;
-import co.mind.management.shared.entidades.Permiso;
+import co.mind.management.shared.dto.UsuarioBO;
+import co.mind.management.shared.entidades.Evaluado;
 import co.mind.management.shared.entidades.PreguntaUsuario;
+import co.mind.management.shared.entidades.ProcesoUsuario;
 import co.mind.management.shared.entidades.PruebaUsuario;
+import co.mind.management.shared.entidades.UsoUsuario;
 import co.mind.management.shared.entidades.Usuario;
 import co.mind.management.shared.recursos.Convencion;
 import co.mind.management.shared.recursos.Generador;
@@ -61,9 +64,6 @@ public class GestionClientes implements IGestionClientes {
 			u.setTelefono(usuarioAdministrador.getTelefono());
 			u.setTelefono_Celular(usuarioAdministrador.getTelefono_Celular());
 			u.setTipo(Convencion.TIPO_USUARIO_ADMINISTRADOR);
-			Permiso p = entityManager.find(Permiso.class, usuarioAdministrador
-					.getPlanesDeUsuario().getIdentificador());
-			u.setPermiso(p);
 			if (!entityManager.contains(u)) {
 				entityManager.persist(u);
 				entityManager.flush();
@@ -81,7 +81,7 @@ public class GestionClientes implements IGestionClientes {
 	}
 
 	public int agregarUsuarioAdministrador(int usuarioMaestroID,
-			UsuarioAdministradorBO usuarioAdministrador,
+			UsuarioAdministradorBO usuarioAdministrador, UsoBO usos,
 			List<PruebaUsuarioBO> pruebas) {
 		EntityTransaction userTransaction = entityManager.getTransaction();
 		try {
@@ -106,10 +106,6 @@ public class GestionClientes implements IGestionClientes {
 			u.setTelefono(usuarioAdministrador.getTelefono());
 			u.setTelefono_Celular(usuarioAdministrador.getTelefono_Celular());
 			u.setTipo(Convencion.TIPO_USUARIO_ADMINISTRADOR);
-			u.setUsos(usuarioAdministrador.getUsos());
-			Permiso p = entityManager.find(Permiso.class, usuarioAdministrador
-					.getPlanesDeUsuario().getIdentificador());
-			u.setPermiso(p);
 			if (!entityManager.contains(u)) {
 				entityManager.persist(u);
 				entityManager.flush();
@@ -165,9 +161,20 @@ public class GestionClientes implements IGestionClientes {
 					}
 
 				}
+				System.out.println("Corregir usos al enviar correo.");
+				UsoUsuario uso = new UsoUsuario();
+				uso.setFechaAsignacion(new Date());
+				uso.setUsosAsignados(usos.getUsosAsignados());
+				uso.setUsosRedimidos(0);
+				uso.setUsuario(u);
+				userTransaction.begin();
+				entityManager.persist(uso);
+				entityManager.flush();
+				userTransaction.commit();
+
 				SMTPSender.enviarCorreoCreacionCuentaCliente(u.getNombres(),
 						u.getApellidos(), u.getCorreo_Electronico(),
-						contrasena, u.getUsos());
+						contrasena, usos.getUsosAsignados());
 				return Convencion.CORRECTO;
 			} else {
 				return Convencion.INCORRECTO;
@@ -195,8 +202,6 @@ public class GestionClientes implements IGestionClientes {
 			u.setNombres(usuarioAdministrador.getNombres());
 			u.setCargo(usuarioAdministrador.getCargo());
 			u.setCiudad(usuarioAdministrador.getCiudad());
-			u.setContrasena(Generador.convertirStringmd5(usuarioAdministrador
-					.getContrasena()));
 			u.setEmpresa(usuarioAdministrador.getEmpresa());
 			u.setEstado_Cuenta(usuarioAdministrador.getEstado_Cuenta());
 			u.setFecha_Creacion(usuarioAdministrador.getFecha_Creacion());
@@ -256,6 +261,37 @@ public class GestionClientes implements IGestionClientes {
 		EntityTransaction userTransaction = entityManager.getTransaction();
 		try {
 			userTransaction.begin();
+			List<UsoUsuario> usos = usuario.getUsosUsuarios();
+			GestionUsos g = new GestionUsos();
+			for (UsoUsuario usoUsuario : usos) {
+				g.eliminarPermiso(usoUsuario.getIdentificador());
+			}
+			List<Usuario> usuarios = usuario.getUsuarios();
+			GestionUsuariosProgramadores gp = new GestionUsuariosProgramadores();
+			for (Usuario user : usuarios) {
+				gp.eliminarUsuarioProgramador(usuario.getIdentificador(),
+						user.getIdentificador());
+			}
+			List<Evaluado> evaluados = usuario.getEvaluados();
+			GestionEvaluados geval = new GestionEvaluados();
+			for (Evaluado evaluado : evaluados) {
+				geval.eliminarUsuarioBasico(usuario.getIdentificador(),
+						evaluado.getIdentificador());
+			}
+			List<ProcesoUsuario> procesos = usuario.getProcesosUsuarios();
+			GestionProcesos gproc = new GestionProcesos();
+			for (ProcesoUsuario procesoUsuario : procesos) {
+				gproc.eliminarProcesoUsuarioAdministrador(
+						usuario.getIdentificador(),
+						procesoUsuario.getIdentificador());
+			}
+			List<PruebaUsuario> pruebas = usuario.getPruebasUsuarios();
+			GestionPruebas gpru = new GestionPruebas();
+			for (PruebaUsuario pruebaUsuario : pruebas) {
+				gpru.eliminarPruebaUsuarioAdministrador(
+						usuario.getIdentificador(),
+						pruebaUsuario.getIdentificador());
+			}
 			entityManager.remove(usuario);
 			entityManager.flush();
 			userTransaction.commit();
@@ -265,6 +301,93 @@ public class GestionClientes implements IGestionClientes {
 			exception.printStackTrace();
 			userTransaction.rollback();
 			return Convencion.INCORRECTO;
+		}
+	}
+
+	public List<UsuarioAdministradorBO> listarClientesPorEmpresaParcial(
+			String empresa) {
+		String query = "SELECT DISTINCT(u) FROM Usuario u WHERE u.tipo =:tipoU AND u.empresa LIKE :empresa";
+		Query q = entityManager.createQuery(query);
+		q.setParameter("tipoU", Convencion.TIPO_USUARIO_ADMINISTRADOR);
+		q.setParameter("empresa", "%" + empresa + "%");
+		List<Usuario> usuarios = q.getResultList();
+		// Valida que se encuentre un usuario.
+		if (usuarios != null) {
+			if (usuarios.size() > 0) {
+				List<UsuarioAdministradorBO> lista = new ArrayList<UsuarioAdministradorBO>();
+				for (int i = 0; i < usuarios.size(); i++) {
+					UsuarioAdministradorBO resultado = new UsuarioAdministradorBO();
+					Usuario usuario = usuarios.get(i);
+
+					resultado.setApellidos(usuario.getApellidos());
+					resultado.setCorreo_Electronico(usuario
+							.getCorreo_Electronico());
+					resultado.setIdentificador(usuario.getIdentificador());
+					resultado.setNombres(usuario.getNombres());
+					resultado.setCargo(usuario.getCargo());
+					resultado.setCiudad(usuario.getCiudad());
+					resultado.setEmpresa(usuario.getEmpresa());
+					resultado.setEstado_Cuenta(usuario.getEstado_Cuenta());
+					resultado.setFecha_Creacion(usuario.getFecha_Creacion());
+					resultado.setIdentificador(usuario.getIdentificador());
+					resultado.setNombres(usuario.getNombres());
+					resultado.setPais(usuario.getPais());
+					resultado.setTelefono(usuario.getTelefono());
+					resultado
+							.setTelefono_Celular(usuario.getTelefono_Celular());
+					resultado.setTipo(usuario.getTipo());
+
+					lista.add(resultado);
+				}
+				return lista;
+			} else {
+				return null;
+			}
+		} else {
+			return null;
+		}
+	}
+
+	public List<UsuarioAdministradorBO> listarClientesPorCedulaParcial(int id) {
+		String query = "SELECT DISTINCT(u) FROM Usuario u WHERE u.tipo =:tipoU AND u.identificador =:empresa";
+		Query q = entityManager.createQuery(query);
+		q.setParameter("tipoU", Convencion.TIPO_USUARIO_ADMINISTRADOR);
+		q.setParameter("empresa", id);
+		List<Usuario> usuarios = q.getResultList();
+		// Valida que se encuentre un usuario.
+		if (usuarios != null) {
+			if (usuarios.size() > 0) {
+				List<UsuarioAdministradorBO> lista = new ArrayList<UsuarioAdministradorBO>();
+				for (int i = 0; i < usuarios.size(); i++) {
+					UsuarioAdministradorBO resultado = new UsuarioAdministradorBO();
+					Usuario usuario = usuarios.get(i);
+
+					resultado.setApellidos(usuario.getApellidos());
+					resultado.setCorreo_Electronico(usuario
+							.getCorreo_Electronico());
+					resultado.setIdentificador(usuario.getIdentificador());
+					resultado.setNombres(usuario.getNombres());
+					resultado.setCargo(usuario.getCargo());
+					resultado.setCiudad(usuario.getCiudad());
+					resultado.setEmpresa(usuario.getEmpresa());
+					resultado.setEstado_Cuenta(usuario.getEstado_Cuenta());
+					resultado.setFecha_Creacion(usuario.getFecha_Creacion());
+					resultado.setIdentificador(usuario.getIdentificador());
+					resultado.setNombres(usuario.getNombres());
+					resultado.setPais(usuario.getPais());
+					resultado.setTelefono(usuario.getTelefono());
+					resultado
+							.setTelefono_Celular(usuario.getTelefono_Celular());
+					resultado.setTipo(usuario.getTipo());
+
+					lista.add(resultado);
+				}
+				return lista;
+			} else {
+				return null;
+			}
+		} else {
+			return null;
 		}
 	}
 
@@ -300,15 +423,6 @@ public class GestionClientes implements IGestionClientes {
 							.setTelefono_Celular(usuario.getTelefono_Celular());
 					resultado.setTipo(usuario.getTipo());
 
-					PermisoBO permiso = new PermisoBO();
-					permiso.setNombre(usuario.getPermiso().getNombre());
-					permiso.setEdicion(usuario.getPermiso().getEdicion());
-					permiso.setCreacion(usuario.getPermiso().getCreacion());
-					permiso.setIdentificador(usuario.getPermiso()
-							.getIdentificador());
-
-					resultado.setPlanesDeUsuario(permiso);
-
 					lista.add(resultado);
 				}
 				return lista;
@@ -317,6 +431,45 @@ public class GestionClientes implements IGestionClientes {
 			}
 		} else {
 			return null;
+		}
+	}
+
+	public int cambiarContrasena(UsuarioBO usuarioMaestro, String pass) {
+		EntityTransaction userTransaction = entityManager.getTransaction();
+		try {
+			userTransaction.begin();
+			Usuario u = entityManager.find(Usuario.class,
+					usuarioMaestro.getIdentificador());
+			u.setContrasena(pass);
+			entityManager.merge(u);
+			entityManager.flush();
+			userTransaction.commit();
+			return Convencion.CORRECTO;
+		} catch (Exception exception) {
+			// Exception has occurred, roll-back the transaction.
+			exception.printStackTrace();
+			userTransaction.rollback();
+			return Convencion.INCORRECTO;
+		}
+	}
+
+	public int cambiarEstadoCUenta(UsuarioAdministradorBO usuario,
+			String estadoCuentaInactiva) {
+		EntityTransaction userTransaction = entityManager.getTransaction();
+		try {
+			userTransaction.begin();
+			Usuario u = entityManager.find(Usuario.class,
+					usuario.getIdentificador());
+			u.setEstado_Cuenta(estadoCuentaInactiva);
+			entityManager.merge(u);
+			entityManager.flush();
+			userTransaction.commit();
+			return Convencion.CORRECTO;
+		} catch (Exception exception) {
+			// Exception has occurred, roll-back the transaction.
+			exception.printStackTrace();
+			userTransaction.rollback();
+			return Convencion.INCORRECTO;
 		}
 	}
 }

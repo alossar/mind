@@ -8,6 +8,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,8 +46,8 @@ public class ExcelReportServlet extends HttpServlet {
 			 * Asegurar que existe el archivo jasper
 			 */
 			ServletContext sc = getServletConfig().getServletContext();
-			String vjrxmlPath = "/reports/reporte.jrxml";
-			String vjasperPath = "/reports/reporte.jasper";
+			String vjrxmlPath = "/reports/reportexls.jrxml";
+			String vjasperPath = "/reports/reportexls.jasper";
 
 			InputStream is = sc.getResourceAsStream(vjasperPath);
 
@@ -60,16 +61,18 @@ public class ExcelReportServlet extends HttpServlet {
 			List<ParticipacionEnProcesoBO> participaciones = (List<ParticipacionEnProcesoBO>) session
 					.getAttribute("participaciones");
 			if (participaciones != null) {
+				List<Integer> identificadores = new ArrayList<Integer>();
+				for (ParticipacionEnProcesoBO participacionEnProcesoBO : participaciones) {
+					identificadores.add(participacionEnProcesoBO.getIdentificador());
+				}
 				Map<String, Object> parametros = new HashMap<>();
-				Integer participacion = participaciones.get(0)
-						.getIdentificador();
 				String direccionSubreporteCategorias = getServletConfig()
 						.getServletContext().getRealPath(
 								"/reports/subreporte_categorias.jasper");
 				String direccionSubreportePreguntas = getServletConfig()
 						.getServletContext().getRealPath(
 								"/reports/subreporte_preguntas.jasper");
-				parametros.put("participacionID", participacion);
+				parametros.put("participacionID", identificadores);
 				parametros.put("SUBREPORT_DIR", direccionSubreporteCategorias);
 				parametros.put("SUBREPORT_DIR_PRE",
 						direccionSubreportePreguntas);
@@ -87,15 +90,14 @@ public class ExcelReportServlet extends HttpServlet {
 				JRXlsExporter exporter = new JRXlsExporter();
 				exporter.setParameter(JRExporterParameter.JASPER_PRINT, jprint);
 				exporter.setParameter(JRExporterParameter.OUTPUT_FILE_NAME, xls);
-				exporter.setParameter(
-						JRXlsExporterParameter.IS_ONE_PAGE_PER_SHEET,
-						Boolean.FALSE);
-				exporter.setParameter(
-						JRXlsExporterParameter.IS_IGNORE_CELL_BORDER,
-						Boolean.FALSE);
-				exporter.setParameter(
-						JRXlsExporterParameter.IS_WHITE_PAGE_BACKGROUND,
-						Boolean.FALSE);
+				exporter.setParameter(JRXlsExporterParameter.IS_ONE_PAGE_PER_SHEET,	Boolean.FALSE);
+				exporter.setParameter(JRXlsExporterParameter.IS_IGNORE_CELL_BORDER,	Boolean.FALSE);
+				exporter.setParameter(JRXlsExporterParameter.IS_WHITE_PAGE_BACKGROUND, Boolean.FALSE);				
+				exporter.setParameter(JRXlsExporterParameter.IS_COLLAPSE_ROW_SPAN, Boolean.TRUE);
+				exporter.setParameter(JRXlsExporterParameter.IS_REMOVE_EMPTY_SPACE_BETWEEN_COLUMNS, Boolean.TRUE);
+				exporter.setParameter(JRXlsExporterParameter.IS_REMOVE_EMPTY_SPACE_BETWEEN_ROWS, Boolean.TRUE);
+				exporter.setParameter(JRXlsExporterParameter.IS_DETECT_CELL_TYPE, Boolean.FALSE);
+				exporter.setParameter(JRXlsExporterParameter.IS_IGNORE_GRAPHICS, Boolean.TRUE);
 				exporter.exportReport();
 
 				/*
@@ -104,7 +106,7 @@ public class ExcelReportServlet extends HttpServlet {
 				File f = new File(xls);
 				response.setContentType("application/vnd.ms-excel");
 				response.setHeader("Content-Disposition",
-						"attachment;filename=\"" + "detObjMet.xls" + "\"");
+						"attachment;filename=\"" + "Proyecto "+participaciones.get(0).getProcesoID()+".xls" + "\"");
 				InputStream in = new FileInputStream(f);
 				ServletOutputStream sos = response.getOutputStream();
 

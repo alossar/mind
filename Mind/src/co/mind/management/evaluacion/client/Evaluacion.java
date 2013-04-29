@@ -157,24 +157,26 @@ public class Evaluacion implements EntryPoint {
 
 					@Override
 					public void onSuccess(ParticipacionEnProcesoBO result) {
-						participacionEnProceso = result;
-						// obtenerNombreEmpresa();
-						Window.addWindowClosingHandler(new ClosingHandler() {
+						if (result != null) {
+							participacionEnProceso = result;
+							// obtenerNombreEmpresa();
+							Window.addWindowClosingHandler(new ClosingHandler() {
 
-							@Override
-							public void onWindowClosing(ClosingEvent event) {
-								if (!termina) {
-									event.setMessage("Si cierra puede perder los resultados de la prueba. ¿Desea continuar?");
+								@Override
+								public void onWindowClosing(ClosingEvent event) {
+									if (!termina) {
+										event.setMessage("Si cierra puede perder los resultados de la prueba. ¿Desea continuar?");
+									}
 								}
-							}
-						});
-						comenzarPrueba();
+							});
+							comenzarPrueba();
+						}
 					}
 
 					@Override
 					public void onFailure(Throwable caught) {
+						caught.printStackTrace();
 						System.out.println("Error obteniendo la participacion");
-
 					}
 				});
 	}
@@ -188,12 +190,16 @@ public class Evaluacion implements EntryPoint {
 					@Override
 					public void onSuccess(Integer result) {
 						if (result.equals(Convencion.CORRECTO)) {
+							obtenerPreguntasPrueba();
+						} else {
+							termina = true;
+							Window.Location.replace(finUrl);
 						}
-						obtenerPreguntasPrueba();
 					}
 
 					@Override
 					public void onFailure(Throwable caught) {
+						caught.printStackTrace();
 						System.out.println("Error comenzando la prueba");
 
 					}
@@ -214,6 +220,7 @@ public class Evaluacion implements EntryPoint {
 
 					@Override
 					public void onFailure(Throwable caught) {
+						caught.printStackTrace();
 
 					}
 				});
@@ -236,6 +243,7 @@ public class Evaluacion implements EntryPoint {
 
 					@Override
 					public void onFailure(Throwable caught) {
+						caught.printStackTrace();
 						System.out.println("Error guardando el resultado");
 					}
 				});
@@ -258,6 +266,7 @@ public class Evaluacion implements EntryPoint {
 
 					@Override
 					public void onFailure(Throwable caught) {
+						caught.printStackTrace();
 						System.out.println("Error cargando las preguntas");
 
 					}
@@ -301,6 +310,7 @@ public class Evaluacion implements EntryPoint {
 
 						@Override
 						public void onFailure(Throwable caught) {
+							caught.printStackTrace();
 							System.out.println("Error terminando la prueba");
 						}
 					});
@@ -318,6 +328,7 @@ public class Evaluacion implements EntryPoint {
 
 			@Override
 			public void onFailure(Throwable caught) {
+				caught.printStackTrace();
 				Window.Location.replace(finUrl);
 			}
 		});

@@ -9,9 +9,10 @@ import com.smartgwt.client.widgets.grid.ListGridRecord;
 
 public class UsuarioBasicoListGridRecord extends ListGridRecord {
 
-	public UsuarioBasicoListGridRecord(int id, String nombre, String apellidos,
-			String correo, int idUsuario, int edad) {
-		setAttribute("id", id);
+	public UsuarioBasicoListGridRecord(int id, int cedula, String nombre,
+			String apellidos, String correo, int idUsuario, int edad) {
+		setAttribute("id", cedula);
+		setAttribute("identificador", id);
 		setAttribute("nombre", nombre);
 		setAttribute("apellidos", apellidos);
 		setAttribute("correo", correo);
@@ -25,8 +26,9 @@ public class UsuarioBasicoListGridRecord extends ListGridRecord {
 		if (usuarios != null) {
 			for (EvaluadoBO usuario : usuarios) {
 				UsuarioBasicoListGridRecord imagen = new UsuarioBasicoListGridRecord(
-						usuario.getIdentificador(), usuario.getNombres(),
-						usuario.getApellidos(), usuario.getCorreoElectronico(),
+						usuario.getIdentificador(), usuario.getCedula(),
+						usuario.getNombres(), usuario.getApellidos(),
+						usuario.getCorreoElectronico(),
 						usuario.getIdentificadorUsuarioAdministrador(),
 						usuario.getEdad());
 				resultado.add(imagen);
@@ -51,7 +53,9 @@ public class UsuarioBasicoListGridRecord extends ListGridRecord {
 				usuarioBasico.setCorreoElectronico(usuario
 						.getAttribute("correo"));
 				usuarioBasico.setEdad(usuario.getAttributeAsInt("edad"));
-				usuarioBasico.setIdentificador(usuario.getAttributeAsInt("id"));
+				usuarioBasico.setIdentificador(usuario.getAttributeAsInt("identificador"));
+				usuarioBasico.setCedula(usuario
+						.getAttributeAsInt("id"));
 				usuarioBasico.setNombres(usuario.getAttribute("nombre"));
 				usuarioBasico.setIdentificadorUsuarioAdministrador(usuario
 						.getAttributeAsInt("idUsuario"));

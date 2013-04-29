@@ -3,11 +3,10 @@ package co.mind.management.maestro.client.evaluados;
 import java.util.List;
 
 import co.mind.management.maestro.client.Maestro;
-import co.mind.management.shared.datasources.EvaluadosDataSource;
+import co.mind.management.maestro.client.PanelEncabezadoDialogo;
 import co.mind.management.shared.dto.EvaluadoBO;
 import co.mind.management.shared.records.UsuarioBasicoListGridRecord;
 
-import com.smartgwt.client.types.SelectionAppearance;
 import com.smartgwt.client.types.SelectionStyle;
 import com.smartgwt.client.types.Side;
 import com.smartgwt.client.types.VerticalAlignment;
@@ -17,9 +16,17 @@ import com.smartgwt.client.widgets.events.CloseClickEvent;
 import com.smartgwt.client.widgets.events.CloseClickHandler;
 import com.smartgwt.client.widgets.form.DynamicForm;
 import com.smartgwt.client.widgets.form.fields.ButtonItem;
+import com.smartgwt.client.widgets.form.fields.FormItemIcon;
 import com.smartgwt.client.widgets.form.fields.IntegerItem;
+import com.smartgwt.client.widgets.form.fields.PickerIcon;
 import com.smartgwt.client.widgets.form.fields.TextItem;
+import com.smartgwt.client.widgets.form.fields.events.ChangedEvent;
+import com.smartgwt.client.widgets.form.fields.events.ChangedHandler;
 import com.smartgwt.client.widgets.form.fields.events.ClickEvent;
+import com.smartgwt.client.widgets.form.fields.events.IconClickEvent;
+import com.smartgwt.client.widgets.form.fields.events.IconClickHandler;
+import com.smartgwt.client.widgets.form.fields.events.KeyPressEvent;
+import com.smartgwt.client.widgets.form.fields.events.KeyPressHandler;
 import com.smartgwt.client.widgets.form.validator.RegExpValidator;
 import com.smartgwt.client.widgets.grid.ListGrid;
 import com.smartgwt.client.widgets.grid.ListGridField;
@@ -42,10 +49,10 @@ public class PanelContenidoEvaluados extends HLayout {
 	private TextItem textCorreoUsuarioBasico;
 	private IntegerItem textIdentificadorUsuarioBasico;
 	private DynamicForm formUsuarioBasico;
-	private EvaluadosDataSource evaluadosDataSource;
+	private TextItem searchItem;
 
 	public PanelContenidoEvaluados() {
-		setWidth("100%");
+		setWidth("90%");
 		setHeight("80%");
 		setBackgroundColor("white");
 		setPadding(15);
@@ -59,10 +66,7 @@ public class PanelContenidoEvaluados extends HLayout {
 		listGridUsuariosBasicos = new ListGrid();
 		listGridUsuariosBasicos.setWidth100();
 		listGridUsuariosBasicos.setHeight100();
-		evaluadosDataSource = new EvaluadosDataSource("evaluados");
-		listGridUsuariosBasicos.setDataSource(evaluadosDataSource);
 		listGridUsuariosBasicos.setShowAllRecords(true);
-		listGridUsuariosBasicos.setSelectionType(SelectionStyle.SIMPLE);
 		listGridUsuariosBasicos
 				.setEmptyMessage("No hay evaluados en su cuenta.");
 		listGridUsuariosBasicos
@@ -101,7 +105,7 @@ public class PanelContenidoEvaluados extends HLayout {
 					}
 				});
 
-		ListGridField idField = new ListGridField("id", "C\u00E9dula");
+		ListGridField idField = new ListGridField("id", "Cédula");
 		idField.setCanEdit(false);
 		ListGridField nombreField = new ListGridField("nombre", "Nombre");
 		ListGridField apellidosField = new ListGridField("apellidos",
@@ -110,8 +114,6 @@ public class PanelContenidoEvaluados extends HLayout {
 		listGridUsuariosBasicos.setFields(idField, nombreField, apellidosField,
 				correoField);
 		listGridUsuariosBasicos.setCanResizeFields(true);
-		listGridUsuariosBasicos.setAutoFetchData(true);
-		listGridUsuariosBasicos.setShowFilterEditor(true);
 		listGridUsuariosBasicos.setCanEdit(true);
 
 		ToolStripButton botonNuevoBasico = new ToolStripButton(
@@ -127,42 +129,69 @@ public class PanelContenidoEvaluados extends HLayout {
 					}
 				});
 
-		ToolStripButton botonEliminarBasico = new ToolStripButton(
-				"Eliminar Evaluados", "icons/16/document_plain_new.png");
-
-		botonEliminarBasico
-				.addClickHandler(new com.smartgwt.client.widgets.events.ClickHandler() {
-
-					@Override
-					public void onClick(
-							com.smartgwt.client.widgets.events.ClickEvent event) {
-						ListGridRecord[] records = listGridUsuariosBasicos
-								.getSelectedRecords();
-						if (records.length > 0) {
-							UsuarioBasicoListGridRecord[] recordsusuarios = new UsuarioBasicoListGridRecord[records.length];
-							for (int i = 0; i < records.length; i++) {
-								recordsusuarios[i] = (UsuarioBasicoListGridRecord) records[i];
-							}
-							Maestro.eliminarUsuariosBasicos(UsuarioBasicoListGridRecord
-									.getBO(recordsusuarios));
-						} else {
-							SC.warn("Seleccione los evaluados a eliminar.");
-						}
-					}
-				});
-
 		ToolStrip menuBarUsuarioBasico = new ToolStrip();
 		menuBarUsuarioBasico.setWidth100();
 		menuBarUsuarioBasico.addButton(botonNuevoBasico);
-		menuBarUsuarioBasico.addButton(botonEliminarBasico);
 		menuBarUsuarioBasico.addFill();
 		menuBarUsuarioBasico.addSeparator();
 		menuBarUsuarioBasico.addSeparator();
+
+		searchItem = new TextItem("description", "Buscar Evaluado");
+		searchItem.addKeyPressHandler(new KeyPressHandler() {
+			public void onKeyPress(KeyPressEvent event) {
+				if ("enter".equalsIgnoreCase(event.getKeyName())) {
+					String keyword = searchItem.getValueAsString();
+					if (keyword != "" && keyword != null) {
+						Maestro.consultarEvaluadosClave(keyword);
+					} else {
+						Maestro.setListaUsuariosBasicos();
+					}
+				}
+			}
+		});
+		final PickerIcon findIcon = new PickerIcon(PickerIcon.SEARCH);
+		final PickerIcon cancelIcon = new PickerIcon(PickerIcon.CLEAR);
+		searchItem.setIcons(findIcon, cancelIcon);
+
+		searchItem.addIconClickHandler(new IconClickHandler() {
+			public void onIconClick(IconClickEvent event) {
+				FormItemIcon icon = event.getIcon();
+				if (icon.getSrc().equals(cancelIcon.getSrc())) {
+					searchItem.setValue("");
+					Maestro.setListaUsuariosBasicos();
+				} else if (icon.getSrc().equals(findIcon.getSrc())) {
+					String keyword = searchItem.getValueAsString();
+					if (keyword != "" && keyword != null) {
+						Maestro.consultarEvaluadosClave(keyword);
+					} else {
+						Maestro.setListaUsuariosBasicos();
+					}
+				}
+			}
+		});
+
+		searchItem.addChangedHandler(new ChangedHandler() {
+
+			@Override
+			public void onChanged(ChangedEvent event) {
+				String valor = searchItem.getValueAsString();
+				if (valor == "" || valor == null) {
+					Maestro.setListaUsuariosBasicos();
+				}
+			}
+		});
+
+		DynamicForm form = new DynamicForm();
+		form.setWidth100();
+		form.setPadding(5);
+		form.setLayoutAlign(VerticalAlignment.BOTTOM);
+		form.setFields(searchItem);
 
 		VLayout vl1 = new VLayout();
 		vl1.setWidth100();
 		vl1.setHeight100();
 
+		vl1.addMember(form);
 		vl1.addMember(listGridUsuariosBasicos);
 		vl1.addMember(menuBarUsuarioBasico);
 
@@ -171,8 +200,6 @@ public class PanelContenidoEvaluados extends HLayout {
 	}
 
 	public void actualizarUsuariosBasicos(List<EvaluadoBO> result) {
-		evaluadosDataSource.setTestData(UsuarioBasicoListGridRecord
-				.getRecords(result));
 		listGridUsuariosBasicos.setData(UsuarioBasicoListGridRecord
 				.getRecords(result));
 	}
@@ -180,7 +207,7 @@ public class PanelContenidoEvaluados extends HLayout {
 	private void mostrarDialogoCrearUsuarioBasico() {
 		final Window winModal = new Window();
 		winModal.setWidth(350);
-		winModal.setHeight(180);
+		winModal.setHeight(250);
 		winModal.setTitle("Crear un Evaluado");
 		winModal.setShowMinimizeButton(false);
 		winModal.setIsModal(true);
@@ -192,6 +219,10 @@ public class PanelContenidoEvaluados extends HLayout {
 				winModal.destroy();
 			}
 		});
+
+		PanelEncabezadoDialogo p = new PanelEncabezadoDialogo("Crear Evaluado",
+				"Cree un evaluado en su cuenta", "img/admin/bot3.png");
+		p.setSize("100%", "70px");
 
 		formUsuarioBasico = new DynamicForm();
 		formUsuarioBasico.setHeight("40%");
@@ -236,6 +267,7 @@ public class PanelContenidoEvaluados extends HLayout {
 				textNombreUsuarioBasico, textApellidosUsuarioBasico,
 				textCorreoUsuarioBasico, boton);
 
+		winModal.addItem(p);
 		winModal.addItem(formUsuarioBasico);
 
 		winModal.show();

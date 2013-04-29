@@ -16,6 +16,7 @@ import co.mind.management.shared.persistencia.GestionAccesos;
 import co.mind.management.shared.persistencia.GestionEvaluacion;
 import co.mind.management.shared.persistencia.GestionPruebas;
 import co.mind.management.shared.persistencia.GestionClientes;
+import co.mind.management.shared.persistencia.GestionUsos;
 import co.mind.management.shared.recursos.Convencion;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
@@ -31,6 +32,7 @@ public class EvaluacionServiceImpl extends RemoteServiceServlet implements
 	private GestionEvaluacion gestionEvaluacion = new GestionEvaluacion();
 	private GestionPruebas gestionPruebas = new GestionPruebas();
 	private GestionClientes gestionUsuariosAdministradores = new GestionClientes();
+	private GestionUsos gestionUsos = new GestionUsos();
 
 	@Override
 	public int comenzarPrueba(EvaluadoBO usuarioBasico,
@@ -44,6 +46,10 @@ public class EvaluacionServiceImpl extends RemoteServiceServlet implements
 					usuarioBasico.getIdentificadorUsuarioAdministrador(),
 					usuarioBasico.getIdentificador(),
 					participacion.getProcesoID(), participacion);
+			gestionEvaluacion.decrementarCantidadDeUsosUsuarios(
+					participacion.getIdentificador(),
+					participacion.getProcesoID());
+
 			return resultado;
 
 		} else {
@@ -85,11 +91,11 @@ public class EvaluacionServiceImpl extends RemoteServiceServlet implements
 	}
 
 	@Override
-	public int validarUsuarioBasico(String identificador, String correo,
+	public int validarUsuarioBasico(String cedula, String correo,
 			String codigoAcceso) {
 		EvaluadoBO u = new EvaluadoBO();
 		u.setCorreoElectronico(correo);
-		u.setIdentificador(Integer.parseInt(identificador));
+		u.setCedula(Integer.parseInt(cedula));
 		ParticipacionEnProcesoBO p = new ParticipacionEnProcesoBO();
 		p.setCodigo_Acceso(codigoAcceso);
 		return (Integer) g.verificarUsuarioBasico(u, p);

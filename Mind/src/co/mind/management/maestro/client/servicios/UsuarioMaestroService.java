@@ -7,7 +7,6 @@ import co.mind.management.shared.dto.EvaluadoBO;
 import co.mind.management.shared.dto.ImagenBO;
 import co.mind.management.shared.dto.ImagenUsuarioBO;
 import co.mind.management.shared.dto.ParticipacionEnProcesoBO;
-import co.mind.management.shared.dto.PermisoBO;
 import co.mind.management.shared.dto.PreguntaUsuarioBO;
 import co.mind.management.shared.dto.ProcesoUsuarioBO;
 import co.mind.management.shared.dto.PruebaUsuarioBO;
@@ -16,9 +15,10 @@ import co.mind.management.shared.dto.SolicitudEliminacionCuentaBO;
 import co.mind.management.shared.dto.SolicitudIncrementoUsosBO;
 import co.mind.management.shared.dto.SolicitudPlanBO;
 import co.mind.management.shared.dto.SolicitudValoracionBO;
+import co.mind.management.shared.dto.UsoBO;
 import co.mind.management.shared.dto.UsuarioAdministradorBO;
 import co.mind.management.shared.dto.UsuarioBO;
-import co.mind.management.shared.dto.UsuarioMaestroBO;
+import co.mind.management.shared.dto.UsuarioProgramadorBO;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
@@ -31,7 +31,7 @@ public interface UsuarioMaestroService extends RemoteService {
 	public void cerrarSesion();
 
 	int crearCuenta(UsuarioBO usuarioAdministrador, SolicitudPlanBO solicitud,
-			PermisoBO plan, Date fechaFinalizacion, int usosTotal);
+			Date fechaFinalizacion, int usosTotal);
 
 	/**
 	 * Activa la cuenta de un Usuario Administrador.
@@ -58,14 +58,7 @@ public interface UsuarioMaestroService extends RemoteService {
 	public int eliminarCuenta(int usuarioAdministradorID,
 			SolicitudEliminacionCuentaBO solicitud);
 
-	public int agregarImagenPredeterminada(ImagenBO imagen);
-
-	public int agregarImagenPredeterminadaAUsuarios(
-			List<UsuarioBO> usuariosAdministradores, ImagenBO imagen);
-
-	public int agregarPlan(PermisoBO plan);
-
-	int agregarParticipacionDeUsuarioBasicoAProceso(
+		int agregarParticipacionDeUsuarioBasicoAProceso(
 			UsuarioBO usuarioAdministrador, ProcesoUsuarioBO proceso,
 			List<ParticipacionEnProcesoBO> evaluados);
 
@@ -124,8 +117,6 @@ public interface UsuarioMaestroService extends RemoteService {
 	public List<EvaluadoBO> consultarUsuariosBasicosUsuarioAdministrador(
 			int usuarioID);
 
-	public List<PermisoBO> consultarPlanesUsuarioAdministrador(int usuarioID);
-
 	public List<ImagenUsuarioBO> consultarImagenesUsuario(int usuariID);
 
 	public int eliminarUsuariosBasicos(UsuarioBO usuarioMaestro,
@@ -134,26 +125,22 @@ public interface UsuarioMaestroService extends RemoteService {
 	public List<PreguntaUsuarioBO> consultarPreguntasPorCategoriaUsuarioAdministrador(
 			int usuarioId);
 
-	public int eliminarPregunta(UsuarioMaestroBO usuarioMaestro,
+	int eliminarPregunta(UsuarioBO usuarioMaestro,
 			PreguntaUsuarioBO preguntaTemp);
 
-	public int eliminarPrueba(UsuarioMaestroBO usuarioMaestro,
-			PruebaUsuarioBO pruebaTemp);
+	int eliminarPrueba(UsuarioBO usuarioMaestro, PruebaUsuarioBO pruebaTemp);
 
-	int eliminarProceso(UsuarioMaestroBO usuarioMaestro,
-			ProcesoUsuarioBO procesoTemp);
+	int eliminarProceso(UsuarioBO usuarioMaestro, ProcesoUsuarioBO procesoTemp);
 
 	public void generarReporte(List<ParticipacionEnProcesoBO> participaciones);
 
 	ProcesoUsuarioBO consultarProceso(UsuarioBO usuarioMaestro,
 			ProcesoUsuarioBO proceso);
 
-	int enviarNotificacionesParticipacionesProceso(
-			UsuarioMaestroBO usuarioMaestro, List<ParticipacionEnProcesoBO> p);
+	int enviarNotificacionesParticipacionesProceso(UsuarioBO usuarioMaestro,
+			List<ParticipacionEnProcesoBO> p);
 
-	List<PermisoBO> consultarPermisos();
-
-	int agregarCuenta(UsuarioBO usuarioMaestro, UsuarioBO usuario,
+	int agregarCuenta(UsuarioBO usuarioMaestro, UsuarioBO usuario, UsoBO usos,
 			List<PruebaUsuarioBO> pruebas);
 
 	int editarPregunta(UsuarioBO usuarioMaestro, PreguntaUsuarioBO bo,
@@ -170,5 +157,42 @@ public interface UsuarioMaestroService extends RemoteService {
 	int editarCliente(UsuarioBO usuarioMaestro, UsuarioAdministradorBO cliente);
 
 	int editarEvaluado(UsuarioBO usuarioMaestro, EvaluadoBO evaluado);
+
+	List<UsoBO> consultarUsos(UsuarioBO cliente);
+
+	List<ProcesoUsuarioBO> consultarProcesosUsuarioAdministradorNombre(
+			int identificador, String keyword);
+
+	List<PruebaUsuarioBO> consultarPruebasUsuarioAdministradorNombre(
+			int identificador, String keyword);
+
+	List<EvaluadoBO> consultarEvaluadoPorCedula(int identificador, int valor);
+
+	List<EvaluadoBO> consultarEvaluadoPorCorreo(int identificador,
+			String keyword);
+
+	List<UsuarioBO> consultarClientePorCedula(int identificador, int valor);
+
+	List<UsuarioBO> consultarClientePorEmpresa(int identificador, String keyword);
+
+	void generarReporteUsos(UsuarioBO usuarioSeleccionado, Date dateInicio,
+			Date dateFinal);
+
+	int eliminarParticipacionesDeProceso(UsuarioBO usuarioMaestro,
+			ProcesoUsuarioBO procesoActual, List<ParticipacionEnProcesoBO> bo);
+
+	int eliminarPruebasDeProceso(UsuarioBO usuarioMaestro,
+			ProcesoUsuarioBO procesoActual, List<PruebaUsuarioBO> bo);
+
+	int agregarProgramador(UsuarioBO usuarioMaestro,
+			UsuarioProgramadorBO programador);
+
+	List<UsuarioProgramadorBO> consultarProgramadores(int identificador);
+
+	int agregarUsos(UsuarioBO usuarioSeleccionado, int usos);
+
+	int cambiarContrasena(UsuarioBO usuarioMaestro, String pass);
+
+	List<ProcesoUsuarioBO> consultarProcesosParaRevisar();
 
 }

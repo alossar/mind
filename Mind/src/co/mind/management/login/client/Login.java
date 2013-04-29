@@ -28,6 +28,7 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.smartgwt.client.util.SC;
+import com.smartgwt.client.widgets.layout.VLayout;
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
@@ -36,8 +37,8 @@ public class Login implements EntryPoint {
 	private static PanelLogin panelLogin;
 	private static LoginServiceAsync loginService = GWT
 			.create(LoginService.class);
-	private static String urlAplicacion = "/Mind/Main.html";
-	private static String urlMaster = "/Mind/Maestro.html";
+	private static String urlMaster = "/Mind/index.html";
+	private static PanelRecuperacionContrasena panelRecuperacion;
 
 	public void onModuleLoad() {
 
@@ -51,9 +52,16 @@ public class Login implements EntryPoint {
 
 	private void inicializarComponentes() {
 		RootPanel rootPanel = RootPanel.get("registro");
+		VLayout vl = new VLayout();
+		vl.setSize("300px", "250px");
+
 		panelLogin = new PanelLogin();
-		rootPanel.add(panelLogin);
-		RootPanel.get("superFondoBlanco").setVisible(false);
+		panelRecuperacion = new PanelRecuperacionContrasena();
+		panelRecuperacion.setVisible(false);
+
+		vl.addMember(panelLogin);
+		vl.addMember(panelRecuperacion);
+		rootPanel.add(vl);
 	}
 
 	public static void validarLogin(String correo, String pass) {
@@ -82,26 +90,24 @@ public class Login implements EntryPoint {
 		final long DURATION = 1000 * 60 * 60;
 		Date expires = new Date(System.currentTimeMillis() + DURATION);
 		Cookies.setCookie("sid", sessionID, expires, null, "/", false);
-		if (result.getTipo().equals(
-				Convencion.CLAVE_PERMISOS_USUARIO_ADMINISTRADOR)) {
 
-			if (!GWT.isProdMode()) {
-				String url = "?gwt.codesvr=127.0.0.1:9997";
-				Window.Location.replace(urlAplicacion + url);
-			} else {
-				Window.Location.replace(urlAplicacion);
-			}
-		} else if (result.getTipo().equals(
-				Convencion.CLAVE_PERMISOS_USUARIO_MAESTRO)
-				|| result.getTipo().equals(
-						Convencion.CLAVE_PERMISOS_USUARIO_MAESTRO_PRINCIPAL)) {
-			if (!GWT.isProdMode()) {
-				String url = "?gwt.codesvr=127.0.0.1:9997";
-				Window.Location.replace(urlMaster + url);
-			} else {
-				Window.Location.replace(urlMaster);
-			}
+		if (!GWT.isProdMode()) {
+			String url = "?gwt.codesvr=127.0.0.1:9997";
+			Window.Location.replace(urlMaster + url);
+		} else {
+			Window.Location.replace(urlMaster);
 		}
+
+	}
+
+	public static void mostrarNuevaContrasena() {
+		panelLogin.setVisible(false);
+		panelRecuperacion.setVisible(true);
+	}
+
+	public static void mostrarLogin() {
+		panelLogin.setVisible(true);
+		panelRecuperacion.setVisible(false);
 	}
 
 	private void verificarSessionCookie(String sessionID) {
@@ -122,6 +128,33 @@ public class Login implements EntryPoint {
 
 			}
 		});
+
+	}
+
+	public static void recuperarContrasena(String correo) {
+		final DialogoProcesamiento dialogoProc = new DialogoProcesamiento(
+				"Solicitando nueva contraseña...");
+		dialogoProc.show();
+		loginService.enviarNuevaContrasena(correo,
+				new AsyncCallback<Integer>() {
+
+					@Override
+					public void onSuccess(Integer result) {
+						dialogoProc.destroy();
+						if (result == Convencion.CORRECTO) {
+							SC.say("Una nueva contraseña se envió a su correo electrónico.");
+						} else if (result == Convencion.INCORRECTO) {
+							SC.say("La contraseña no pudo ser cambiada.");
+						}
+						mostrarLogin();
+					}
+
+					@Override
+					public void onFailure(Throwable arg0) {
+						dialogoProc.destroy();
+						mostrarLogin();
+					}
+				});
 
 	}
 

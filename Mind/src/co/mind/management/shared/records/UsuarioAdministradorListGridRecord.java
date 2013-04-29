@@ -1,6 +1,7 @@
 package co.mind.management.shared.records;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import co.mind.management.shared.dto.UsuarioAdministradorBO;
@@ -12,8 +13,8 @@ public class UsuarioAdministradorListGridRecord extends ListGridRecord {
 
 	public UsuarioAdministradorListGridRecord(int id, String nombre,
 			String apellidos, String correo, String empresa, String cargo,
-			String ciudad, String telefono, String celular, int idPermiso,
-			String permisos, int usos) {
+			String ciudad, String telefono, String celular, String estado,
+			Date vencimiento) {
 		setAttribute("id", id);
 		setAttribute("nombre", nombre);
 		setAttribute("apellidos", apellidos);
@@ -23,9 +24,8 @@ public class UsuarioAdministradorListGridRecord extends ListGridRecord {
 		setAttribute("ciudad", ciudad);
 		setAttribute("telefono", telefono);
 		setAttribute("celular", celular);
-		setAttribute("idPermiso", idPermiso);
-		setAttribute("permisos", permisos);
-		setAttribute("usos", usos);
+		setAttribute("estado", estado);
+		setAttribute("vencimiento", vencimiento);
 	}
 
 	public static UsuarioAdministradorListGridRecord[] getRecords(
@@ -40,9 +40,8 @@ public class UsuarioAdministradorListGridRecord extends ListGridRecord {
 						usuario.getCorreo_Electronico(), usuario.getEmpresa(),
 						usuario.getCargo(), usuario.getCiudad(),
 						usuario.getTelefono(), usuario.getTelefono_Celular(),
-						usuario.getPlanesDeUsuario().getIdentificador(),
-						usuario.getPlanesDeUsuario().getNombre(),
-						usuario.getUsos());
+						usuario.getEstado_Cuenta(),
+						usuario.getFechaVencimiento());
 				resultado.add(imagen);
 			}
 			UsuarioAdministradorListGridRecord[] records = new UsuarioAdministradorListGridRecord[resultado
@@ -67,12 +66,40 @@ public class UsuarioAdministradorListGridRecord extends ListGridRecord {
 						.getAttribute("correo"));
 				usuarioBasico.setIdentificador(usuario.getAttributeAsInt("id"));
 				usuarioBasico.setNombres(usuario.getAttribute("nombre"));
+				usuarioBasico.setCargo(usuario.getAttribute("cargo"));
+				usuarioBasico.setTelefono(usuario.getAttribute("telefono"));
+				usuarioBasico.setTelefono_Celular(usuario
+						.getAttribute("celular"));
+				usuarioBasico.setEmpresa(usuario.getAttribute("empresa"));
+				usuarioBasico.setCiudad(usuario.getAttribute("ciudad"));
+				usuarioBasico.setEstado_Cuenta(usuario.getAttribute("estado"));
+				usuarioBasico.setFechaVencimiento(usuario
+						.getAttributeAsDate("vencimiento"));
 				resultado.add(usuarioBasico);
 			}
 
 			return resultado;
 		} else {
 			return null;
+		}
+	}
+
+	public static UsuarioBO getBO(UsuarioAdministradorListGridRecord usuario) {
+		if (usuario != null) {
+			UsuarioBO usuarioBasico = new UsuarioBO();
+			usuarioBasico.setApellidos(usuario.getAttribute("apellidos"));
+			usuarioBasico.setCorreo_Electronico(usuario.getAttribute("correo"));
+			usuarioBasico.setIdentificador(usuario.getAttributeAsInt("id"));
+			usuarioBasico.setNombres(usuario.getAttribute("nombre"));
+			usuarioBasico.setCargo(usuario.getAttribute("cargo"));
+			usuarioBasico.setTelefono(usuario.getAttribute("telefono"));
+			usuarioBasico.setTelefono_Celular(usuario.getAttribute("celular"));
+			usuarioBasico.setEmpresa(usuario.getAttribute("empresa"));
+			usuarioBasico.setCiudad(usuario.getAttribute("ciudad"));
+			usuarioBasico.setEstado_Cuenta(usuario.getAttribute("estado"));
+			return usuarioBasico;
+		} else {
+			return new UsuarioBO();
 		}
 	}
 

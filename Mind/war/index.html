@@ -1,0 +1,383 @@
+<!DOCTYPE>
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<title>Mind Management</title>
+<link rel="stylesheet" href="css/2mstyle.css">
+<script type="text/javascript" src="js/jquery.js"></script>
+<script type="text/javascript" src="js/rotate.js"></script>
+<script>
+	var isomorphicDir = "co.mind.management.maestro.Maestro/sc/";
+</script>
+<script
+	src="co.mind.management.maestro.Maestro/co.mind.management.maestro.Maestro.nocache.js"></script>
+
+<script TYPE="text/javascript">
+	var jQnC = jQuery.noConflict();/*Aqui creo una variable distinta a "$" para noc rear conflicto*/
+	jQnC(document).ready(function() {
+		jQnC('#principalM').show();
+		jQnC('#logoFrontal').hide();
+		jQnC('#programarProcesoM').hide();//escondo ventana
+		jQnC('#pruebaM').hide();
+		jQnC('#programadoresM').hide();
+		jQnC('#evaluadosM').hide();
+		jQnC('#administraM').hide();
+		jQnC('#clientesM').hide();
+		jQnC('#laminasM').hide();
+		jQnC('#cuentaM').hide();
+		//INTERACIONES CON LA SOLICITUD
+		jQnC('.botMasP').click(function() {
+			jQnC('#ventanaSolicitudP').show("slow");
+		});
+		jQnC('#botCerrarVentanaSolicitud').click(function() {
+			jQnC('#ventanaSolicitudP').hide("slow");
+		});
+		//CERRAR SESIÓN              
+		jQnC('#botCerrarP').click(function() {
+			window.location = 'http://www.google.com';//poner aqui la direccion del home
+		});
+		//INTERACCIONES CON LOS MOSTRADOR de creacion de pruebas
+		jQnC('#programarProcesoP').click(function() {
+			jQnC('#principalM').hide("slow");
+			jQnC('#programarProcesoM').show("slow");
+			jQnC('#pruebaM').hide("slow");
+			jQnC('#programadoresM').hide("slow");
+			jQnC('#evaluadosM').hide("slow");
+			jQnC('#laminasM').hide("slow");
+			jQnC('#clientesM').hide("slow");
+			jQnC('#cuentaM').hide("slow");
+		});
+		jQnC('#programarProcesoPD').click(function() {
+			jQnC('#principalM').hide("slow");
+			jQnC('#programarProcesoM').show("slow");
+			jQnC('#pruebaM').hide("slow");
+			jQnC('#programadoresM').hide("slow");
+			jQnC('#evaluadosM').hide("slow");
+			jQnC('#laminasM').hide("slow");
+			jQnC('#clientesM').hide("slow");
+			jQnC('#cuentaM').hide("slow");
+		});
+		jQnC('#gestionP').click(function() {//click en ver Pruebas
+			jQnC('#principalM').hide("slow");
+			jQnC('#pruebaM').show("slow");
+			jQnC('#programarProcesoM').hide("slow");
+			jQnC('#programadoresM').hide("slow");
+			jQnC('#evaluadosM').hide("slow");
+			jQnC('#laminasM').hide("slow");
+			jQnC('#clientesM').hide("slow");
+			jQnC('#cuentaM').hide("slow");
+		});
+		jQnC('#gestionPD').click(function() {//click en ver Pruebas
+			jQnC('#principalM').hide("slow");
+			jQnC('#pruebaM').show("slow");
+			jQnC('#programarProcesoM').hide("slow");
+			jQnC('#programadoresM').hide("slow");
+			jQnC('#evaluadosM').hide("slow");
+			jQnC('#laminasM').hide("slow");
+			jQnC('#clientesM').hide("slow");
+			jQnC('#cuentaM').hide("slow");
+		});
+		jQnC('#evaluadosP').click(function() {//click en ver Pruebas
+			jQnC('#principalM').hide("slow");
+			jQnC('#evaluadosM').show("slow");
+			jQnC('#programarProcesoM').hide("slow");
+			jQnC('#pruebaM').hide("slow");
+			jQnC('#programadoresM').hide("slow");
+			jQnC('#laminasM').hide("slow");
+			jQnC('#clientesM').hide("slow");
+			jQnC('#cuentaM').hide("slow");
+		});
+		jQnC('#pruebaPD').click(function() {//click en ver Pruebas
+			jQnC('#principalM').hide("slow");
+			jQnC('#evaluadosM').hide("slow");
+			jQnC('#programarProcesoM').hide("slow");
+			jQnC('#pruebaM').show("slow");
+			jQnC('#programadoresM').hide("slow");
+			jQnC('#laminasM').hide("slow");
+			jQnC('#clientesM').hide("slow");
+			jQnC('#cuentaM').hide("slow");
+		});
+		jQnC('#evaluadosPD').click(function() {//click en ver Pruebas
+			jQnC('#principalM').hide("slow");
+			jQnC('#evaluadosM').show("slow");
+			jQnC('#programarProcesoM').hide("slow");
+			jQnC('#pruebaM').hide("slow");
+			jQnC('#programadoresM').hide("slow");
+			jQnC('#laminasM').hide("slow");
+			jQnC('#clientesM').hide("slow");
+			jQnC('#cuentaM').hide("slow");
+		});
+
+		jQnC('#programadorP').click(function() {//click en ver Pruebas
+			jQnC('#principalM').hide("slow");
+			jQnC('#programadoresM').show("slow");
+			jQnC('#programarProcesoM').hide("slow");
+			jQnC('#pruebaM').hide("slow");
+			jQnC('#evaluadosM').hide("slow");
+			jQnC('#laminasM').hide("slow");
+			jQnC('#clientesM').hide("slow");
+			jQnC('#cuentaM').hide("slow");
+		});
+		jQnC('#laminasP').click(function() {//click en ver Pruebas
+			jQnC('#principalM').hide("slow");
+			jQnC('#laminasM').show("slow");
+			jQnC('#verProcesosM').hide("slow");
+			jQnC('#pruebaM').hide("slow");
+			jQnC('#editarM').hide("slow");
+			jQnC('#programadoresM').hide("slow");
+			jQnC('#evaluadosM').hide("slow");
+			jQnC('#clientesM').hide("slow");
+			jQnC('#cuentaM').hide("slow");
+		});
+		jQnC('#clientesP').click(function() {//click en ver Pruebas
+			jQnC('#principalM').hide("slow");
+			//jQnC('#panelAdmin').slideUp("slow");
+			jQnC('#clientesM').show("slow");
+			jQnC('#programarProcesoM').hide("slow");//escondo ventana
+			jQnC('#pruebaM').hide("slow");
+			jQnC('#evaluadosM').hide("slow");
+			jQnC('#programadoresM').hide("slow");
+			jQnC('#laminasM').hide("slow");
+			jQnC('#cuentaM').hide("slow");
+			//jQnC('#footer').hide("slow");				
+		});
+		jQnC('#botHomeNav').click(function() {//click en ver Pruebas
+			jQnC('#principalM').show("slow");
+			jQnC('#panelAdmin').slideDown("slow");
+			jQnC('#programarProcesoM').hide("slow");
+			jQnC('#pruebaM').hide("slow");
+			jQnC('#evaluadosM').hide("slow");
+			jQnC('#laminasM').hide("slow");
+			jQnC('#clientesM').hide("slow");
+			jQnC('#programadoresM').hide("slow");
+			jQnC('#cuentaM').hide("slow");
+			jQnC('#footer').show("slow");
+
+		});
+		jQnC('#botInfoNav').click(function() {//click en ver Pruebas
+			jQnC('#principalM').hide("slow");
+			jQnC('#evaluadosM').hide("slow");
+			jQnC('#programarProcesoM').hide("slow");
+			jQnC('#pruebaM').hide("slow");
+			jQnC('#programadoresM').hide("slow");
+			jQnC('#laminasM').hide("slow");
+			jQnC('#clientesM').hide("slow");
+			jQnC('#cuentaM').show("slow");
+
+		});
+		//CERRAR MOSTRADOR
+		jQnC('.cerrarMos').click(function() {
+			jQnC('#programarProcesoM').hide("slow");
+			jQnC('#pruebaM').hide("slow");
+			jQnC('#evaluadosM').hide("slow");
+			jQnC('#laminasM').hide("slow");
+			jQnC('#clientesM').hide("slow");
+			jQnC('#programadoresM').hide("slow");
+			jQnC('#principalM').show("slow");
+
+		});
+	});//Cierro Script
+</script>
+
+</head>
+<body>
+	<iframe name="fileUploadFrame" style="width: 0; height: 0; border: 0"></iframe>
+	<div id="superFondoBlanco"
+		style="position: absolute; z-index: 100; width: 100%; height: 100%; background-color: white;"></div>
+	<div id="cont">
+		<div id="nav">
+			<div id="navAdmin">
+				<div id="adminLogo">
+					<!-- Logo -->
+					<img src="images/img/admin/logo.png">
+				</div>
+				<div id="navtools">
+					<li><div id="programarProcesoP"></div></li>
+					<li><div id="gestionP"></div></li>
+					<li><div id="evaluadosP"></div></li>
+					<li><div id="programadorP"></div></li>
+					<li><div id="laminasP"></div></li>
+					<li><div id="clientesP"></div></li>
+				</div>
+
+				<div id="listaFunciones">
+					<li><div id="botInfoNav" class="navtools">
+							<!--<img src="images/img/admin/botPregunta.png"> -->
+						</div></li>
+					<li><div id="botHomeNav"></div></li>
+					<!-- <li><img src="images/img/admin/misContactos.png"></li> -->
+					<li>
+						<div id="listaFuncionesUser"></div>
+					</li>
+				</div>
+			</div>
+		</div>
+		<div id="mostradorMaster">
+			<div id="mostrador">
+				<!--Area para mostrar la información-->
+				<!--Programar Procesor-->
+				<div id="principalM" class="mostradoresHome">
+					<div id="mostradorPrincipal">
+
+						<!--DASHBOARD-->
+						<div class="homeShow" id="programarProcesoPD">
+							<!--Pone aqui los eventos Listeners-->
+							<img src="images/img/home/proceso.png">
+							<h2>Proceso</h2>
+							<div class="descripcionP">
+								<p>Aquí Creara y programará la hora, fecha, los evaluados y
+									los temas que desea asignar para la evaluación</p>
+							</div>
+							<div class="dashBots">
+								<p>Crear</p>
+							</div>
+						</div>
+
+						<div class="homeShow" id="pruebaPD">
+
+							<img src="images/img/home/prueba.png">
+							<h2>Prueba</h2>
+							<div class="descripcionP">
+								<p>Crea y personaliza tus temas para cualquier situación que
+									necesites.</p>
+							</div>
+							<div class="dashBots">
+								<p>Personaliza</p>
+							</div>
+
+						</div>
+
+						<div class="homeShow" id="evaluadosPD">
+							<img src="images/img/home/evaluados.png">
+							<h2>Evaluados</h2>
+							<div class="descripcionP">
+								<p>Aquí se gestiona la creación y edición de información
+									para todos los evaluados.</p>
+							</div>
+							<div class="dashBots">
+								<p>Evaluar</p>
+							</div>
+						</div>
+
+					</div>
+				</div>
+
+				<div id="programarProcesoM" class="mostradores">
+					<div class="titleStart">
+						<img src="images/img/admin/bot1.png">
+						<div id="programarProcesoMTextoM">
+							<h3>
+								Programar Procesos
+								<p>Organiza tus pruebas como quieras</p>
+							</h3>
+						</div>
+					</div>
+					<div class="cerrarMos">
+						<p>x</p>
+					</div>
+					<div id="programarProcesoMInfo" class="sizeMostrador"></div>
+				</div>
+				<!--Gestion de Paquetes-->
+				<div id="pruebaM" class="mostradores">
+					<div class="titleStart">
+						<img src="images/img/admin/bot2.png">
+						<div id="programarProcesoMTextoM">
+							<h3>
+								Pruebas
+								<p>Crear Pruebas y editar</p>
+							</h3>
+						</div>
+					</div>
+					<div class="cerrarMos">
+						<p>x</p>
+					</div>
+					<div id="pruebaMInfo" class="sizeMostrador"></div>
+				</div>
+				<!--EVALAUDOS-->
+				<div id="evaluadosM" class="mostradores">
+					<div class="titleStart">
+						<img src="images/img/admin/bot3.png">
+						<div id="programarProcesoMTextoM">
+							<h3>
+								Evaluados
+								<p>Gestion de Candidatos</p>
+							</h3>
+						</div>
+					</div>
+					<div class="cerrarMos">
+						<p>x</p>
+					</div>
+					<div id="evaluadosMInfo" class="sizeMostrador"></div>
+				</div>
+				<!--PROGRAMADORES-->
+				<div id="programadoresM" class="mostradores">
+					<div class="titleStart">
+						<img src="images/img/admin/bot3.png">
+						<div id="programarProcesoMTextoM">
+							<h3>
+								Programadores
+								<p>Organizador de Evalaución</p>
+							</h3>
+						</div>
+					</div>
+					<div class="cerrarMos">
+						<p>x</p>
+					</div>
+					<div id="programadoresMInfo" class="sizeMostrador"></div>
+				</div>
+				<!--LAMINAS-->
+				<div id="laminasM" class="mostradores">
+					<div class="titleStart">
+						<img src="images/img/admin/bot3.png">
+						<div id="programarProcesoMTextoM">
+							<h3>
+								Laminas
+								<p>Gestion de Laminas</p>
+							</h3>
+						</div>
+					</div>
+					<div class="cerrarMos">
+						<p>x</p>
+					</div>
+					<div id="laminasMInfo" class="sizeMostrador"></div>
+				</div>
+				<!--CLIENTES-->
+				<div id="clientesM" class="mostradores">
+					<div class="titleStart">
+						<img src="images/img/admin/bot4.png">
+						<div id="programarProcesoMTextoM">
+							<h3>
+								Clientes
+								<p>Manejo de Cuentas</p>
+							</h3>
+						</div>
+					</div>
+					<div class="cerrarMos">
+						<p>x</p>
+					</div>
+					<div id="clientesMInfo" class="sizeMostrador"></div>
+				</div>
+				<!--Gestion de Paquetes-->
+				<div id="cuentaM" class="mostradores">
+					<div class="titleStart">
+						<img src="images/img/admin/bot2.png">
+						<div id="programarProcesoMTextoM">
+							<h3>
+								Cuenta
+								<p>Información de la cuenta</p>
+							</h3>
+						</div>
+					</div>
+					<div class="cerrarMos">
+						<p>x</p>
+					</div>
+					<div id="cuentaMInfo" class="sizeMostrador"></div>
+				</div>
+			</div>
+			<!--Cierro mostrador-->
+		</div>
+		<!-- cierro Mostrador Master -->
+
+	</div>
+</body>
+</html>

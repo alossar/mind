@@ -41,14 +41,14 @@ public class PanelEncabezadoDialogo extends Canvas {
 		addChild(this.titulo);
 		addChild(this.subtitulo);
 
-		this.titulo.setContents("<h1><center>" + titulo + "</center></h1>");
+		this.titulo.setContents("<h2><center>" + titulo + "</center></h2>");
 		this.subtitulo.setContents("<center>" + subtitulo + "</center>");
 		this.imagenLogo.setSrc(urlImagen);
 	}
 
 	public void actualizarEncabezado(String titulo, String subtitulo,
 			String urlImagen) {
-		this.titulo.setContents("<h1><center>" + titulo + "</center></h1>");
+		this.titulo.setContents("<h2><center>" + titulo + "</center></h2>");
 		this.subtitulo.setContents("<center>" + subtitulo + "</center>");
 		this.imagenLogo.setSrc(urlImagen);
 	}

@@ -61,6 +61,7 @@ public class PanelLogin extends VLayout {
 				}
 			}
 		});
+		
 		textPassword.addKeyDownHandler(new KeyDownHandler() {
 
 			@Override
@@ -70,6 +71,7 @@ public class PanelLogin extends VLayout {
 				}
 			}
 		});
+		
 		textCedula.addKeyDownHandler(new KeyDownHandler() {
 
 			@Override

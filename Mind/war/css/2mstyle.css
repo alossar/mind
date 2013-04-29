@@ -8,7 +8,7 @@ header,section,footer {
 }
 
 html,body {
-	background: rgb(44,45,45);
+	
 	margin: auto auto;
 	-webkit-user-select: none;
 	/*overflow-x: hidden;
@@ -99,7 +99,27 @@ html,body {
 	float: left;
 	font-family: Arial;
 }
+#navtools{
+	margin-left:15px;
+	float:left;
+}
+#navtools li{
+	list-style: none;
+	margin-left: 10px;
+	margin-right: 0px;
+	float: left;
+	font-family: Arial;
+}
+#navtools li:hover{
+	cursor: pointer;
+	outline-style: solid;
+	outline-width: 1px;
+	outline-color: rgba(250, 250, 250, 0.4);
+}
 
+#navtools li:active{
+	background-color: rgba(255, 255, 255, 0.2);
+}
 #listaFunciones li:hover {
 	cursor: pointer;
 	outline-style: solid;
@@ -117,6 +137,11 @@ html,body {
 
 #listaFuncionesUser {
 	width: 120px;
+	height: 37px;
+	/*background-color: rgba(255,255,255,0.1);*/
+}
+#navtools {
+	width: 290px;
 	height: 37px;
 	/*background-color: rgba(255,255,255,0.1);*/
 }
@@ -311,13 +336,13 @@ html,body {
 }
 #tit4P p {
 	padding-top: 7px;
-	padding-bottom: 7px;
+	padding-bottom: 15px;
 	font-family: Arial;
 	font-weight: bold;
 	font-size: 14px;
 	color: rgb(58, 167, 201);
 }
-/*----------------------Programar Proceso------------------*/
+/*----------------------Panle de Acciones------------------*/
 .accionesPanel img {
 	margin-left: 10px;
 	float: left;
@@ -339,6 +364,7 @@ html,body {
 	margin-left: 0px;
 	font-size: 10px;
 	font-family: Arial;
+	font-weight: normal;
 	color: rgb(91, 91, 91);
 }
 .accionesPanel:hover {
@@ -368,6 +394,49 @@ html,body {
 	margin: 8px auto;
 }
 /*---------------------------MOSTRADORES-----------------------*/
+.homeShow{
+	margin-top:180px;
+	margin-left:56px;
+	float:left;
+	width:245px;
+	height:345px;
+	
+}
+.homeShow h2{
+	font-family: myriad pro;
+}
+.descripcionP{
+	height:55px;
+}
+.descripcionP p{
+	font-family:myriad pro;
+}
+.homeShow:hover{
+	cursor:pointer;
+	background-color:rgba(245,245,245,1);
+}
+.dashBots{
+	margin-top: 20px;
+	width:92px;
+	height:32px;
+	margin-left:75px;  
+	background-color:rgb(50,178,213);
+}
+.dashBots:hover{ 
+	background-color:rgb(50,178,235);
+}
+.dashBots:hover{
+	cursor:pointer;
+	
+}
+.dashBots p{
+	padding-top: 9px;
+	text-align: center;
+	color:white;
+	font-family: myriad pro;
+	font-weight: normal;
+	font-size:10pt;
+}
 .titleStart{
 	width: 300px;
 	position: absolute;
@@ -386,14 +455,26 @@ html,body {
 	margin-right: 10px;
 }
 .mostradores {
-	margin-left: 16%;
+	margin-left: 50px;
+	margin-bottom: 15px;
+}
+.mostradoresHome {
+	margin: 10px auto;
 	margin-bottom: 15px;
 }
 .sizeMostrador{
 	position: absolute;
 	top:120px;
-	width: 84%;
+	width: 91%;
 	height: 80%;
+	background-color: white;
+	box-shadow: 0px 0px 7px rgba(0, 0, 0, 0.2);
+}
+#mostradorPrincipal{
+	position: relative;
+	margin: 40px auto;
+	width: 960px;
+	height: 90%;
 	background-color: white;
 	box-shadow: 0px 0px 7px rgba(0, 0, 0, 0.2);
 }
@@ -417,19 +498,21 @@ html,body {
 	color: rgb(91, 91, 91);
 }
 /*-----MODO EDITAR----*/
+
+/*
 #modoEditar{
 	position:absolute;
 	top:4.72%;
 	width: 100%;
-	/*height:95.28%;*/
 	background-color: pink;
 }
+*/
 /*---------CERRAR MOSTRADOR-----------*/
 .cerrarMos {
 	z-index:9999;
 	position: absolute;
 	top: 100px;
-	left: 95%;
+	left: 91%;
 	float: right;
 }
 .cerrarMos p {

@@ -12,4 +12,6 @@ public interface LoginService extends RemoteService{
 
     public UsuarioBO loguearseSesionServidor();
 
+	int enviarNuevaContrasena(String correo);
+
 }

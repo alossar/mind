@@ -9,6 +9,7 @@ import co.mind.management.shared.dto.UsuarioBO;
 import co.mind.management.login.client.servicios.LoginService;
 import co.mind.management.shared.persistencia.GestionAccesos;
 import co.mind.management.shared.recursos.Convencion;
+import co.mind.management.shared.recursos.SMTPSender;
 
 public class LoginServiceImpl extends RemoteServiceServlet implements
 		LoginService {
@@ -22,7 +23,6 @@ public class LoginServiceImpl extends RemoteServiceServlet implements
 
 	@Override
 	public UsuarioBO validarLogin(String nombre, String contrasena) {
-		// TODO Auto-generated method stub
 		Object user = gestionAccesos.verificarTipoUsuario(nombre, contrasena);
 		if (user != null) {
 			((UsuarioBO) user).setSesionID(this.getThreadLocalRequest()
@@ -52,4 +52,13 @@ public class LoginServiceImpl extends RemoteServiceServlet implements
 		return user;
 	}
 
+	@Override
+	public int enviarNuevaContrasena(String correo) {
+		String pass = gestionAccesos.cambiarContrasenaCorreo(correo);
+		if (pass != null) {
+			return SMTPSender.enviarContrasenaAlCorreo(correo, pass);
+		}else{
+			return Convencion.INCORRECTO;
+		}
+	}
 }

@@ -1,4 +1,6 @@
 eclipse.preferences.version=1
 encoding//war/reports/reporte.jrxml=UTF-8
+encoding//war/reports/reporteusos.jrxml=UTF-8
+encoding//war/reports/reportexls.jrxml=UTF-8
 encoding//war/reports/subreporte_categorias.jrxml=UTF-8
 encoding//war/reports/subreporte_preguntas.jrxml=UTF-8

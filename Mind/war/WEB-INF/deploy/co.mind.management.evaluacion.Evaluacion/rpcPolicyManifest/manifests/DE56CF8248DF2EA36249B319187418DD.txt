@@ -1,0 +1,2 @@
+serviceClass: co.mind.management.evaluacion.client.servicios.EvaluacionService
+path: 1F63111A7BB6E1C3C16D2E4823DE107A.gwt.rpc

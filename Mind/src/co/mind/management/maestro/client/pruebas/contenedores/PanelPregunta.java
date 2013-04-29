@@ -2,7 +2,6 @@ package co.mind.management.maestro.client.pruebas.contenedores;
 
 import co.mind.management.shared.recursos.Convencion;
 
-import com.google.gwt.user.client.Timer;
 import com.smartgwt.client.types.Cursor;
 import com.smartgwt.client.types.DragAppearance;
 import com.smartgwt.client.types.ImageStyle;
@@ -136,7 +135,7 @@ public class PanelPregunta extends Canvas {
 				.obtenerTiempoMinutoSegundos(tiempoLamina));
 	}
 
-	
+
 	public void habilitarEdicion() {
 		labelPregunta.setCanDragReposition(true);
 		labelPregunta.setDragAppearance(DragAppearance.TARGET);
@@ -175,3 +174,4 @@ public class PanelPregunta extends Canvas {
 	}
 
 }
+

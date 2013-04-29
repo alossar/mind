@@ -73,6 +73,6 @@ public class PruebaListGridRecord extends ListGridRecord {
 			}
 			return listaResultado;
 		}
-		return null;
+		return new ArrayList<PruebaUsuarioBO>();
 	}
 }

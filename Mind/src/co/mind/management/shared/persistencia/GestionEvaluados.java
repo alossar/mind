@@ -7,6 +7,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
+import javax.persistence.Query;
 
 import co.mind.management.shared.dto.EvaluadoBO;
 import co.mind.management.shared.entidades.Evaluado;
@@ -42,7 +43,7 @@ public class GestionEvaluados implements IGestionEvaluados {
 			u.setApellidos(Evaluado.getApellidos());
 			u.setCorreoElectronico(Evaluado.getCorreoElectronico());
 			u.setEdad(Evaluado.getEdad());
-			u.setIdentificador(Evaluado.getIdentificador());
+			u.setCedula(Evaluado.getCedula());
 			u.setNombres(Evaluado.getNombres());
 			u.setUsuario(usuario);
 
@@ -107,6 +108,7 @@ public class GestionEvaluados implements IGestionEvaluados {
 			resultado.setNombres(usuario.getNombres());
 			resultado
 					.setIdentificadorUsuarioAdministrador(usuarioAdministradorID);
+			resultado.setCedula(usuario.getCedula());
 			return resultado;
 		}
 	}
@@ -161,9 +163,72 @@ public class GestionEvaluados implements IGestionEvaluados {
 				resultado.setNombres(u.getNombres());
 				resultado
 						.setIdentificadorUsuarioAdministrador(usuarioAdministradorID);
+				resultado.setCedula(u.getCedula());
 				lista.add(resultado);
 			}
 			return lista;
+		} else {
+			return null;
+		}
+	}
+
+	public List<EvaluadoBO> listarEvaluadosPorCorreo(
+			int usuarioAdministradorID, String correo) {
+		Usuario user = entityManager
+				.find(Usuario.class, usuarioAdministradorID);
+		if (user != null) {
+			entityManager.refresh(user);
+			String query = "SELECT DISTINCT(u) FROM Evaluado u WHERE u.usuario =:user AND u.correoElectronico =:correo";
+			Query q = entityManager.createQuery(query);
+			q.setParameter("user", user);
+			q.setParameter("correo", correo);
+			List<Evaluado> lista = q.getResultList();
+			List<EvaluadoBO> listaResultado = new ArrayList<EvaluadoBO>();
+			for (int i = 0; i < lista.size(); i++) {
+				EvaluadoBO resultado = new EvaluadoBO();
+				Evaluado u = lista.get(i);
+				resultado.setApellidos(u.getApellidos());
+				resultado.setCorreoElectronico(u.getCorreoElectronico());
+				resultado.setEdad(u.getEdad());
+				resultado.setIdentificador(u.getIdentificador());
+				resultado.setNombres(u.getNombres());
+				resultado
+						.setIdentificadorUsuarioAdministrador(usuarioAdministradorID);
+				resultado.setCedula(u.getCedula());
+				listaResultado.add(resultado);
+			}
+			return listaResultado;
+		} else {
+			return null;
+		}
+	}
+
+	public List<EvaluadoBO> listarEvaluadosPorCedula(
+			int usuarioAdministradorID, int id) {
+		Usuario user = entityManager
+				.find(Usuario.class, usuarioAdministradorID);
+		if (user != null) {
+			entityManager.refresh(user);
+			String query = "SELECT DISTINCT(u) FROM Evaluado u WHERE u.usuario =:user AND u.identificador =:correo";
+			Query q = entityManager.createQuery(query);
+			q.setParameter("user", user);
+			q.setParameter("correo", id);
+			List<Evaluado> lista = q.getResultList();
+			List<EvaluadoBO> listaResultado = new ArrayList<EvaluadoBO>();
+			for (int i = 0; i < lista.size(); i++) {
+				EvaluadoBO resultado = new EvaluadoBO();
+				Evaluado u = lista.get(i);
+				resultado.setApellidos(u.getApellidos());
+				resultado.setCorreoElectronico(u.getCorreoElectronico());
+				resultado.setEdad(u.getEdad());
+				resultado.setIdentificador(u.getIdentificador());
+				resultado.setNombres(u.getNombres());
+				resultado
+						.setIdentificadorUsuarioAdministrador(usuarioAdministradorID);
+				resultado.setCedula(u.getCedula());
+				listaResultado.add(resultado);
+			}
+			return listaResultado;
 		} else {
 			return null;
 		}
