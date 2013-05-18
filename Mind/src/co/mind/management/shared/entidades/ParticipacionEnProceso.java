@@ -22,6 +22,9 @@ public class ParticipacionEnProceso implements Serializable {
 	@Column(name="Codigo_Acceso")
 	private String codigo_Acceso;
 
+	@Column(name="esta_notificado")
+	private String estaNotificado;
+
 	@Column(name="Estado")
 	private String estado;
 
@@ -68,6 +71,14 @@ public class ParticipacionEnProceso implements Serializable {
 
 	public void setCodigo_Acceso(String codigo_Acceso) {
 		this.codigo_Acceso = codigo_Acceso;
+	}
+
+	public String getEstaNotificado() {
+		return this.estaNotificado;
+	}
+
+	public void setEstaNotificado(String estaNotificado) {
+		this.estaNotificado = estaNotificado;
 	}
 
 	public String getEstado() {

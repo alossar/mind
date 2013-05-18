@@ -32,6 +32,7 @@ import co.mind.management.shared.recursos.Convencion;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.Window.ClosingEvent;
 import com.google.gwt.user.client.Window.ClosingHandler;
@@ -54,7 +55,6 @@ public class Evaluacion implements EntryPoint {
 	private static String correo;
 	private static String codigoAcceso;
 	private static boolean termina = false;
-	// private static String finUrl ="/end.html";
 	private static String finUrl = "/Mind/end.html";
 
 	private static PanelInstruccion panelInstruccion;
@@ -120,22 +120,27 @@ public class Evaluacion implements EntryPoint {
 		identificador = Integer.parseInt(cedula);
 		correo = usuario;
 		codigoAcceso = pass;
+		final DialogoProcesamiento dlg = new DialogoProcesamiento(
+				"Ingresando...");
+		dlg.show();
 		evaluacionService.validarUsuarioBasico(cedula, usuario, pass,
 				new AsyncCallback<Integer>() {
 					public void onFailure(Throwable caught) {
-						// Show the RPC error message to the user
+						dlg.destroy();
 						caught.printStackTrace();
-						SC.warn("Error de conexi�n.");
+						SC.warn("Identificaci\u00F3n o c\u00F3digo no v�lido.");
+						panelLogin.habilitarCampos(true);
 					}
 
 					@Override
 					public void onSuccess(Integer result) {
+						dlg.destroy();
 						if (result == Convencion.VERIFICACION_USUARIO_BASICO_CORRECTA) {
 							obtenerParticipacionEnProceso();
 						} else {
 							panelLogin.habilitarCampos(true);
 							if (result == Convencion.VERIFICACION_USUARIO_BASICO_CODIGO_ACCESO_NO_VALIDO) {
-								SC.warn("El c\u00F3digo de Acceso no es válido");
+								SC.warn("El c\u00F3digo de acceso no es válido");
 							} else if (result == Convencion.VERIFICACION_USUARIO_BASICO_SIN_TERMINAR_PRUEBA) {
 								SC.warn("El usuario comenz\u00F3 una prueba pero no la termin\u00F3.");
 							} else if (result == Convencion.VERIFICACION_USUARIO_BASICO_PARTICIPACION_NO_EXISTE) {
@@ -161,7 +166,6 @@ public class Evaluacion implements EntryPoint {
 							participacionEnProceso = result;
 							// obtenerNombreEmpresa();
 							Window.addWindowClosingHandler(new ClosingHandler() {
-
 								@Override
 								public void onWindowClosing(ClosingEvent event) {
 									if (!termina) {
@@ -299,21 +303,34 @@ public class Evaluacion implements EntryPoint {
 			mostrarPanelInstruccion();
 
 		} catch (NoSuchElementException exc) {
-			evaluacionService.terminarPrueba(
-					participacionEnProceso.getUsuarioBasico(),
-					participacionEnProceso, new AsyncCallback<Integer>() {
+			final DialogoProcesamiento dlg = new DialogoProcesamiento(
+					"Finalizando...");
+			dlg.show();
+			Timer t = new Timer() {
+				public void run() {
+					evaluacionService.terminarPrueba(
+							participacionEnProceso.getUsuarioBasico(),
+							participacionEnProceso,
+							new AsyncCallback<Integer>() {
 
-						@Override
-						public void onSuccess(Integer result) {
-							cerrarSesion();
-						}
+								@Override
+								public void onSuccess(Integer result) {
+									cerrarSesion();
+									dlg.destroy();
+								}
 
-						@Override
-						public void onFailure(Throwable caught) {
-							caught.printStackTrace();
-							System.out.println("Error terminando la prueba");
-						}
-					});
+								@Override
+								public void onFailure(Throwable caught) {
+									dlg.destroy();
+									caught.printStackTrace();
+									System.out
+											.println("Error terminando la prueba");
+								}
+							});
+				}
+			};
+			t.schedule(5000);
+
 		}
 	}
 

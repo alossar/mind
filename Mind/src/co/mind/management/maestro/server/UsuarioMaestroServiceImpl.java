@@ -468,6 +468,8 @@ public class UsuarioMaestroServiceImpl extends RemoteServiceServlet implements
 						.enviarCorreoParticipacionAProceso(participacionEnProcesoBO);
 				participacionEnProcesoBO
 						.setEstado(Convencion.ESTADO_PARTICIPACION_EN_PROCESO_EN_ESPERA);
+				participacionEnProcesoBO
+						.setEstaNotificado(Convencion.ESTADO_NOTIFICACION_ENVIADA);
 				gestionEvaluacion.editarParticipacionEnProceso(usuarioMaestro
 						.getIdentificador(), participacionEnProcesoBO
 						.getUsuarioBasico().getIdentificador(), 0,
@@ -697,5 +699,33 @@ public class UsuarioMaestroServiceImpl extends RemoteServiceServlet implements
 			return (List<ProcesoUsuarioBO>) result;
 		}
 		return null;
+	}
+
+	@Override
+	public List<ParticipacionEnProcesoBO> consultarParticipacionesEvaluado(
+			UsuarioBO usuarioMaestro, EvaluadoBO bo) {
+		Object result = gestionEvaluacion.listarParticipacionesEvaluado(
+				usuarioMaestro, bo);
+		if (result != null) {
+			return (List<ParticipacionEnProcesoBO>) result;
+		}
+		return null;
+	}
+
+	@Override
+	public int agregarPruebas(UsuarioBO usuarioSeleccionado,
+			List<PruebaUsuarioBO> pruebasBO) {
+		for (PruebaUsuarioBO pruebaUsuarioBO : pruebasBO) {
+			if (pruebaUsuarioBO != null) {
+				pruebaUsuarioBO = gestionPruebas
+						.consultarPruebaUsuarioAdministrador(
+								usuarioSeleccionado.getIdentificador(),
+								pruebaUsuarioBO.getIdentificador());
+				gestionPruebas.agregarPruebaUsuarioAdministrador(
+						usuarioSeleccionado.getIdentificador(),
+						pruebaUsuarioBO, pruebaUsuarioBO.getPreguntas());
+			}
+		}
+		return 0;
 	}
 }

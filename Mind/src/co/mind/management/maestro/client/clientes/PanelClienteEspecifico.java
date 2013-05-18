@@ -11,10 +11,18 @@ import co.mind.management.shared.dto.UsoBO;
 import co.mind.management.shared.dto.UsuarioBO;
 import co.mind.management.shared.records.PruebaListGridRecord;
 import co.mind.management.shared.records.UsoUsuarioListgridRecord;
+import co.mind.management.shared.recursos.Convencion;
 
+import com.smartgwt.client.data.Record;
+import com.smartgwt.client.types.SelectionAppearance;
+import com.smartgwt.client.types.SelectionStyle;
 import com.smartgwt.client.types.Side;
 import com.smartgwt.client.types.VerticalAlignment;
 import com.smartgwt.client.util.SC;
+import com.smartgwt.client.widgets.Canvas;
+import com.smartgwt.client.widgets.HTMLFlow;
+import com.smartgwt.client.widgets.IButton;
+import com.smartgwt.client.widgets.Img;
 import com.smartgwt.client.widgets.Window;
 import com.smartgwt.client.widgets.events.ClickHandler;
 import com.smartgwt.client.widgets.events.CloseClickEvent;
@@ -24,6 +32,7 @@ import com.smartgwt.client.widgets.form.fields.ButtonItem;
 import com.smartgwt.client.widgets.form.fields.DateItem;
 import com.smartgwt.client.widgets.form.fields.IntegerItem;
 import com.smartgwt.client.widgets.form.fields.SelectItem;
+import com.smartgwt.client.widgets.form.fields.TextAreaItem;
 import com.smartgwt.client.widgets.form.fields.TextItem;
 import com.smartgwt.client.widgets.form.fields.events.ClickEvent;
 import com.smartgwt.client.widgets.form.validator.RegExpValidator;
@@ -45,6 +54,8 @@ public class PanelClienteEspecifico extends HLayout {
 	private ListGrid listGridTemasDeClientes;
 	private ListGrid listGridUsos;
 
+	private ListGrid listGridPruebas;
+
 	private TextItem nombreItem;
 	private TextItem apellidosItem;
 	private TextItem cedulaItem;
@@ -62,6 +73,7 @@ public class PanelClienteEspecifico extends HLayout {
 	private UsuarioBO usuarioSeleccionado;
 	private DynamicForm formUsos;
 	private IntegerItem textUsos;
+	private List<PruebaUsuarioBO> listaPruebas;
 
 	public PanelClienteEspecifico() {
 		setWidth("100%");
@@ -71,7 +83,7 @@ public class PanelClienteEspecifico extends HLayout {
 
 		panelInformacionCliente = new VLayout();
 		panelInformacionCliente.setHeight100();
-		panelInformacionCliente.setWidth("20%");
+		panelInformacionCliente.setWidth("250px");
 
 		DynamicForm formProceso = new DynamicForm();
 		formProceso.setWidth100();
@@ -81,34 +93,54 @@ public class PanelClienteEspecifico extends HLayout {
 		nombreItem = new TextItem();
 		nombreItem.setTitle("Nombres");
 		nombreItem.setCanEdit(false);
+		nombreItem.setWidth("100%");
+		nombreItem.setLength(Convencion.MAXIMA_LONGITUD_NOMBRE_USUARIO);
 
 		apellidosItem = new TextItem();
 		apellidosItem.setTitle("Apellidos");
 		apellidosItem.setCanEdit(false);
+		apellidosItem.setWidth("100%");
+		apellidosItem.setLength(Convencion.MAXIMA_LONGITUD_NOMBRE_USUARIO);
 
 		cedulaItem = new TextItem();
 		cedulaItem.setTitle("Cédula");
 		cedulaItem.setCanEdit(false);
+		cedulaItem.setWidth("100%");
+		cedulaItem.setLength(Convencion.MAXIMA_LONGITUD_CEDULA);
+
+		RegExpValidator regExpValidator = new RegExpValidator();
+		regExpValidator
+				.setExpression("^([a-zA-Z0-9_.\\-+])+@(([a-zA-Z0-9\\-])+\\.)+[a-zA-Z0-9]{2,4}$");
 
 		mailItem = new TextItem();
 		mailItem.setTitle("Correo Electrónico");
+		mailItem.setValidators(regExpValidator);
+		mailItem.setWidth("100%");
 		mailItem.setCanEdit(false);
 
 		ciudadItem = new TextItem();
 		ciudadItem.setTitle("Ciudad");
 		ciudadItem.setCanEdit(false);
+		ciudadItem.setWidth("100%");
+		ciudadItem.setLength(Convencion.MAXIMA_LONGITUD_CIUDAD);
 
 		telefono = new TextItem();
 		telefono.setTitle("Teléfono");
 		telefono.setCanEdit(false);
+		telefono.setWidth("100%");
+		telefono.setLength(10);
 
 		nombreEmpresa = new TextItem();
 		nombreEmpresa.setTitle("Nombre Empresa");
 		nombreEmpresa.setCanEdit(false);
+		nombreEmpresa.setWidth("100%");
+		nombreEmpresa.setLength(Convencion.MAXIMA_LONGITUD_EMPRESA);
 
 		cargo = new TextItem();
 		cargo.setTitle("Cargo");
 		cargo.setCanEdit(false);
+		cargo.setWidth("100%");
+		cargo.setLength(Convencion.MAXIMA_LONGITUD_CARGO);
 
 		formProceso.setFields(nombreItem, apellidosItem, cedulaItem, mailItem,
 				ciudadItem, telefono, nombreEmpresa, cargo);
@@ -120,8 +152,7 @@ public class PanelClienteEspecifico extends HLayout {
 		v2.addChild(formProceso);
 
 		panelEncabezadoCliente = new PanelEncabezadoDialogo("Cliente",
-				"Informaci\u00F3n del cliente.",
-				"insumos/procesos/logoProcesos.png");
+				"Informaci\u00F3n del cliente.", "img/admin/bot6.png");
 		panelEncabezadoCliente.setSize("100%", "70px");
 
 		panelInformacionCliente.addMember(panelEncabezadoCliente);
@@ -144,14 +175,13 @@ public class PanelClienteEspecifico extends HLayout {
 					fechaFinal.setVisible(true);
 					fechaInicio.setVisible(true);
 					botonGenerarReporte.setVisible(true);
-					botonAgregarUsos.setVisible(true);
+					botonAgregarUsos.setTitle("Agregar Usos");
 
 				} else if (t.getID().equalsIgnoreCase("pruebas")) {
 					fechaFinal.setVisible(false);
 					fechaInicio.setVisible(false);
 					botonGenerarReporte.setVisible(false);
-					botonAgregarUsos.setVisible(false);
-
+					botonAgregarUsos.setTitle("Agregar Pruebas");
 				}
 			}
 		});
@@ -173,7 +203,7 @@ public class PanelClienteEspecifico extends HLayout {
 		ListGridField apellidoField = new ListGridField("usosAsignados",
 				"Usos Asignados");
 		ListGridField correoField = new ListGridField("usosRedimidos",
-				"Usos Redimidos");
+				"Usos Utilizados");
 		listGridUsos.setFields(nombreField, fecha, apellidoField, correoField);
 		listGridUsos.setCanResizeFields(true);
 
@@ -254,7 +284,12 @@ public class PanelClienteEspecifico extends HLayout {
 			@Override
 			public void onClick(
 					com.smartgwt.client.widgets.events.ClickEvent event) {
-				mostrarDialogoAgregarUso();
+				Tab t = topTabSet.getSelectedTab();
+				if (t.getID().equalsIgnoreCase("usos")) {
+					mostrarDialogoAgregarUso();
+				} else if (t.getID().equalsIgnoreCase("pruebas")) {
+					mostrarDialogoAgregarPruebas();
+				}
 
 			}
 		});
@@ -279,7 +314,7 @@ public class PanelClienteEspecifico extends HLayout {
 	private void mostrarDialogoAgregarUso() {
 		final Window winModal = new Window();
 		winModal.setWidth(350);
-		winModal.setHeight(150);
+		winModal.setHeight(180);
 		winModal.setTitle("Agregar Usos");
 		winModal.setShowMinimizeButton(false);
 		winModal.setIsModal(true);
@@ -294,7 +329,7 @@ public class PanelClienteEspecifico extends HLayout {
 
 		PanelEncabezadoDialogo p = new PanelEncabezadoDialogo("Asignar Usos",
 				"Asigne una nueva cantidad de usos a un cliente",
-				"img/admin/bot4.png");
+				"img/admin/bot6.png");
 		p.setSize("100%", "70px");
 
 		formUsos = new DynamicForm();
@@ -305,8 +340,9 @@ public class PanelClienteEspecifico extends HLayout {
 
 		textUsos = new IntegerItem();
 		textUsos.setRequired(true);
-		textUsos.setTitle("C\u00E9dula");
+		textUsos.setTitle("Usos");
 		textUsos.setAllowExpressions(false);
+		textUsos.setLength(10);
 
 		ButtonItem boton = new ButtonItem("Crear");
 		boton.addClickHandler(new com.smartgwt.client.widgets.form.fields.events.ClickHandler() {
@@ -329,6 +365,81 @@ public class PanelClienteEspecifico extends HLayout {
 		winModal.show();
 	}
 
+	private void mostrarDialogoAgregarPruebas() {
+		final Window winModal = new Window();
+
+		final PanelEncabezadoDialogo p = new PanelEncabezadoDialogo(
+				"Agregar Pruebas", "Agregue pruebas al cliente",
+				"img/admin/bot1.png");
+		p.setSize("100%", "70px");
+
+		winModal.setWidth(350);
+		winModal.setHeight(225);
+		winModal.setTitle("Agregar Pruebas");
+		winModal.setShowMinimizeButton(false);
+		winModal.setIsModal(true);
+		winModal.setShowModalMask(true);
+		winModal.centerInPage();
+		// winModal.setBackgroundColor("#CECECE");
+		winModal.addCloseClickHandler(new CloseClickHandler() {
+			@Override
+			public void onCloseClick(CloseClickEvent event) {
+				winModal.destroy();
+			}
+		});
+
+		final IButton boton = new IButton("Agregar");
+		boton.addClickHandler(new ClickHandler() {
+
+			@Override
+			public void onClick(
+					com.smartgwt.client.widgets.events.ClickEvent event) {
+				Record[] records = listGridPruebas.getSelectedRecords();
+				if (records != null) {
+					PruebaListGridRecord[] pruebas = new PruebaListGridRecord[records.length];
+					for (int i = 0; i < records.length; i++) {
+						pruebas[i] = (PruebaListGridRecord) records[i];
+					}
+					List<PruebaUsuarioBO> pruebasBO = PruebaListGridRecord
+							.getBO(pruebas);
+					Maestro.agregarPruebasACliente(pruebasBO,
+							usuarioSeleccionado);
+					winModal.destroy();
+				} else {
+					SC.warn("Debe seleccionar las pruebas que desea agregar al proceso.");
+				}
+
+			}
+
+		});
+
+		winModal.addItem(p);
+
+		listGridPruebas = new ListGrid();
+		listGridPruebas.setWidth100();
+		listGridPruebas.setHeight100();
+		listGridPruebas.setShowAllRecords(true);
+		listGridPruebas.setWrapCells(true);
+		listGridPruebas.setFixedRecordHeights(false);
+		listGridPruebas.setSelectionType(SelectionStyle.SINGLE);
+		listGridPruebas.setEmptyMessage("No se encuentran pruebas.");
+
+		ListGridField nombreField = new ListGridField("nombre", "Nombre");
+		ListGridField apellidosField = new ListGridField("descripcion",
+				"Descripci\u00F3n");
+
+		listGridPruebas.setFields(nombreField, apellidosField);
+		listGridPruebas.setCanResizeFields(false);
+		listGridPruebas.setSelectionType(SelectionStyle.SIMPLE);
+		listGridPruebas.setSelectionAppearance(SelectionAppearance.CHECKBOX);
+		listGridPruebas.setData(PruebaListGridRecord.getRecords(listaPruebas));
+
+		winModal.addItem(listGridPruebas);
+		winModal.addItem(boton);
+		winModal.show();
+
+	}
+
 	public void actualizarUsosCliente(List<UsoBO> result) {
 		listGridUsos.setData(UsoUsuarioListgridRecord.getRecords(result));
 	}
@@ -338,8 +449,10 @@ public class PanelClienteEspecifico extends HLayout {
 				.setData(PruebaListGridRecord.getRecords(result));
 	}
 
-	public void actualizarDatosCliente(UsuarioBO bo) {
+	public void actualizarDatosCliente(UsuarioBO bo,
+			List<PruebaUsuarioBO> listaPruebas2) {
 		usuarioSeleccionado = bo;
+		listaPruebas = listaPruebas2;
 		nombreItem.setValue(bo.getNombres());
 		apellidosItem.setValue(bo.getApellidos());
 		cedulaItem.setValue(bo.getIdentificador());

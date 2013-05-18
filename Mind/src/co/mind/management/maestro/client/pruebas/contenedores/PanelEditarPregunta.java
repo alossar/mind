@@ -85,12 +85,12 @@ public class PanelEditarPregunta extends HLayout {
 		formInformacionLamina.setWidth(600);
 		formInformacionLamina.setHeight100();
 		formInformacionLamina.setGroupTitle("Informaci\u00F3n de la Pregunta");
-		formInformacionLamina.setNumCols(6);
 		formInformacionLamina.setID("formInformacionLamina");
 
 		richTextEditorPregunta = new TextAreaItem();
-		richTextEditorPregunta.setWidth(600);
+		richTextEditorPregunta.setWidth("100%");
 		richTextEditorPregunta.setRequired(true);
+		richTextEditorPregunta.setTitle("Pregunta");
 		richTextEditorPregunta.addChangedHandler(new ChangedHandler() {
 
 			@Override

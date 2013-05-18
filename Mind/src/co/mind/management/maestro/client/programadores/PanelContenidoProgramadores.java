@@ -10,11 +10,12 @@ import co.mind.management.shared.dto.ProcesoUsuarioBO;
 import co.mind.management.shared.dto.UsuarioBO;
 import co.mind.management.shared.dto.UsuarioProgramadorBO;
 import co.mind.management.shared.records.ProgramadorListGridRecord;
-import co.mind.management.shared.records.UsuarioAdministradorListGridRecord;
+import co.mind.management.shared.recursos.Convencion;
 
 import com.smartgwt.client.types.VerticalAlignment;
 import com.smartgwt.client.util.BooleanCallback;
 import com.smartgwt.client.util.SC;
+import com.smartgwt.client.widgets.ImgButton;
 import com.smartgwt.client.widgets.Window;
 import com.smartgwt.client.widgets.events.CloseClickEvent;
 import com.smartgwt.client.widgets.events.CloseClickHandler;
@@ -26,12 +27,10 @@ import com.smartgwt.client.widgets.form.fields.events.ClickEvent;
 import com.smartgwt.client.widgets.form.validator.RegExpValidator;
 import com.smartgwt.client.widgets.grid.ListGrid;
 import com.smartgwt.client.widgets.grid.ListGridField;
-import com.smartgwt.client.widgets.grid.events.CellDoubleClickEvent;
-import com.smartgwt.client.widgets.grid.events.CellDoubleClickHandler;
+import com.smartgwt.client.widgets.grid.events.RecordDoubleClickEvent;
+import com.smartgwt.client.widgets.grid.events.RecordDoubleClickHandler;
 import com.smartgwt.client.widgets.layout.HLayout;
 import com.smartgwt.client.widgets.layout.VLayout;
-import com.smartgwt.client.widgets.toolbar.ToolStrip;
-import com.smartgwt.client.widgets.toolbar.ToolStripButton;
 
 public class PanelContenidoProgramadores extends HLayout {
 
@@ -42,10 +41,10 @@ public class PanelContenidoProgramadores extends HLayout {
 	private IntegerItem textIdentificadorUsuarioBasico;
 	private DynamicForm formUsuarioBasico;
 	private IntegerItem textTelefono;
-	private ToolStripButton botonRegresar;
+	private ImgButton botonRegresar;
+	private ImgButton botonNuevoProgramador;
+	private ImgButton botonEliminarProgramador;
 	private PanelProgramadorEspecifico panelProgramadorEspecifico;
-	private ToolStripButton botonNuevoProgramador;
-	private ToolStripButton botonEliminarProgramador;
 	private DialogoProcesamiento dlgNotificaciones;
 
 	public PanelContenidoProgramadores() {
@@ -58,7 +57,8 @@ public class PanelContenidoProgramadores extends HLayout {
 		listGridUsuariosProgramadores.setWidth100();
 		listGridUsuariosProgramadores.setHeight100();
 		listGridUsuariosProgramadores.setShowAllRecords(true);
-		listGridUsuariosProgramadores.setEmptyMessage("No se encuentran usuarios programadores en su cuenta.");
+		listGridUsuariosProgramadores
+				.setEmptyMessage("No se encuentran usuarios programadores en su cuenta.");
 
 		ListGridField idUsuarioField = new ListGridField("id", "C\u00E9dula");
 		ListGridField nombreUsuarioField = new ListGridField("nombre", "Nombre");
@@ -70,9 +70,10 @@ public class PanelContenidoProgramadores extends HLayout {
 		listGridUsuariosProgramadores.setCanResizeFields(true);
 
 		listGridUsuariosProgramadores
-				.addCellDoubleClickHandler(new CellDoubleClickHandler() {
+				.addRecordDoubleClickHandler(new RecordDoubleClickHandler() {
+
 					@Override
-					public void onCellDoubleClick(CellDoubleClickEvent event) {
+					public void onRecordDoubleClick(RecordDoubleClickEvent event) {
 						ProgramadorListGridRecord record = (ProgramadorListGridRecord) event
 								.getRecord();
 						if (record != null) {
@@ -81,22 +82,30 @@ public class PanelContenidoProgramadores extends HLayout {
 							panelProgramadorEspecifico
 									.actualizarDatosProgramador(programador);
 							Maestro.obtenerProcesosProgramador(programador);
-							botonRegresar.setVisible(true);
-							botonNuevoProgramador.setVisible(false);
-							botonEliminarProgramador.setVisible(false);
+							botonRegresar.setDisabled(false);
+							botonNuevoProgramador.setDisabled(true);
+							botonEliminarProgramador.setDisabled(true);
 							listGridUsuariosProgramadores.setVisible(false);
 							panelProgramadorEspecifico.setVisible(true);
 						}
 					}
 				});
 
+		listGridUsuariosProgramadores.setGenerateDoubleClickOnEnter(true);
+
 		panelProgramadorEspecifico = new PanelProgramadorEspecifico();
 		panelProgramadorEspecifico.setHeight100();
 		panelProgramadorEspecifico.setWidth100();
 		panelProgramadorEspecifico.setVisible(false);
 
-		botonNuevoProgramador = new ToolStripButton("Nuevo Programador",
-				"icons/16/document_plain_new.png");
+		botonNuevoProgramador = new ImgButton();
+		botonNuevoProgramador.setWidth(35);
+		botonNuevoProgramador.setHeight(35);
+		botonNuevoProgramador.setShowRollOver(true);
+		botonNuevoProgramador.setShowDown(true);
+		botonNuevoProgramador.setSrc("icons/agregar.png");
+		botonNuevoProgramador.setDisabled(false);
+		botonNuevoProgramador.setTooltip("Nuevo programador");
 
 		botonNuevoProgramador
 				.addClickHandler(new com.smartgwt.client.widgets.events.ClickHandler() {
@@ -108,9 +117,15 @@ public class PanelContenidoProgramadores extends HLayout {
 					}
 
 				});
-		botonRegresar = new ToolStripButton("Volver",
-				"icons/16/document_plain_new.png");
-		botonRegresar.setVisible(false);
+
+		botonRegresar = new ImgButton();
+		botonRegresar.setWidth(35);
+		botonRegresar.setHeight(35);
+		botonRegresar.setShowRollOver(true);
+		botonRegresar.setShowDown(true);
+		botonRegresar.setSrc("icons/atras.png");
+		botonRegresar.setDisabled(true);
+
 		botonRegresar
 				.addClickHandler(new com.smartgwt.client.widgets.events.ClickHandler() {
 					@Override
@@ -121,8 +136,14 @@ public class PanelContenidoProgramadores extends HLayout {
 
 				});
 
-		botonEliminarProgramador = new ToolStripButton("Eliminar Programador",
-				"icons/16/document_plain_new.png");
+		botonEliminarProgramador = new ImgButton();
+		botonEliminarProgramador.setWidth(35);
+		botonEliminarProgramador.setHeight(35);
+		botonEliminarProgramador.setShowRollOver(true);
+		botonEliminarProgramador.setShowDown(true);
+		botonEliminarProgramador.setSrc("icons/eliminar.png");
+		botonEliminarProgramador.setDisabled(false);
+		botonEliminarProgramador.setTooltip("Eliminar programador");
 
 		botonEliminarProgramador
 				.addClickHandler(new com.smartgwt.client.widgets.events.ClickHandler() {
@@ -154,24 +175,28 @@ public class PanelContenidoProgramadores extends HLayout {
 
 				});
 
-		ToolStrip menuBarUsuarioProgramador = new ToolStrip();
-		menuBarUsuarioProgramador.setWidth100();
-		menuBarUsuarioProgramador.addButton(botonNuevoProgramador);
-		menuBarUsuarioProgramador.addButton(botonRegresar);
-		menuBarUsuarioProgramador.addFill();
-		menuBarUsuarioProgramador.addSeparator();
-		menuBarUsuarioProgramador.addButton(botonEliminarProgramador);
-		menuBarUsuarioProgramador.addSeparator();
+		HLayout hl1 = new HLayout();
+		hl1.setWidth100();
+		hl1.setHeight("40px");
 
-		VLayout vl2 = new VLayout();
-		vl2.setWidth100();
-		vl2.setHeight100();
+		HLayout hlRelleno = new HLayout();
+		hlRelleno.setWidth("*");
+		hlRelleno.setHeight("1px");
 
-		vl2.addMember(listGridUsuariosProgramadores);
-		vl2.addMember(panelProgramadorEspecifico);
-		vl2.addMember(menuBarUsuarioProgramador);
+		hl1.addMember(hlRelleno);
+		hl1.addMember(botonRegresar);
+		hl1.addMember(botonNuevoProgramador);
+		hl1.addMember(botonEliminarProgramador);
 
-		addMember(vl2);
+		VLayout vl1 = new VLayout();
+		vl1.setWidth100();
+		vl1.setHeight100();
+
+		vl1.addMember(hl1);
+		vl1.addMember(listGridUsuariosProgramadores);
+		vl1.addMember(panelProgramadorEspecifico);
+
+		addMember(vl1);
 
 	}
 
@@ -208,16 +233,20 @@ public class PanelContenidoProgramadores extends HLayout {
 		formUsuarioBasico.setHeight("40%");
 		formUsuarioBasico.setWidth100();
 		formUsuarioBasico.setPadding(5);
-		formUsuarioBasico.setLayoutAlign(VerticalAlignment.BOTTOM);
+		formUsuarioBasico.setLayoutAlign(VerticalAlignment.CENTER);
 
 		textIdentificadorUsuarioBasico = new IntegerItem();
 		textIdentificadorUsuarioBasico.setRequired(true);
 		textIdentificadorUsuarioBasico.setTitle("C\u00E9dula");
 		textIdentificadorUsuarioBasico.setAllowExpressions(false);
+		textIdentificadorUsuarioBasico
+				.setLength(Convencion.MAXIMA_LONGITUD_CEDULA);
 
 		textNombreUsuarioProgramador = new TextItem();
 		textNombreUsuarioProgramador.setTitle("Nombre");
 		textNombreUsuarioProgramador.setRequired(true);
+		textNombreUsuarioProgramador
+				.setLength(Convencion.MAXIMA_LONGITUD_NOMBRE_USUARIO);
 
 		textApellidosUsuarioBasico = new TextItem();
 		textApellidosUsuarioBasico.setRequired(true);
@@ -275,14 +304,15 @@ public class PanelContenidoProgramadores extends HLayout {
 		programador.setTelefono(telefono);
 		Maestro.agregarProgramador(programador);
 
-		dlgNotificaciones = new DialogoProcesamiento("Creando el Programador...");
+		dlgNotificaciones = new DialogoProcesamiento(
+				"Creando el Programador...");
 		dlgNotificaciones.show();
 	}
 
 	public void setEstadoInicial() {
-		botonRegresar.setVisible(false);
-		botonNuevoProgramador.setVisible(true);
-		botonEliminarProgramador.setVisible(true);
+		botonRegresar.setDisabled(true);
+		botonNuevoProgramador.setDisabled(false);
+		botonEliminarProgramador.setDisabled(false);
 
 		listGridUsuariosProgramadores.setVisible(true);
 		panelProgramadorEspecifico.setVisible(false);

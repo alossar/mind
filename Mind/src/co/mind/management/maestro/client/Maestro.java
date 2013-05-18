@@ -537,6 +537,7 @@ public class Maestro implements EntryPoint {
 		panelVerProcesos.setEstadoInicial();
 		panelProgramadores.setEstadoInicial();
 		panelClientes.setEstadoInicial();
+		panelEvaluados.setEstadoInicial();
 	}
 
 	private void actualizarCookie() {
@@ -570,9 +571,9 @@ public class Maestro implements EntryPoint {
 							panelImagenes.actualizarImagenesUsuario(result);
 							panelPruebas.actualizarImagenesUsuario(result);
 						}
-						if(usuarioMaestro.getTipo().equalsIgnoreCase(
-										Convencion.TIPO_USUARIO_ADMINISTRADOR)){
-							panelPruebas.actualizarImagenesUsuario(result);							
+						if (usuarioMaestro.getTipo().equalsIgnoreCase(
+								Convencion.TIPO_USUARIO_ADMINISTRADOR)) {
+							panelPruebas.actualizarImagenesUsuario(result);
 						}
 					}
 
@@ -747,8 +748,11 @@ public class Maestro implements EntryPoint {
 	}
 
 	public static void obtenerPruebasProceso(ProcesoUsuarioBO proceso) {
+		if (proceso != null) {
+			procesoTemp = proceso;
+		}
 		usuarioMaestroService.consultarProceso((UsuarioBO) usuarioMaestro,
-				proceso, new AsyncCallback<ProcesoUsuarioBO>() {
+				procesoTemp, new AsyncCallback<ProcesoUsuarioBO>() {
 
 					@Override
 					public void onFailure(Throwable caught) {
@@ -1353,10 +1357,6 @@ public class Maestro implements EntryPoint {
 
 	}
 
-	public static void eliminarImagen(ImagenUsuarioBO imagenSeleccionada) {
-		// TODO Auto-generated method stub
-	}
-
 	public static void enviarNotificacionesCorreo(
 			List<ParticipacionEnProcesoBO> p) {
 		usuarioMaestroService.enviarNotificacionesParticipacionesProceso(
@@ -1391,6 +1391,10 @@ public class Maestro implements EntryPoint {
 						panelClientes.desactivarDialogoCreacionClientes();
 						if (result == Convencion.CORRECTO) {
 							setListaClientes();
+						} else if (result == Convencion.INCORRECTO_USUARIO_CEDULA_EXISTENTE) {
+							SC.warn("Un usuario ya se encuentra registrado con la cedula especificada.");
+						} else if (result == Convencion.INCORRECTO_USUARIO_CORREO_EXISTENTE) {
+							SC.warn("Un usuario ya se encuentra registrado con el correo especificado.");
 						} else {
 							SC.warn("El cliente no pudo ser creado");
 						}
@@ -1454,13 +1458,32 @@ public class Maestro implements EntryPoint {
 					@Override
 					public void onSuccess(Integer result) {
 						if (result == Convencion.CORRECTO) {
-
-							setListaProcesos();
+							obtenerProceso(procesoTemp);
 							obtenerParticipantesProceso(procesoTemp);
 							obtenerPruebasProceso(procesoTemp);
 						} else {
 							SC.warn("El proceso no pudo ser editado.");
 						}
+					}
+
+					@Override
+					public void onFailure(Throwable caught) {
+						caught.printStackTrace();
+					}
+				});
+	}
+
+	private static void obtenerProceso(ProcesoUsuarioBO proceso) {
+		usuarioMaestroService.consultarProceso(usuarioMaestro, proceso,
+				new AsyncCallback<ProcesoUsuarioBO>() {
+
+					@Override
+					public void onSuccess(ProcesoUsuarioBO result) {
+						if (result != null) {
+							panelVerProcesos
+									.actualizarProcesoSeleccionado(result);
+						}
+
 					}
 
 					@Override
@@ -1757,6 +1780,10 @@ public class Maestro implements EntryPoint {
 						panelProgramadores.desactivarDialogoCreacionClientes();
 						if (result == Convencion.CORRECTO) {
 							setListaProgramadores();
+						} else if (result == Convencion.INCORRECTO_USUARIO_CEDULA_EXISTENTE) {
+							SC.warn("Un usuario ya se encuentra registrado con la cedula especificada.");
+						} else if (result == Convencion.INCORRECTO_USUARIO_CORREO_EXISTENTE) {
+							SC.warn("Un usuario ya se encuentra registrado con el correo especificado.");
 						} else {
 							SC.warn("El programador no pudo ser agregado.");
 						}
@@ -1919,6 +1946,61 @@ public class Maestro implements EntryPoint {
 					public void onFailure(Throwable caught) {
 						caught.printStackTrace();
 
+					}
+				});
+	}
+
+	public static native void irAPruebaDesdeProceso() /*-{
+		$wnd.irAPruebaDesdeProceso();
+	}-*/;
+
+	public static native void irAProcesoDesdePrueba() /*-{
+		$wnd.isAProcesoDesdePrueba();
+	}-*/;
+
+	public static void irAPruebaSeleccionada(PruebaUsuarioBO prueba) {
+		panelPruebas.setPreguntasPrueba(prueba);
+	}
+
+	public static void obtenerProcesosEvaluado(EvaluadoBO bo) {
+		usuarioMaestroService.consultarParticipacionesEvaluado(usuarioMaestro,
+				bo, new AsyncCallback<List<ParticipacionEnProcesoBO>>() {
+
+					@Override
+					public void onSuccess(List<ParticipacionEnProcesoBO> result) {
+						panelEvaluados
+								.actualizarParticipacionesEvaluado(result);
+					}
+
+					@Override
+					public void onFailure(Throwable caught) {
+						caught.printStackTrace();
+
+					}
+				});
+
+	}
+
+	public static void agregarPruebasACliente(List<PruebaUsuarioBO> pruebasBO,
+			UsuarioBO usuarioSeleccionado) {
+		clienteTemp = usuarioSeleccionado;
+		usuarioMaestroService.agregarPruebas(usuarioSeleccionado,
+				pruebasBO, new AsyncCallback<Integer>() {
+
+					@Override
+					public void onSuccess(Integer result) {
+						if (result == Convencion.CORRECTO) {
+							obtenerPruebasCliente(clienteTemp);
+						} else {
+							SC.warn("Las pruebas no pudieron ser agregadas al cliente.");
+						}
+					}
+
+					@Override
+					public void onFailure(Throwable caught) {
+						caught.printStackTrace();
+						System.out
+								.println("Error agregando los temas al proceso");
 					}
 				});
 	}

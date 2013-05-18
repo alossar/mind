@@ -41,9 +41,9 @@ public class GestionAccesos implements IGestionAccesos {
 		qs.setParameter("correo", usuarioBasico.getCorreoElectronico());
 		qs.setParameter("codigo", participacion.getCodigo_Acceso());
 		qs.setParameter("cedula", usuarioBasico.getCedula());
-		List<ParticipacionEnProceso> listaPar = qs.getResultList();
-		if (listaPar != null && listaPar.size() > 0) {
-			ParticipacionEnProceso par = listaPar.get(0);
+		ParticipacionEnProceso par = (ParticipacionEnProceso) qs
+				.getSingleResult();
+		if (par != null) {
 			entityManager.refresh(par);
 			Date fechaInicio = par.getProcesosUsuario().getFechaInicio();
 			Date fechaFinal = par.getProcesosUsuario().getFechaFinalizacion();

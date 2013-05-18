@@ -6,6 +6,7 @@ import co.mind.management.maestro.client.PanelEncabezadoDialogo;
 import co.mind.management.shared.dto.ProcesoUsuarioBO;
 import co.mind.management.shared.dto.UsuarioBO;
 import co.mind.management.shared.records.ProcesoRecord;
+import co.mind.management.shared.recursos.Convencion;
 
 import com.smartgwt.client.types.Side;
 import com.smartgwt.client.widgets.form.DynamicForm;
@@ -33,7 +34,6 @@ public class PanelProgramadorEspecifico extends HLayout {
 	private TextItem telefono;
 
 	private PanelEncabezadoDialogo panelEncabezadoCliente;
-	private UsuarioBO usuarioSeleccionado;
 
 	public PanelProgramadorEspecifico() {
 		setWidth("100%");
@@ -52,12 +52,15 @@ public class PanelProgramadorEspecifico extends HLayout {
 
 		nombreItem = new TextItem();
 		nombreItem.setTitle("Nombres");
+		nombreItem.setLength(Convencion.MAXIMA_LONGITUD_NOMBRE_USUARIO);
 
 		apellidosItem = new TextItem();
 		apellidosItem.setTitle("Apellidos");
+		apellidosItem.setLength(Convencion.MAXIMA_LONGITUD_NOMBRE_USUARIO);
 
 		cedulaItem = new TextItem();
 		cedulaItem.setTitle("Cédula");
+		cedulaItem.setLength(Convencion.MAXIMA_LONGITUD_CEDULA);
 
 		mailItem = new TextItem();
 		mailItem.setTitle("Correo Electrónico");
@@ -75,8 +78,7 @@ public class PanelProgramadorEspecifico extends HLayout {
 		v2.addChild(formProceso);
 
 		panelEncabezadoCliente = new PanelEncabezadoDialogo("Programador",
-				"Informaci\u00F3n del programador.",
-				"insumos/procesos/logoProcesos.png");
+				"Informaci\u00F3n del programador.", "img/admin/bot3.png");
 		panelEncabezadoCliente.setSize("100%", "70px");
 
 		panelInformacionCliente.addMember(panelEncabezadoCliente);
@@ -145,7 +147,6 @@ public class PanelProgramadorEspecifico extends HLayout {
 	}
 
 	public void actualizarDatosProgramador(UsuarioBO bo) {
-		usuarioSeleccionado = bo;
 		nombreItem.setValue(bo.getNombres());
 		apellidosItem.setValue(bo.getApellidos());
 		cedulaItem.setValue(bo.getIdentificador());

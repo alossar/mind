@@ -15,6 +15,8 @@ public class ParticipacionEnProcesoBO implements Serializable {
 	private EvaluadoBO usuarioBasico;
 
 	private String sesionID;
+	private ProcesoUsuarioBO proceso;
+	private String estaNotificado;
 
 	public ParticipacionEnProcesoBO() {
 	}
@@ -82,6 +84,23 @@ public class ParticipacionEnProcesoBO implements Serializable {
 
 	public String getSesionID() {
 		return sesionID;
+	}
+
+	public ProcesoUsuarioBO getProceso() {
+		return proceso;
+	}
+
+	public void setProceso(ProcesoUsuarioBO proceso) {
+		this.proceso = proceso;
+
+	}
+
+	public String getEstaNotificado() {
+		return this.estaNotificado;
+	}
+
+	public void setEstaNotificado(String estaNotificado) {
+		this.estaNotificado = estaNotificado;
 	}
 
 }

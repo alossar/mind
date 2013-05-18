@@ -7,6 +7,7 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
+import javax.persistence.NoResultException;
 import javax.persistence.Persistence;
 import javax.persistence.Query;
 
@@ -83,108 +84,136 @@ public class GestionClientes implements IGestionClientes {
 	public int agregarUsuarioAdministrador(int usuarioMaestroID,
 			UsuarioAdministradorBO usuarioAdministrador, UsoBO usos,
 			List<PruebaUsuarioBO> pruebas) {
-		EntityTransaction userTransaction = entityManager.getTransaction();
-		try {
-			userTransaction.begin();
-			Usuario u = new Usuario();
-			String contrasena = Generador.GenerarCodigo(Generador.CARACTERES,
-					12);
-			u.setApellidos(usuarioAdministrador.getApellidos());
-			u.setCorreo_Electronico(usuarioAdministrador
-					.getCorreo_Electronico());
-			u.setIdentificador(usuarioAdministrador.getIdentificador());
-			u.setNombres(usuarioAdministrador.getNombres());
-			u.setCargo(usuarioAdministrador.getCargo());
-			u.setCiudad(usuarioAdministrador.getCiudad());
-			u.setContrasena(Generador.convertirStringmd5(contrasena));
-			u.setEmpresa(usuarioAdministrador.getEmpresa());
-			u.setEstado_Cuenta(Convencion.ESTADO_CUENTA_ACTIVA);
-			u.setFecha_Creacion(new Date());
-			u.setIdentificador(usuarioAdministrador.getIdentificador());
-			u.setNombres(usuarioAdministrador.getNombres());
-			u.setPais(usuarioAdministrador.getPais());
-			u.setTelefono(usuarioAdministrador.getTelefono());
-			u.setTelefono_Celular(usuarioAdministrador.getTelefono_Celular());
-			u.setTipo(Convencion.TIPO_USUARIO_ADMINISTRADOR);
-			if (!entityManager.contains(u)) {
-				entityManager.persist(u);
-				entityManager.flush();
-				userTransaction.commit();
 
-				GestionLaminas gLaminas = new GestionLaminas();
-				GestionPreguntas gPreguntas = new GestionPreguntas();
-				entityManager.refresh(u);
-
-				List<ImagenUsuarioBO> imagenes = gLaminas
-						.listarLaminasUsuarioAdministrador(usuarioMaestroID);
-				for (ImagenUsuarioBO imagenUsuarioBO : imagenes) {
-					gLaminas.agregarLaminaUsuarioAdministrador(
-							u.getIdentificador(), imagenUsuarioBO);
+		Usuario u = entityManager.find(Usuario.class,
+				usuarioAdministrador.getIdentificador());
+		if (u != null) {
+			return Convencion.INCORRECTO_USUARIO_CEDULA_EXISTENTE;
+		} else {
+			String query = "SELECT DISTINCT(u) FROM Usuario u WHERE u.correo_Electronico =:correo";
+			Query q = entityManager.createQuery(query);
+			q.setParameter("correo",
+					usuarioAdministrador.getCorreo_Electronico());
+			try {
+				u = (Usuario) q.getSingleResult();
+				if (u != null) {
+					return Convencion.INCORRECTO_USUARIO_CORREO_EXISTENTE;
 				}
-				for (PruebaUsuarioBO pruebaUsuarioBO : pruebas) {
+			} catch (NoResultException e) {
+				EntityTransaction userTransaction = entityManager
+						.getTransaction();
+				try {
 					userTransaction.begin();
-					PruebaUsuario c = new PruebaUsuario();
-					c.setUsuario(u);
-					c.setDescripcion(pruebaUsuarioBO.getDescripcion());
-					c.setNombre(pruebaUsuarioBO.getNombre());
-					if (!entityManager.contains(c)) {
-						entityManager.persist(c);
+					String contrasena = Generador.GenerarCodigo(
+							Generador.CARACTERES, 12);
+					u = new Usuario();
+					u.setApellidos(usuarioAdministrador.getApellidos());
+					u.setCorreo_Electronico(usuarioAdministrador
+							.getCorreo_Electronico());
+					u.setIdentificador(usuarioAdministrador.getIdentificador());
+					u.setNombres(usuarioAdministrador.getNombres());
+					u.setCargo(usuarioAdministrador.getCargo());
+					u.setCiudad(usuarioAdministrador.getCiudad());
+					u.setContrasena(Generador.convertirStringmd5(contrasena));
+					u.setEmpresa(usuarioAdministrador.getEmpresa());
+					u.setEstado_Cuenta(Convencion.ESTADO_CUENTA_ACTIVA);
+					u.setFecha_Creacion(new Date());
+					u.setIdentificador(usuarioAdministrador.getIdentificador());
+					u.setNombres(usuarioAdministrador.getNombres());
+					u.setPais(usuarioAdministrador.getPais());
+					u.setTelefono(usuarioAdministrador.getTelefono());
+					u.setTelefono_Celular(usuarioAdministrador
+							.getTelefono_Celular());
+					u.setTipo(Convencion.TIPO_USUARIO_ADMINISTRADOR);
+					if (!entityManager.contains(u)) {
+						entityManager.persist(u);
 						entityManager.flush();
 						userTransaction.commit();
+
+						GestionLaminas gLaminas = new GestionLaminas();
+						GestionPreguntas gPreguntas = new GestionPreguntas();
+						entityManager.refresh(u);
+
+						List<ImagenUsuarioBO> imagenes = gLaminas
+								.listarLaminasUsuarioAdministrador(usuarioMaestroID);
+						for (ImagenUsuarioBO imagenUsuarioBO : imagenes) {
+							gLaminas.agregarLaminaUsuarioAdministrador(
+									u.getIdentificador(), imagenUsuarioBO);
+						}
+						for (PruebaUsuarioBO pruebaUsuarioBO : pruebas) {
+							userTransaction.begin();
+							PruebaUsuario c = new PruebaUsuario();
+							c.setUsuario(u);
+							c.setDescripcion(pruebaUsuarioBO.getDescripcion());
+							c.setNombre(pruebaUsuarioBO.getNombre());
+							if (!entityManager.contains(c)) {
+								entityManager.persist(c);
+								entityManager.flush();
+								userTransaction.commit();
+							}
+							entityManager.refresh(c);
+
+							PruebaUsuario pru = entityManager.find(
+									PruebaUsuario.class,
+									pruebaUsuarioBO.getIdentificador());
+							PruebaUsuarioBO pruBO = new PruebaUsuarioBO();
+							pruBO.setIdentificador(c.getIdentificador());
+							List<PreguntaUsuario> preguntas = pru
+									.getPreguntasUsuarios();
+							for (PreguntaUsuario im : preguntas) {
+								PreguntaUsuarioBO resultado = new PreguntaUsuarioBO();
+								resultado.setCaracteresMaximo(im
+										.getCaracteresMaximo());
+								resultado.setIdentificador(im
+										.getIdentificador());
+								resultado.setPregunta(im.getPregunta());
+								resultado.setTiempoMaximo(im.getTiempoMaximo());
+								resultado.setPosicionPreguntaX(im
+										.getPosicionPreguntaX());
+								resultado.setPosicionPreguntaY(im
+										.getPosicionPreguntaY());
+								resultado
+										.setImagenesUsuarioID(gLaminas
+												.consultarLaminaUsuarioAdministradorEnlace(
+														u.getIdentificador(),
+														im.getImagenesUsuario()
+																.getImagene()
+																.getImagenURI()));
+								gPreguntas.agregarPreguntaUsuarioAdministrador(
+										u.getIdentificador(), resultado, pruBO);
+
+							}
+
+						}
+						System.out.println("Corregir usos al enviar correo.");
+						UsoUsuario uso = new UsoUsuario();
+						uso.setFechaAsignacion(new Date());
+						uso.setUsosAsignados(usos.getUsosAsignados());
+						uso.setUsosRedimidos(0);
+						uso.setUsuario(u);
+						userTransaction.begin();
+						entityManager.persist(uso);
+						entityManager.flush();
+						userTransaction.commit();
+
+						SMTPSender.enviarCorreoCreacionCuentaCliente(
+								u.getNombres(), u.getApellidos(),
+								u.getCorreo_Electronico(), contrasena,
+								usos.getUsosAsignados());
+						return Convencion.CORRECTO;
+					} else {
+						return Convencion.INCORRECTO;
 					}
-					entityManager.refresh(c);
-
-					PruebaUsuario pru = entityManager.find(PruebaUsuario.class,
-							pruebaUsuarioBO.getIdentificador());
-					PruebaUsuarioBO pruBO = new PruebaUsuarioBO();
-					pruBO.setIdentificador(c.getIdentificador());
-					List<PreguntaUsuario> preguntas = pru
-							.getPreguntasUsuarios();
-					for (PreguntaUsuario im : preguntas) {
-						PreguntaUsuarioBO resultado = new PreguntaUsuarioBO();
-						resultado.setCaracteresMaximo(im.getCaracteresMaximo());
-						resultado.setIdentificador(im.getIdentificador());
-						resultado.setPregunta(im.getPregunta());
-						resultado.setTiempoMaximo(im.getTiempoMaximo());
-						resultado.setPosicionPreguntaX(im
-								.getPosicionPreguntaX());
-						resultado.setPosicionPreguntaY(im
-								.getPosicionPreguntaY());
-						resultado.setImagenesUsuarioID(gLaminas
-								.consultarLaminaUsuarioAdministradorEnlace(
-										u.getIdentificador(), im
-												.getImagenesUsuario()
-												.getImagene().getImagenURI()));
-						gPreguntas.agregarPreguntaUsuarioAdministrador(
-								u.getIdentificador(), resultado, pruBO);
-
-					}
-
+				} catch (Exception exception) {
+					// Exception has occurred, roll-back the transaction.
+					exception.printStackTrace();
+					userTransaction.rollback();
+					return Convencion.INCORRECTO;
 				}
-				System.out.println("Corregir usos al enviar correo.");
-				UsoUsuario uso = new UsoUsuario();
-				uso.setFechaAsignacion(new Date());
-				uso.setUsosAsignados(usos.getUsosAsignados());
-				uso.setUsosRedimidos(0);
-				uso.setUsuario(u);
-				userTransaction.begin();
-				entityManager.persist(uso);
-				entityManager.flush();
-				userTransaction.commit();
-
-				SMTPSender.enviarCorreoCreacionCuentaCliente(u.getNombres(),
-						u.getApellidos(), u.getCorreo_Electronico(),
-						contrasena, usos.getUsosAsignados());
-				return Convencion.CORRECTO;
-			} else {
-				return Convencion.INCORRECTO;
 			}
-		} catch (Exception exception) {
-			// Exception has occurred, roll-back the transaction.
-			exception.printStackTrace();
-			userTransaction.rollback();
-			return Convencion.INCORRECTO;
 		}
+		return Convencion.INCORRECTO;
+
 	}
 
 	@Override

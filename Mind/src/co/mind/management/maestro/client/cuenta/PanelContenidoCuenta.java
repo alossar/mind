@@ -23,6 +23,7 @@ import com.smartgwt.client.widgets.form.fields.ButtonItem;
 import com.smartgwt.client.widgets.form.fields.PasswordItem;
 import com.smartgwt.client.widgets.form.fields.TextItem;
 import com.smartgwt.client.widgets.form.validator.MatchesFieldValidator;
+import com.smartgwt.client.widgets.form.validator.RegExpValidator;
 import com.smartgwt.client.widgets.grid.ListGrid;
 import com.smartgwt.client.widgets.grid.ListGridField;
 import com.smartgwt.client.widgets.layout.HLayout;
@@ -107,18 +108,27 @@ public class PanelContenidoCuenta extends HLayout {
 
 		nombreItem = new TextItem();
 		nombreItem.setTitle("Nombres");
+		nombreItem.setLength(Convencion.MAXIMA_LONGITUD_NOMBRE_USUARIO);
 
 		apellidosItem = new TextItem();
 		apellidosItem.setTitle("Apellidos");
+		apellidosItem.setLength(Convencion.MAXIMA_LONGITUD_NOMBRE_USUARIO);
 
 		cedulaItem = new TextItem();
 		cedulaItem.setTitle("Cédula");
+		cedulaItem.setLength(Convencion.MAXIMA_LONGITUD_CEDULA);
+
+		RegExpValidator regExpValidator = new RegExpValidator();
+		regExpValidator
+				.setExpression("^([a-zA-Z0-9_.\\-+])+@(([a-zA-Z0-9\\-])+\\.)+[a-zA-Z0-9]{2,4}$");
 
 		mailItem = new TextItem();
 		mailItem.setTitle("Correo Electrónico");
+		mailItem.setValidators(regExpValidator);
 
 		ciudadItem = new TextItem();
 		ciudadItem.setTitle("Ciudad");
+		ciudadItem.setLength(Convencion.MAXIMA_LONGITUD_CIUDAD);
 
 		formInformacionPersonal.setFields(nombreItem, apellidosItem,
 				cedulaItem, mailItem, ciudadItem);
@@ -300,7 +310,7 @@ public class PanelContenidoCuenta extends HLayout {
 		ListGridField apellidoField = new ListGridField("usosAsignados",
 				"Usos Asignados");
 		ListGridField correoField = new ListGridField("usosRedimidos",
-				"Usos Redimidos");
+				"Usos Utilizados");
 		listGridUsos.setFields(nombreField, fecha, apellidoField, correoField);
 		listGridUsos.setCanResizeFields(true);
 

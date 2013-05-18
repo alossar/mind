@@ -12,10 +12,8 @@ import com.smartgwt.client.types.Overflow;
 import com.smartgwt.client.widgets.Canvas;
 import com.smartgwt.client.widgets.HTMLFlow;
 import com.smartgwt.client.widgets.IButton;
-import com.smartgwt.client.widgets.Label;
 import com.smartgwt.client.widgets.drawing.DrawOval;
 import com.smartgwt.client.widgets.drawing.DrawPane;
-import com.smartgwt.client.widgets.drawing.DrawSector;
 import com.smartgwt.client.widgets.drawing.Point;
 import com.smartgwt.client.widgets.events.ClickEvent;
 import com.smartgwt.client.widgets.events.ClickHandler;
@@ -36,14 +34,10 @@ public class PanelPregunta extends Canvas {
 	private int radioReloj = 30;
 	private int tiempoLamina = 120;
 	private int tiempoTotal;
-	private float anguloCrecimiento;
-	private float anguloInicial = -90;
-	private double color;
 	private Canvas labelPregunta;
 	private HTMLFlow textTiempo;
 	private List<PreguntaUsuarioBO> listaPregunta;
 	private PreguntaUsuarioBO preguntaActual;
-	private int indicePregunta;
 	private DynamicForm formRespuesta;
 	private IButton botonSiguientePregunta;
 
@@ -51,9 +45,6 @@ public class PanelPregunta extends Canvas {
 		setSize("900px", "600px");
 		setLeft(0);
 		setTop(0);
-
-		anguloCrecimiento = (float) (360 / tiempoLamina);
-		color = 1 / tiempoLamina;
 		tiempoTotal = tiempoLamina;
 		inicializarRespuesta();
 		inicializarReloj();
@@ -74,7 +65,7 @@ public class PanelPregunta extends Canvas {
 
 		addChild(botonSiguientePregunta);
 		textTiempo = new HTMLFlow();
-		textTiempo.setLeft(435);
+		textTiempo.setLeft(430);
 		textTiempo.setTop(55);
 		textTiempo.setStyleName("temporizador");
 		addChild(textTiempo);
@@ -238,8 +229,6 @@ public class PanelPregunta extends Canvas {
 			setBackgroundImage(preguntaActual.getImagenesUsuario().getImagen()
 					.getImagenURI());
 			textContador.setValue(0 + "/" + textAreaRespuesta.getLength());
-			anguloCrecimiento = (float) (360 / tiempoLamina);
-			indicePregunta++;
 			// labelIndicePregunta.setContents(((Integer)
 			// indicePregunta).toString());
 

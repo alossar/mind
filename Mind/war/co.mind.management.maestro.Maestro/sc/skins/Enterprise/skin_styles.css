@@ -1266,6 +1266,9 @@ overwritten by _base.scss.
 .dateChooserDisabledWeekdayOver,
 .dateChooserDisabledWeekdayDown,
 .dateChooserDisabledWeekdayDisabled,
+.dateChooserDisabledWeekdayDisabledOver,
+.dateChooserDisabledWeekdayDisabledSelected,
+.dateChooserDisabledWeekdayDisabledSelectedOver,
 .dateChooserDisabledWeekdaySelected,
 .dateChooserDisabledWeekdaySelectedDown,
 .dateChooserDisabledWeekdaySelectedOver,
@@ -1274,6 +1277,9 @@ overwritten by _base.scss.
 .dateChooserDisabledWeekendOver,
 .dateChooserDisabledWeekendDown,
 .dateChooserDisabledWeekendDisabled,
+.dateChooserDisabledWeekendDisabledOver,
+.dateChooserDisabledWeekendDisabledSelected,
+.dateChooserDisabledWeekendDisabledSelectedOver,
 .dateChooserDisabledWeekendSelected,
 .dateChooserDisabledWeekendSelectedDown,
 .dateChooserDisabledWeekendSelectedOver,
@@ -1369,6 +1375,9 @@ overwritten by _base.scss.
 .dateChooserDisabledWeekendOver,
 .dateChooserDisabledWeekendDown,
 .dateChooserDisabledWeekendDisabled,
+.dateChooserDisabledWeekendDisabledOver,
+.dateChooserDisabledWeekendDisabledSelected,
+.dateChooserDisabledWeekendDisabledSelectedOver,
 .dateChooserDisabledWeekendSelected,
 .dateChooserDisabledWeekendSelectedDown,
 .dateChooserDisabledWeekendSelectedOver,
@@ -1412,6 +1421,9 @@ overwritten by _base.scss.
 .dateChooserDisabledWeekdayOver,
 .dateChooserDisabledWeekdayDown,
 .dateChooserDisabledWeekdayDisabled,
+.dateChooserDisabledWeekdayDisabledOver,
+.dateChooserDisabledWeekdayDisabledSelected,
+.dateChooserDisabledWeekdayDisabledSelectedOver,
 .dateChooserDisabledWeekdaySelected,
 .dateChooserDisabledWeekdaySelectedDown,
 .dateChooserDisabledWeekdaySelectedOver,
@@ -1423,6 +1435,9 @@ overwritten by _base.scss.
 .dateChooserDisabledWeekendOver,
 .dateChooserDisabledWeekendDown,
 .dateChooserDisabledWeekendDisabled,
+.dateChooserDisabledWeekendDisabledOver,
+.dateChooserDisabledWeekendDisabledSelected,
+.dateChooserDisabledWeekendDisabledSelectedOver,
 .dateChooserDisabledWeekendSelected,
 .dateChooserDisabledWeekendSelectedDown,
 .dateChooserDisabledWeekendSelectedOver,
@@ -4289,6 +4304,7 @@ IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII
 .calendar,
 .calendarDisabled,
 .calendarWorkday,
+.calendarWorkdayDisabled,
 .calendarDark {
   background-color: white;
   border-bottom: 1px solid #ababab;
@@ -4298,12 +4314,14 @@ IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII
   font-size: 11px;
 }
 
+.calendarWorkdayDisabled,
+.calendarDark,
 .calendarDisabled {
   background-color: #fafafa;
 }
 
 .calendarWorkday {
-  background-color: white;
+  background-color: #f2f2f2;
 }
 
 .calendarOver,

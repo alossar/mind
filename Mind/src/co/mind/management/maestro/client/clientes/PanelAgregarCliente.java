@@ -77,18 +77,24 @@ public class PanelAgregarCliente extends HLayout {
 		textIdentificadorUsuarioBasico.setRequired(true);
 		textIdentificadorUsuarioBasico.setTitle("C\u00E9dula");
 		textIdentificadorUsuarioBasico.setAllowExpressions(false);
+		textIdentificadorUsuarioBasico
+				.setLength(Convencion.MAXIMA_LONGITUD_CEDULA);
 
 		textNombreUsuarioBasico = new TextItem();
 		textNombreUsuarioBasico.setTitle("Nombre");
 		textNombreUsuarioBasico.setRequired(true);
+		textNombreUsuarioBasico
+				.setLength(Convencion.MAXIMA_LONGITUD_NOMBRE_USUARIO);
 
 		textApellidosUsuarioBasico = new TextItem();
 		textApellidosUsuarioBasico.setRequired(true);
 		textApellidosUsuarioBasico.setTitle("Apellidos");
+		textApellidosUsuarioBasico
+				.setLength(Convencion.MAXIMA_LONGITUD_NOMBRE_USUARIO);
 
 		RegExpValidator regExpValidator = new RegExpValidator();
 		regExpValidator
-				.setExpression("^([a-zA-Z0-9_.\\-+])+@(([a-zA-Z0-9\\-])+\\.)+[a-zA-Z0-9]{2,4}$");
+				.setExpression("^([a-z0-9_.\\-+])+@(([a-z0-9\\-])+\\.)+[a-z0-9]{2,4}$");
 
 		textCorreoUsuarioBasico = new TextItem();
 		textCorreoUsuarioBasico.setRequired(true);
@@ -98,14 +104,17 @@ public class PanelAgregarCliente extends HLayout {
 		textCiudad = new TextItem();
 		textCiudad.setRequired(false);
 		textCiudad.setTitle("Ciudad");
+		textCiudad.setLength(Convencion.MAXIMA_LONGITUD_CIUDAD);
 
 		textEmpresa = new TextItem();
 		textEmpresa.setTitle("Empresa");
 		textEmpresa.setRequired(false);
+		textEmpresa.setLength(Convencion.MAXIMA_LONGITUD_EMPRESA);
 
 		textCargo = new TextItem();
 		textCargo.setTitle("Cargo");
 		textCargo.setRequired(false);
+		textCargo.setLength(Convencion.MAXIMA_LONGITUD_CARGO);
 
 		textTelefono = new IntegerItem();
 		textTelefono.setRequired(true);
@@ -160,7 +169,7 @@ public class PanelAgregarCliente extends HLayout {
 		v2.addChild(formInformacion);
 
 		panelEncabezadoProceso = new PanelEncabezadoDialogo("Agregar Cliente",
-				"Informaci\u00F3n del Cliente.", "img/admin/bot4.png");
+				"Informaci\u00F3n del Cliente.", "img/admin/bot6.png");
 		panelEncabezadoProceso.setSize("100%", "70px");
 
 		panelInformacionProceso.addMember(panelEncabezadoProceso);

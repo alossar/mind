@@ -5,12 +5,13 @@ import java.util.List;
 import co.mind.management.maestro.client.Maestro;
 import co.mind.management.maestro.client.PanelEncabezadoDialogo;
 import co.mind.management.shared.dto.EvaluadoBO;
+import co.mind.management.shared.dto.ParticipacionEnProcesoBO;
 import co.mind.management.shared.records.UsuarioBasicoListGridRecord;
+import co.mind.management.shared.recursos.Convencion;
 
-import com.smartgwt.client.types.SelectionStyle;
 import com.smartgwt.client.types.Side;
 import com.smartgwt.client.types.VerticalAlignment;
-import com.smartgwt.client.util.SC;
+import com.smartgwt.client.widgets.ImgButton;
 import com.smartgwt.client.widgets.Window;
 import com.smartgwt.client.widgets.events.CloseClickEvent;
 import com.smartgwt.client.widgets.events.CloseClickHandler;
@@ -33,23 +34,27 @@ import com.smartgwt.client.widgets.grid.ListGridField;
 import com.smartgwt.client.widgets.grid.ListGridRecord;
 import com.smartgwt.client.widgets.grid.events.EditCompleteEvent;
 import com.smartgwt.client.widgets.grid.events.EditCompleteHandler;
+import com.smartgwt.client.widgets.grid.events.RecordDoubleClickEvent;
+import com.smartgwt.client.widgets.grid.events.RecordDoubleClickHandler;
 import com.smartgwt.client.widgets.grid.events.RowContextClickEvent;
 import com.smartgwt.client.widgets.grid.events.RowContextClickHandler;
 import com.smartgwt.client.widgets.layout.HLayout;
 import com.smartgwt.client.widgets.layout.VLayout;
 import com.smartgwt.client.widgets.tab.TabSet;
-import com.smartgwt.client.widgets.toolbar.ToolStrip;
-import com.smartgwt.client.widgets.toolbar.ToolStripButton;
 
 public class PanelContenidoEvaluados extends HLayout {
 
 	private ListGrid listGridUsuariosBasicos;
+	private PanelEvaluadoEspecifico panelEvaluado;
 	private TextItem textNombreUsuarioBasico;
 	private TextItem textApellidosUsuarioBasico;
 	private TextItem textCorreoUsuarioBasico;
 	private IntegerItem textIdentificadorUsuarioBasico;
 	private DynamicForm formUsuarioBasico;
 	private TextItem searchItem;
+	private ImgButton botonRegresar;
+	private ImgButton botonNuevoBasico;
+	private DynamicForm formBusqueda;
 
 	public PanelContenidoEvaluados() {
 		setWidth("90%");
@@ -69,6 +74,42 @@ public class PanelContenidoEvaluados extends HLayout {
 		listGridUsuariosBasicos.setShowAllRecords(true);
 		listGridUsuariosBasicos
 				.setEmptyMessage("No hay evaluados en su cuenta.");
+
+		ListGridField idField = new ListGridField("id", "Cédula");
+		idField.setCanEdit(false);
+		ListGridField nombreField = new ListGridField("nombre", "Nombre");
+		ListGridField apellidosField = new ListGridField("apellidos",
+				"Apellidos");
+		ListGridField correoField = new ListGridField("correo", "Correo");
+		listGridUsuariosBasicos.setFields(idField, nombreField, apellidosField,
+				correoField);
+		listGridUsuariosBasicos.setCanResizeFields(true);
+		listGridUsuariosBasicos.setCanEdit(true);
+
+		listGridUsuariosBasicos
+				.addRecordDoubleClickHandler(new RecordDoubleClickHandler() {
+
+					@Override
+					public void onRecordDoubleClick(RecordDoubleClickEvent event) {
+						UsuarioBasicoListGridRecord usuario = (UsuarioBasicoListGridRecord) event
+								.getRecord();
+						if (usuario != null) {
+							EvaluadoBO bo = UsuarioBasicoListGridRecord
+									.getBO(usuario);
+							panelEvaluado.actualizarDatosEvaluado(bo);
+
+							Maestro.obtenerProcesosEvaluado(bo);
+
+							listGridUsuariosBasicos.setVisible(false);
+							panelEvaluado.setVisible(true);
+							botonNuevoBasico.setDisabled(true);
+							formBusqueda.setVisible(false);
+
+							botonRegresar.setDisabled(false);
+						}
+					}
+				});
+
 		listGridUsuariosBasicos
 				.addRowContextClickHandler(new RowContextClickHandler() {
 					public void onRowContextClick(RowContextClickEvent event) {
@@ -105,19 +146,21 @@ public class PanelContenidoEvaluados extends HLayout {
 					}
 				});
 
-		ListGridField idField = new ListGridField("id", "Cédula");
-		idField.setCanEdit(false);
-		ListGridField nombreField = new ListGridField("nombre", "Nombre");
-		ListGridField apellidosField = new ListGridField("apellidos",
-				"Apellidos");
-		ListGridField correoField = new ListGridField("correo", "Correo");
-		listGridUsuariosBasicos.setFields(idField, nombreField, apellidosField,
-				correoField);
-		listGridUsuariosBasicos.setCanResizeFields(true);
-		listGridUsuariosBasicos.setCanEdit(true);
+		listGridUsuariosBasicos.setGenerateDoubleClickOnEnter(true);
 
-		ToolStripButton botonNuevoBasico = new ToolStripButton(
-				"Nuevo Evaluado", "icons/16/document_plain_new.png");
+		panelEvaluado = new PanelEvaluadoEspecifico();
+		panelEvaluado.setHeight100();
+		panelEvaluado.setWidth100();
+		panelEvaluado.setVisible(false);
+
+		botonNuevoBasico = new ImgButton();
+		botonNuevoBasico.setWidth(35);
+		botonNuevoBasico.setHeight(35);
+		botonNuevoBasico.setShowRollOver(true);
+		botonNuevoBasico.setShowDown(true);
+		botonNuevoBasico.setSrc("icons/agregar.png");
+		botonNuevoBasico.setDisabled(false);
+		botonNuevoBasico.setTooltip("Nuevo evaluado");
 
 		botonNuevoBasico
 				.addClickHandler(new com.smartgwt.client.widgets.events.ClickHandler() {
@@ -128,13 +171,23 @@ public class PanelContenidoEvaluados extends HLayout {
 						mostrarDialogoCrearUsuarioBasico();
 					}
 				});
+		botonRegresar = new ImgButton();
+		botonRegresar.setWidth(35);
+		botonRegresar.setHeight(35);
+		botonRegresar.setShowRollOver(true);
+		botonRegresar.setShowDown(true);
+		botonRegresar.setSrc("icons/atras.png");
+		botonRegresar.setDisabled(true);
 
-		ToolStrip menuBarUsuarioBasico = new ToolStrip();
-		menuBarUsuarioBasico.setWidth100();
-		menuBarUsuarioBasico.addButton(botonNuevoBasico);
-		menuBarUsuarioBasico.addFill();
-		menuBarUsuarioBasico.addSeparator();
-		menuBarUsuarioBasico.addSeparator();
+		botonRegresar
+				.addClickHandler(new com.smartgwt.client.widgets.events.ClickHandler() {
+					@Override
+					public void onClick(
+							com.smartgwt.client.widgets.events.ClickEvent event) {
+						setEstadoInicial();
+					}
+
+				});
 
 		searchItem = new TextItem("description", "Buscar Evaluado");
 		searchItem.addKeyPressHandler(new KeyPressHandler() {
@@ -181,19 +234,33 @@ public class PanelContenidoEvaluados extends HLayout {
 			}
 		});
 
-		DynamicForm form = new DynamicForm();
-		form.setWidth100();
-		form.setPadding(5);
-		form.setLayoutAlign(VerticalAlignment.BOTTOM);
-		form.setFields(searchItem);
+		formBusqueda = new DynamicForm();
+		formBusqueda.setWidth("250px");
+		formBusqueda.setHeight("33px");
+		formBusqueda.setPadding(5);
+		formBusqueda.setLayoutAlign(VerticalAlignment.CENTER);
+		formBusqueda.setFields(searchItem);
+
+		HLayout hl1 = new HLayout();
+		hl1.setWidth100();
+		hl1.setHeight("40px");
+
+		HLayout hlRelleno = new HLayout();
+		hlRelleno.setWidth("*");
+		hlRelleno.setHeight("1px");
+
+		hl1.addMember(hlRelleno);
+		hl1.addMember(formBusqueda);
+		hl1.addMember(botonRegresar);
+		hl1.addMember(botonNuevoBasico);
 
 		VLayout vl1 = new VLayout();
 		vl1.setWidth100();
 		vl1.setHeight100();
 
-		vl1.addMember(form);
+		vl1.addMember(hl1);
 		vl1.addMember(listGridUsuariosBasicos);
-		vl1.addMember(menuBarUsuarioBasico);
+		vl1.addMember(panelEvaluado);
 
 		addMember(vl1);
 
@@ -234,18 +301,24 @@ public class PanelContenidoEvaluados extends HLayout {
 		textIdentificadorUsuarioBasico.setRequired(true);
 		textIdentificadorUsuarioBasico.setTitle("C\u00E9dula");
 		textIdentificadorUsuarioBasico.setAllowExpressions(false);
+		textIdentificadorUsuarioBasico
+				.setLength(Convencion.MAXIMA_LONGITUD_CEDULA);
 
 		textNombreUsuarioBasico = new TextItem();
 		textNombreUsuarioBasico.setTitle("Nombre");
 		textNombreUsuarioBasico.setRequired(true);
+		textNombreUsuarioBasico
+				.setLength(Convencion.MAXIMA_LONGITUD_NOMBRE_USUARIO);
 
 		textApellidosUsuarioBasico = new TextItem();
 		textApellidosUsuarioBasico.setRequired(true);
 		textApellidosUsuarioBasico.setTitle("Apellidos");
+		textApellidosUsuarioBasico
+				.setLength(Convencion.MAXIMA_LONGITUD_NOMBRE_USUARIO);
 
 		RegExpValidator regExpValidator = new RegExpValidator();
 		regExpValidator
-				.setExpression("^([a-zA-Z0-9_.\\-+])+@(([a-zA-Z0-9\\-])+\\.)+[a-zA-Z0-9]{2,4}$");
+				.setExpression("^([a-z0-9_.\\-+])+@(([a-z0-9\\-])+\\.)+[a-z0-9]{2,4}$");
 
 		textCorreoUsuarioBasico = new TextItem();
 		textCorreoUsuarioBasico.setRequired(true);
@@ -281,5 +354,19 @@ public class PanelContenidoEvaluados extends HLayout {
 
 		Maestro.agregarUsuarioBasico(idUsuario, nombreUsuario,
 				apellidosUsuario, correoUsuario);
+	}
+
+	public void setEstadoInicial() {
+		listGridUsuariosBasicos.setVisible(true);
+		panelEvaluado.setVisible(false);
+		botonNuevoBasico.setDisabled(false);
+		botonRegresar.setDisabled(true);
+		formBusqueda.setVisible(true);
+	}
+
+	public void actualizarParticipacionesEvaluado(
+			List<ParticipacionEnProcesoBO> result) {
+		panelEvaluado.actualizarParticipacionesEvaluado(result);
+
 	}
 }

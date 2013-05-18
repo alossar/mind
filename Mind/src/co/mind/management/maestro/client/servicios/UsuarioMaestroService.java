@@ -58,7 +58,7 @@ public interface UsuarioMaestroService extends RemoteService {
 	public int eliminarCuenta(int usuarioAdministradorID,
 			SolicitudEliminacionCuentaBO solicitud);
 
-		int agregarParticipacionDeUsuarioBasicoAProceso(
+	int agregarParticipacionDeUsuarioBasicoAProceso(
 			UsuarioBO usuarioAdministrador, ProcesoUsuarioBO proceso,
 			List<ParticipacionEnProcesoBO> evaluados);
 
@@ -194,5 +194,11 @@ public interface UsuarioMaestroService extends RemoteService {
 	int cambiarContrasena(UsuarioBO usuarioMaestro, String pass);
 
 	List<ProcesoUsuarioBO> consultarProcesosParaRevisar();
+
+	List<ParticipacionEnProcesoBO> consultarParticipacionesEvaluado(
+			UsuarioBO usuarioMaestro, EvaluadoBO bo);
+
+	int agregarPruebas(UsuarioBO usuarioSeleccionado,
+			List<PruebaUsuarioBO> pruebasBO);
 
 }

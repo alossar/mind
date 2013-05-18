@@ -8,9 +8,11 @@ import co.mind.management.shared.records.ImagenRecord;
 
 import com.google.gwt.user.client.ui.NamedFrame;
 import com.smartgwt.client.types.Encoding;
+import com.smartgwt.client.types.SelectionStyle;
 import com.smartgwt.client.types.VerticalAlignment;
 import com.smartgwt.client.types.Visibility;
 import com.smartgwt.client.widgets.Canvas;
+import com.smartgwt.client.widgets.ImgButton;
 import com.smartgwt.client.widgets.Window;
 import com.smartgwt.client.widgets.events.CloseClickEvent;
 import com.smartgwt.client.widgets.events.CloseClickHandler;
@@ -42,6 +44,7 @@ public class PanelContenidoImagenes extends HLayout {
 		tileGridImagenesUsuario.setWidth100();
 		tileGridImagenesUsuario.setCanReorderTiles(false);
 		tileGridImagenesUsuario.setShowAllRecords(false);
+		tileGridImagenesUsuario.setSelectionType(SelectionStyle.SIMPLE);
 
 		DetailViewerField pictureField = new DetailViewerField("thumbnail");
 		pictureField.setType("image");
@@ -52,8 +55,14 @@ public class PanelContenidoImagenes extends HLayout {
 
 		tileGridImagenesUsuario.setFields(pictureField, nameField);
 
-		ToolStripButton botonNuevoBasico = new ToolStripButton("Agregar Imagen");
-
+		ImgButton botonNuevoBasico = new ImgButton();
+		botonNuevoBasico.setWidth(35);
+		botonNuevoBasico.setHeight(35);
+		botonNuevoBasico.setShowRollOver(true);
+		botonNuevoBasico.setShowDown(true);
+		botonNuevoBasico.setSrc("icons/agregar.png");
+		botonNuevoBasico.setDisabled(false);
+		botonNuevoBasico.setTooltip("Nueva prueba");
 		botonNuevoBasico
 				.addClickHandler(new com.smartgwt.client.widgets.events.ClickHandler() {
 
@@ -138,20 +147,42 @@ public class PanelContenidoImagenes extends HLayout {
 		// }
 		// });
 
-		ToolStrip menuBarUsuarioBasico = new ToolStrip();
-		menuBarUsuarioBasico.setWidth100();
-		menuBarUsuarioBasico.addButton(botonNuevoBasico);
-		// menuBarUsuarioBasico.addButton(botonEliminarBasico);
-		menuBarUsuarioBasico.addFill();
-		menuBarUsuarioBasico.addSeparator();
-		menuBarUsuarioBasico.addSeparator();
+		ImgButton botonAgregarImagenes = new ImgButton();
+		botonAgregarImagenes.setWidth(35);
+		botonAgregarImagenes.setHeight(35);
+		botonAgregarImagenes.setShowRollOver(true);
+		botonAgregarImagenes.setShowDown(true);
+		botonAgregarImagenes.setSrc("icons/agregar.png");
+		botonAgregarImagenes.setDisabled(false);
+		botonAgregarImagenes.setTooltip("Agregar imagenes a cliente");
+		botonAgregarImagenes
+				.addClickHandler(new com.smartgwt.client.widgets.events.ClickHandler() {
+
+					@Override
+					public void onClick(
+							com.smartgwt.client.widgets.events.ClickEvent event) {
+						
+					}
+				});
+
+		HLayout hl1 = new HLayout();
+		hl1.setWidth100();
+		hl1.setHeight("40px");
+
+		HLayout hlRelleno = new HLayout();
+		hlRelleno.setWidth("*");
+		hlRelleno.setHeight("1px");
+
+		hl1.addMember(hlRelleno);
+		hl1.addMember(botonNuevoBasico);
+		hl1.addMember(botonAgregarImagenes);
 
 		VLayout vl1 = new VLayout();
 		vl1.setWidth100();
 		vl1.setHeight100();
 
+		vl1.addMember(hl1);
 		vl1.addMember(tileGridImagenesUsuario);
-		vl1.addMember(menuBarUsuarioBasico);
 
 		addMember(vl1);
 

@@ -83,12 +83,13 @@ public class PanelAgregarPregunta extends HLayout {
 		formInformacionLamina.setHeight100();
 		formInformacionLamina
 				.setGroupTitle("Informaci\u00F3n de la L\u00E1mina");
-		formInformacionLamina.setNumCols(6);
 		formInformacionLamina.setID("formInformacionLamina");
 
 		richTextEditorPregunta = new TextAreaItem();
-		richTextEditorPregunta.setWidth(600);
+		richTextEditorPregunta.setWidth("100%");
 		richTextEditorPregunta.setRequired(true);
+		// richTextEditorPregunta.setControlGroups();
+		richTextEditorPregunta.setTitle("Pregunta");
 		richTextEditorPregunta.addChangedHandler(new ChangedHandler() {
 
 			@Override
@@ -232,7 +233,7 @@ public class PanelAgregarPregunta extends HLayout {
 				panelPruebas.agregarPreguntaPrueba(bo);
 			} else {
 				SC.warn("La pregunta excede la longitud de caracteres máxima. "
-						+ pregunta.length() + " de"
+						+ pregunta.length() + " de "
 						+ Convencion.MAXIMA_LONGITUD_PREGUNTA + " Carecteres.");
 			}
 		} else {

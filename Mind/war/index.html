@@ -7,6 +7,31 @@
 <script type="text/javascript" src="js/jquery.js"></script>
 <script type="text/javascript" src="js/rotate.js"></script>
 <script>
+	function irAPruebaDesdeProceso() {
+		jQnC('#principalM').hide("slow");
+		jQnC('#evaluadosM').hide("slow");
+		jQnC('#programarProcesoM').hide("slow");
+		jQnC('#pruebaM').show("slow");
+		jQnC('#programadoresM').hide("slow");
+		jQnC('#laminasM').hide("slow");
+		jQnC('#clientesM').hide("slow");
+		jQnC('#cuentaM').hide("slow");
+	}
+</script>
+
+<script>
+	function isAProcesoDesdePrueba() {
+		jQnC('#principalM').hide("slow");
+		jQnC('#programarProcesoM').show("slow");
+		jQnC('#pruebaM').hide("slow");
+		jQnC('#programadoresM').hide("slow");
+		jQnC('#evaluadosM').hide("slow");
+		jQnC('#laminasM').hide("slow");
+		jQnC('#clientesM').hide("slow");
+		jQnC('#cuentaM').hide("slow");
+	}
+</script>
+<script>
 	var isomorphicDir = "co.mind.management.maestro.Maestro/sc/";
 </script>
 <script
@@ -128,6 +153,7 @@
 			jQnC('#evaluadosM').hide("slow");
 			jQnC('#clientesM').hide("slow");
 			jQnC('#cuentaM').hide("slow");
+			jQnC('#programarProcesoM').hide("slow");
 		});
 		jQnC('#clientesP').click(function() {//click en ver Pruebas
 			jQnC('#principalM').hide("slow");
@@ -312,7 +338,7 @@
 				<!--PROGRAMADORES-->
 				<div id="programadoresM" class="mostradores">
 					<div class="titleStart">
-						<img src="images/img/admin/bot3.png">
+						<img src="images/img/admin/bot4.png">
 						<div id="programarProcesoMTextoM">
 							<h3>
 								Programadores
@@ -328,7 +354,7 @@
 				<!--LAMINAS-->
 				<div id="laminasM" class="mostradores">
 					<div class="titleStart">
-						<img src="images/img/admin/bot3.png">
+						<img src="images/img/admin/bot5.png">
 						<div id="programarProcesoMTextoM">
 							<h3>
 								Laminas
@@ -344,7 +370,7 @@
 				<!--CLIENTES-->
 				<div id="clientesM" class="mostradores">
 					<div class="titleStart">
-						<img src="images/img/admin/bot4.png">
+						<img src="images/img/admin/bot6.png">
 						<div id="programarProcesoMTextoM">
 							<h3>
 								Clientes
@@ -360,7 +386,7 @@
 				<!--Gestion de Paquetes-->
 				<div id="cuentaM" class="mostradores">
 					<div class="titleStart">
-						<img src="images/img/admin/bot2.png">
+						<img src="images/img/admin/bot6.png">
 						<div id="programarProcesoMTextoM">
 							<h3>
 								Cuenta

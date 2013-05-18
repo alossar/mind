@@ -32,29 +32,18 @@ public class EvaluacionServiceImpl extends RemoteServiceServlet implements
 	private GestionEvaluacion gestionEvaluacion = new GestionEvaluacion();
 	private GestionPruebas gestionPruebas = new GestionPruebas();
 	private GestionClientes gestionUsuariosAdministradores = new GestionClientes();
-	private GestionUsos gestionUsos = new GestionUsos();
 
 	@Override
 	public int comenzarPrueba(EvaluadoBO usuarioBasico,
 			ParticipacionEnProcesoBO participacion) {
-
-		int resultado = g.verificarUsuarioBasico(usuarioBasico, participacion);
-		if (resultado == Convencion.VERIFICACION_USUARIO_BASICO_CORRECTA) {
-			participacion
-					.setEstado(Convencion.ESTADO_PARTICIPACION_EN_PROCESO_EN_EJECUCION);
-			gestionEvaluacion.editarParticipacionEnProceso(
-					usuarioBasico.getIdentificadorUsuarioAdministrador(),
-					usuarioBasico.getIdentificador(),
-					participacion.getProcesoID(), participacion);
-			gestionEvaluacion.decrementarCantidadDeUsosUsuarios(
-					participacion.getIdentificador(),
-					participacion.getProcesoID());
-
-			return resultado;
-
-		} else {
-			return resultado;
-		}
+		participacion
+				.setEstado(Convencion.ESTADO_PARTICIPACION_EN_PROCESO_EN_EJECUCION);
+		gestionEvaluacion.editarParticipacionEnProceso(
+				usuarioBasico.getIdentificadorUsuarioAdministrador(),
+				usuarioBasico.getIdentificador(), participacion.getProcesoID(),
+				participacion);
+		return gestionEvaluacion.decrementarCantidadDeUsosUsuarios(
+				participacion.getIdentificador(), participacion.getProcesoID());
 	}
 
 	@Override

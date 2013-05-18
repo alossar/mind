@@ -12,6 +12,7 @@ import co.mind.management.shared.recursos.Convencion;
 
 import com.smartgwt.client.types.VerticalAlignment;
 import com.smartgwt.client.util.SC;
+import com.smartgwt.client.widgets.ImgButton;
 import com.smartgwt.client.widgets.Window;
 import com.smartgwt.client.widgets.events.CloseClickEvent;
 import com.smartgwt.client.widgets.events.CloseClickHandler;
@@ -27,17 +28,12 @@ import com.smartgwt.client.widgets.form.fields.events.KeyPressEvent;
 import com.smartgwt.client.widgets.form.fields.events.KeyPressHandler;
 import com.smartgwt.client.widgets.grid.ListGrid;
 import com.smartgwt.client.widgets.grid.ListGridField;
-import com.smartgwt.client.widgets.grid.ListGridRecord;
-import com.smartgwt.client.widgets.grid.events.CellDoubleClickEvent;
-import com.smartgwt.client.widgets.grid.events.CellDoubleClickHandler;
+import com.smartgwt.client.widgets.grid.events.RecordDoubleClickEvent;
+import com.smartgwt.client.widgets.grid.events.RecordDoubleClickHandler;
 import com.smartgwt.client.widgets.grid.events.RowMouseDownEvent;
 import com.smartgwt.client.widgets.grid.events.RowMouseDownHandler;
-import com.smartgwt.client.widgets.grid.events.SelectionUpdatedEvent;
-import com.smartgwt.client.widgets.grid.events.SelectionUpdatedHandler;
 import com.smartgwt.client.widgets.layout.HLayout;
 import com.smartgwt.client.widgets.layout.VLayout;
-import com.smartgwt.client.widgets.toolbar.ToolStrip;
-import com.smartgwt.client.widgets.toolbar.ToolStripButton;
 
 public class PanelContenidoClientes extends HLayout {
 
@@ -46,12 +42,12 @@ public class PanelContenidoClientes extends HLayout {
 	private Window windowCrearLamina;
 	private PanelAgregarCliente panelAgregarCliente;
 	private List<PruebaUsuarioBO> listaPruebas;
-	private ToolStripButton botonRegresar;
-	private ToolStripButton botonNuevoAdministrador;
 	private TextItem searchItem;
 	private DynamicForm formBusqueda;
-	private ToolStripButton botonEliminarCuenta;
-	private ToolStripButton botonDesactivarCuenta;
+	private ImgButton botonRegresar;
+	private ImgButton botonNuevoAdministrador;
+	private ImgButton botonEliminarCuenta;
+	private ImgButton botonDesactivarCuenta;
 	private DialogoProcesamiento dlgNotificaciones;
 
 	public PanelContenidoClientes() {
@@ -91,17 +87,17 @@ public class PanelContenidoClientes extends HLayout {
 				.setEmptyMessage("No se encuentran clientes.");
 
 		listGridUsuariosAdministradores
-				.addCellDoubleClickHandler(new CellDoubleClickHandler() {
+				.addRecordDoubleClickHandler(new RecordDoubleClickHandler() {
 
 					@Override
-					public void onCellDoubleClick(CellDoubleClickEvent event) {
+					public void onRecordDoubleClick(RecordDoubleClickEvent event) {
 						UsuarioAdministradorListGridRecord record = (UsuarioAdministradorListGridRecord) event
 								.getRecord();
 						if (record != null) {
 							UsuarioBO cliente = UsuarioAdministradorListGridRecord
 									.getBO(record);
-							panelClienteEspecifico
-									.actualizarDatosCliente(cliente);
+							panelClienteEspecifico.actualizarDatosCliente(
+									cliente, listaPruebas);
 							Maestro.obtenerUsosCliente(cliente);
 							Maestro.obtenerPruebasCliente(cliente);
 
@@ -110,7 +106,9 @@ public class PanelContenidoClientes extends HLayout {
 							formBusqueda.setVisible(false);
 
 							botonNuevoAdministrador.setVisible(false);
-							botonRegresar.setVisible(true);
+							botonRegresar.setDisabled(false);
+							botonDesactivarCuenta.setVisible(false);
+							botonEliminarCuenta.setVisible(false);
 						}
 					}
 				});
@@ -146,14 +144,20 @@ public class PanelContenidoClientes extends HLayout {
 					}
 				});
 
+		listGridUsuariosAdministradores.setGenerateDoubleClickOnEnter(true);
+
 		panelClienteEspecifico = new PanelClienteEspecifico();
 		panelClienteEspecifico.setHeight100();
 		panelClienteEspecifico.setWidth100();
 		panelClienteEspecifico.setVisible(false);
 
-		botonRegresar = new ToolStripButton("Volver",
-				"icons/16/document_plain_new.png");
-		botonRegresar.setVisible(false);
+		botonRegresar = new ImgButton();
+		botonRegresar.setWidth(35);
+		botonRegresar.setHeight(35);
+		botonRegresar.setShowRollOver(true);
+		botonRegresar.setShowDown(true);
+		botonRegresar.setSrc("icons/atras.png");
+		botonRegresar.setDisabled(true);
 
 		botonRegresar
 				.addClickHandler(new com.smartgwt.client.widgets.events.ClickHandler() {
@@ -165,8 +169,14 @@ public class PanelContenidoClientes extends HLayout {
 
 				});
 
-		botonNuevoAdministrador = new ToolStripButton("Nuevo Cliente",
-				"icons/16/document_plain_new.png");
+		botonNuevoAdministrador = new ImgButton();
+		botonNuevoAdministrador.setWidth(35);
+		botonNuevoAdministrador.setHeight(35);
+		botonNuevoAdministrador.setShowRollOver(true);
+		botonNuevoAdministrador.setShowDown(true);
+		botonNuevoAdministrador.setSrc("icons/agregar.png");
+		botonNuevoAdministrador.setDisabled(false);
+		botonNuevoAdministrador.setTooltip("Nuevo cliente");
 
 		botonNuevoAdministrador
 				.addClickHandler(new com.smartgwt.client.widgets.events.ClickHandler() {
@@ -179,8 +189,14 @@ public class PanelContenidoClientes extends HLayout {
 
 				});
 
-		botonEliminarCuenta = new ToolStripButton("Eliminar Cuenta",
-				"icons/16/document_plain_new.png");
+		botonEliminarCuenta = new ImgButton();
+		botonEliminarCuenta.setWidth(35);
+		botonEliminarCuenta.setHeight(35);
+		botonEliminarCuenta.setShowRollOver(true);
+		botonEliminarCuenta.setShowDown(true);
+		botonEliminarCuenta.setSrc("icons/eliminar.png");
+		botonEliminarCuenta.setDisabled(false);
+		botonEliminarCuenta.setTooltip("Eliminar cuenta");
 
 		botonEliminarCuenta
 				.addClickHandler(new com.smartgwt.client.widgets.events.ClickHandler() {
@@ -201,7 +217,14 @@ public class PanelContenidoClientes extends HLayout {
 
 				});
 
-		botonDesactivarCuenta = new ToolStripButton("Desactivar Cuenta");
+		botonDesactivarCuenta = new ImgButton();
+		botonDesactivarCuenta.setWidth(35);
+		botonDesactivarCuenta.setHeight(35);
+		botonDesactivarCuenta.setShowRollOver(true);
+		botonDesactivarCuenta.setShowDown(true);
+		botonDesactivarCuenta.setSrc("icons/eliminar.png");
+		botonDesactivarCuenta.setDisabled(false);
+		botonDesactivarCuenta.setTooltip("Desactivar cuenta");
 		botonDesactivarCuenta.setVisible(false);
 		botonDesactivarCuenta
 				.addClickHandler(new com.smartgwt.client.widgets.events.ClickHandler() {
@@ -230,16 +253,6 @@ public class PanelContenidoClientes extends HLayout {
 					}
 
 				});
-
-		ToolStrip menuBarUsuarioAdministrador = new ToolStrip();
-		menuBarUsuarioAdministrador.setWidth100();
-		menuBarUsuarioAdministrador.addButton(botonNuevoAdministrador);
-		menuBarUsuarioAdministrador.addButton(botonRegresar);
-		menuBarUsuarioAdministrador.addFill();
-		menuBarUsuarioAdministrador.addSeparator();
-		menuBarUsuarioAdministrador.addButton(botonEliminarCuenta);
-		menuBarUsuarioAdministrador.addButton(botonDesactivarCuenta);
-		menuBarUsuarioAdministrador.addSeparator();
 
 		searchItem = new TextItem("description", "Buscar Cliente");
 		searchItem.addKeyPressHandler(new KeyPressHandler() {
@@ -287,21 +300,36 @@ public class PanelContenidoClientes extends HLayout {
 		});
 
 		formBusqueda = new DynamicForm();
-		formBusqueda.setWidth100();
+		formBusqueda.setWidth("250px");
+		formBusqueda.setHeight("33px");
 		formBusqueda.setPadding(5);
-		formBusqueda.setLayoutAlign(VerticalAlignment.BOTTOM);
+		formBusqueda.setLayoutAlign(VerticalAlignment.CENTER);
 		formBusqueda.setFields(searchItem);
 
-		VLayout vl2 = new VLayout();
-		vl2.setWidth100();
-		vl2.setHeight100();
+		HLayout hl1 = new HLayout();
+		hl1.setWidth100();
+		hl1.setHeight("40px");
 
-		vl2.addMember(formBusqueda);
-		vl2.addMember(listGridUsuariosAdministradores);
-		vl2.addMember(panelClienteEspecifico);
-		vl2.addMember(menuBarUsuarioAdministrador);
+		HLayout hlRelleno = new HLayout();
+		hlRelleno.setWidth("*");
+		hlRelleno.setHeight("1px");
 
-		addMember(vl2);
+		hl1.addMember(hlRelleno);
+		hl1.addMember(formBusqueda);
+		hl1.addMember(botonRegresar);
+		hl1.addMember(botonNuevoAdministrador);
+		hl1.addMember(botonDesactivarCuenta);
+		hl1.addMember(botonEliminarCuenta);
+
+		VLayout vl1 = new VLayout();
+		vl1.setWidth100();
+		vl1.setHeight100();
+
+		vl1.addMember(hl1);
+		vl1.addMember(listGridUsuariosAdministradores);
+		vl1.addMember(panelClienteEspecifico);
+
+		addMember(vl1);
 
 	}
 
@@ -340,7 +368,7 @@ public class PanelContenidoClientes extends HLayout {
 			List<PruebaUsuarioBO> pruebas) {
 		Maestro.agregarCliente(usuario, usos, pruebas);
 		windowCrearLamina.destroy();
-		dlgNotificaciones = new DialogoProcesamiento("Creando el Cliente...");
+		dlgNotificaciones = new DialogoProcesamiento("Creando el cliente...");
 		dlgNotificaciones.show();
 	}
 
@@ -353,7 +381,9 @@ public class PanelContenidoClientes extends HLayout {
 		panelClienteEspecifico.setVisible(false);
 		formBusqueda.setVisible(true);
 		botonNuevoAdministrador.setVisible(true);
-		botonRegresar.setVisible(false);
+		botonDesactivarCuenta.setVisible(true);
+		botonEliminarCuenta.setVisible(true);
+		botonRegresar.setDisabled(true);
 	}
 
 	public void actualizarUsosCliente(List<UsoBO> result) {

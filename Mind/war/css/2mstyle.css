@@ -9,6 +9,10 @@ header,section,footer {
 
 html,body {
 	
+	-moz-user-focus: ignore;
+	-mox-user-input: disabled;
+	-moz-user-select: none;
+	
 	margin: auto auto;
 	-webkit-user-select: none;
 	/*overflow-x: hidden;

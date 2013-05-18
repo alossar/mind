@@ -10,6 +10,8 @@ public class Convencion {
 	public static final String MENSAJE_CREACION_CUENTA_USUARIO_ADMINISTRADOR = "Bienvenido a Tarmin. Hemos creado su cuenta.";
 	public static final int CORRECTO = 0;
 	public static final int INCORRECTO = 1;
+	public static final int INCORRECTO_USUARIO_CEDULA_EXISTENTE = 2;
+	public static final int INCORRECTO_USUARIO_CORREO_EXISTENTE = 3;
 
 	public static final String CLAVE_USUARIO = "usuario_sesion";
 	public static final String CLAVE_EVALUACION = "evaluacion_sesion";
@@ -64,6 +66,9 @@ public class Convencion {
 	public static final String ESTADO_CUENTA_ACTIVA = "cuenta_activa";
 	public static final String ESTADO_CUENTA_INACTIVA = "cuenta_inactiva";
 
+	public static final String ESTADO_NOTIFICACION_ENVIADA = "correo_si";
+	public static final String ESTADO_NOTIFICACION_NO_ENVIADA = "correo_no";
+
 	public static final String ESTADO_PARTICIPACION_EN_PROCESO_INACTIVA = "participacion_inactiva";
 	public static final String ESTADO_PARTICIPACION_EN_PROCESO_EN_EJECUCION = "participacion_ejecucion";
 	public static final String ESTADO_PARTICIPACION_EN_PROCESO_EN_ESPERA = "participacion_espera";
@@ -87,10 +92,17 @@ public class Convencion {
 	public static final String ESTADO_SOLICITUD_RECHAZADA = "rechazada";
 
 	public static final int MAXIMA_LONGITUD_RESPUESTA = 2500;
+	public static final int MAXIMA_LONGITUD_CEDULA = 10;
+	public static final int MAXIMA_LONGITUD_DESCRIPCION_PROCESO = 250;
+	public static final int MAXIMA_LONGITUD_DESCRIPCION_PRUEBA = 900;
+	public static final int MAXIMA_LONGITUD_NOMBRE = 40;
+	public static final int MAXIMA_LONGITUD_NOMBRE_USUARIO = 19;
+	public static final int MAXIMA_LONGITUD_CIUDAD = 40;
+	public static final int MAXIMA_LONGITUD_EMPRESA = 19;
+	public static final int MAXIMA_LONGITUD_CARGO = 40;
 	public static final String DIRECCION_WEB = "http://www.mindmanagement.co";
-	// public static final String CONEXION_URL =
-	// "jdbc:mysql://192.168.13.62:3306/mind_measurement";
-	public static final String CONEXION_URL = "jdbc:mysql://localhost:3306/mind_measurement";
+	// public static final String CONEXION_URL = "jdbc:mysql://192.168.13.62:3306/mind_measurement";
+	 public static final String CONEXION_URL = "jdbc:mysql://localhost:3306/mind_measurement";
 	public static final String CONEXION_USER = "root";
 	// public static final String CONEXION_PASS = "WUWV1ITjkI";
 	public static final String CONEXION_PASS = "admin";
@@ -107,9 +119,9 @@ public class Convencion {
 			if (segundos != 0) {
 				minutos++;
 			}
-			return minutos + " m";
+			return minutos + " Min";
 		} else {
-			return segundos + " s";
+			return segundos + " Seg";
 		}
 	}
 

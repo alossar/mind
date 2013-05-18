@@ -53,6 +53,18 @@ isc.DataSource.create({
             name:"length"
         },
         {
+            xmlAttribute:"true",
+            title:"Decimal Pad",
+            type:"integer",
+            name:"decimalPad"
+        },
+        {
+            xmlAttribute:"true",
+            title:"Decimal Precision",
+            type:"integer",
+            name:"decimalPrecision"
+        },
+        {
             visibility:"internal",
             type:"boolean",
             name:"xmlRequired"

@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.poi.ss.usermodel.HorizontalAlignment;
-
 import co.mind.management.maestro.client.Maestro;
 import co.mind.management.maestro.client.PanelEncabezadoDialogo;
 import co.mind.management.shared.dto.EvaluadoBO;
@@ -21,6 +19,7 @@ import com.smartgwt.client.types.ListGridEditEvent;
 import com.smartgwt.client.types.SelectionStyle;
 import com.smartgwt.client.types.VerticalAlignment;
 import com.smartgwt.client.util.SC;
+import com.smartgwt.client.widgets.ImgButton;
 import com.smartgwt.client.widgets.Window;
 import com.smartgwt.client.widgets.events.CloseClickEvent;
 import com.smartgwt.client.widgets.events.CloseClickHandler;
@@ -44,24 +43,22 @@ import com.smartgwt.client.widgets.form.fields.events.KeyPressHandler;
 import com.smartgwt.client.widgets.grid.ListGrid;
 import com.smartgwt.client.widgets.grid.ListGridField;
 import com.smartgwt.client.widgets.grid.ListGridRecord;
-import com.smartgwt.client.widgets.grid.events.CellDoubleClickEvent;
-import com.smartgwt.client.widgets.grid.events.CellDoubleClickHandler;
 import com.smartgwt.client.widgets.grid.events.EditCompleteEvent;
 import com.smartgwt.client.widgets.grid.events.EditCompleteHandler;
+import com.smartgwt.client.widgets.grid.events.RecordDoubleClickEvent;
+import com.smartgwt.client.widgets.grid.events.RecordDoubleClickHandler;
 import com.smartgwt.client.widgets.grid.events.RowContextClickEvent;
 import com.smartgwt.client.widgets.grid.events.RowContextClickHandler;
 import com.smartgwt.client.widgets.layout.HLayout;
 import com.smartgwt.client.widgets.layout.VLayout;
-import com.smartgwt.client.widgets.toolbar.ToolStrip;
-import com.smartgwt.client.widgets.toolbar.ToolStripButton;
 
 public class PanelContenidoProcesos extends HLayout {
 
 	private ListGrid listGridProcesos;
-	private ToolStripButton botonRegresar;
-	private ToolStripButton botonNuevoBasico;
-	private ToolStripButton botonEliminarBasico;
-	private ToolStripButton botonDuplicarBasico;
+	private ImgButton botonRegresar;
+	private ImgButton botonNuevoBasico;
+	private ImgButton botonEliminarBasico;
+	private ImgButton botonDuplicarBasico;
 	private PanelProcesoEspecifico panelProcesoEspecifico;
 	private ProcesoUsuarioBO procesoSeleccionado;
 	private DynamicForm formNuevoProceso;
@@ -87,8 +84,8 @@ public class PanelContenidoProcesos extends HLayout {
 		listGridProcesos.setWidth100();
 		listGridProcesos.setHeight100();
 		listGridProcesos.setShowAllRecords(true);
-		listGridProcesos.setWrapCells(true);  
-		listGridProcesos.setFixedRecordHeights(false); 
+		listGridProcesos.setWrapCells(true);
+		listGridProcesos.setFixedRecordHeights(false);
 		listGridProcesos.setSelectionType(SelectionStyle.SINGLE);
 		listGridProcesos
 				.setEmptyMessage("No se encuentran procesos en su cuenta.");
@@ -116,25 +113,14 @@ public class PanelContenidoProcesos extends HLayout {
 		listGridProcesos.setCanResizeFields(true);
 
 		listGridProcesos
-				.addCellDoubleClickHandler(new CellDoubleClickHandler() {
+				.addRecordDoubleClickHandler(new RecordDoubleClickHandler() {
 
 					@Override
-					public void onCellDoubleClick(CellDoubleClickEvent event) {
-						botonRegresar.setVisible(true);
+					public void onRecordDoubleClick(RecordDoubleClickEvent event) {
 						ProcesoRecord p = (ProcesoRecord) event.getRecord();
 						if (p != null) {
-							procesoSeleccionado = ProcesoRecord.getBO(p);
-							Maestro.obtenerParticipantesProceso(procesoSeleccionado);
-							Maestro.obtenerPruebasProceso(procesoSeleccionado);
-							panelProcesoEspecifico.deseleccionarTodo();
-							panelProcesoEspecifico
-									.actualizarDatosProceso(procesoSeleccionado);
-							listGridProcesos.setVisible(false);
-							panelProcesoEspecifico.setVisible(true);
-							botonNuevoBasico.setVisible(false);
-							botonEliminarBasico.setVisible(false);
-							botonDuplicarBasico.setVisible(false);
-							formBusqueda.setVisible(false);
+							navegarAProcesoEspecifico(ProcesoRecord.getBO(p));
+							botonRegresar.setDisabled(false);
 						}
 					}
 				});
@@ -161,13 +147,72 @@ public class PanelContenidoProcesos extends HLayout {
 			}
 		});
 
+		listGridProcesos.setGenerateDoubleClickOnEnter(true);
+
 		panelProcesoEspecifico = new PanelProcesoEspecifico(usuario);
 		panelProcesoEspecifico.setHeight100();
 		panelProcesoEspecifico.setWidth100();
 		panelProcesoEspecifico.setVisible(false);
 
-		botonRegresar = new ToolStripButton("Volver",
-				"icons/16/document_plain_new.png");
+		searchItem = new TextItem("description", "Buscar Proceso");
+		searchItem.addKeyPressHandler(new KeyPressHandler() {
+			public void onKeyPress(KeyPressEvent event) {
+				if ("enter".equalsIgnoreCase(event.getKeyName())) {
+					String keyword = searchItem.getValueAsString();
+					if (keyword != "" && keyword != null) {
+						Maestro.consultarProcesosClave(keyword);
+					} else {
+						Maestro.setListaProcesos();
+					}
+				}
+			}
+		});
+		final PickerIcon findIcon = new PickerIcon(PickerIcon.SEARCH);
+		final PickerIcon cancelIcon = new PickerIcon(PickerIcon.CLEAR);
+		searchItem.setIcons(findIcon, cancelIcon);
+
+		searchItem.addIconClickHandler(new IconClickHandler() {
+			public void onIconClick(IconClickEvent event) {
+				FormItemIcon icon = event.getIcon();
+				if (icon.getSrc().equals(cancelIcon.getSrc())) {
+					searchItem.setValue("");
+					Maestro.setListaProcesos();
+				} else if (icon.getSrc().equals(findIcon.getSrc())) {
+					String keyword = searchItem.getValueAsString();
+					if (keyword != "" && keyword != null) {
+						Maestro.consultarProcesosClave(keyword);
+					} else {
+						Maestro.setListaProcesos();
+					}
+				}
+			}
+		});
+
+		searchItem.addChangedHandler(new ChangedHandler() {
+
+			@Override
+			public void onChanged(ChangedEvent event) {
+				String valor = searchItem.getValueAsString();
+				if (valor == "" || valor == null) {
+					Maestro.setListaProcesos();
+				}
+			}
+		});
+
+		formBusqueda = new DynamicForm();
+		formBusqueda.setWidth("250px");
+		formBusqueda.setHeight("33px");
+		formBusqueda.setPadding(5);
+		formBusqueda.setLayoutAlign(VerticalAlignment.CENTER);
+		formBusqueda.setFields(searchItem);
+
+		botonRegresar = new ImgButton();
+		botonRegresar.setWidth(35);
+		botonRegresar.setHeight(35);
+		botonRegresar.setShowRollOver(true);
+		botonRegresar.setShowDown(true);
+		botonRegresar.setSrc("icons/atras.png");
+		botonRegresar.setDisabled(true);
 
 		botonRegresar
 				.addClickHandler(new com.smartgwt.client.widgets.events.ClickHandler() {
@@ -179,8 +224,14 @@ public class PanelContenidoProcesos extends HLayout {
 
 				});
 
-		botonNuevoBasico = new ToolStripButton("Nuevo Proceso",
-				"icons/16/document_plain_new.png");
+		botonNuevoBasico = new ImgButton();
+		botonNuevoBasico.setWidth(35);
+		botonNuevoBasico.setHeight(35);
+		botonNuevoBasico.setShowRollOver(true);
+		botonNuevoBasico.setShowDown(true);
+		botonNuevoBasico.setSrc("icons/agregar.png");
+		botonNuevoBasico.setDisabled(false);
+		botonNuevoBasico.setTooltip("Nuevo proceso");
 
 		botonNuevoBasico
 				.addClickHandler(new com.smartgwt.client.widgets.events.ClickHandler() {
@@ -192,8 +243,14 @@ public class PanelContenidoProcesos extends HLayout {
 
 				});
 
-		botonEliminarBasico = new ToolStripButton("Eliminar Proceso",
-				"icons/16/document_plain_new.png");
+		botonEliminarBasico = new ImgButton();
+		botonEliminarBasico.setWidth(35);
+		botonEliminarBasico.setHeight(35);
+		botonEliminarBasico.setShowRollOver(true);
+		botonEliminarBasico.setShowDown(true);
+		botonEliminarBasico.setSrc("icons/eliminar.png");
+		botonEliminarBasico.setDisabled(false);
+		botonEliminarBasico.setTooltip("Eliminar proceso");
 
 		botonEliminarBasico
 				.addClickHandler(new com.smartgwt.client.widgets.events.ClickHandler() {
@@ -214,8 +271,14 @@ public class PanelContenidoProcesos extends HLayout {
 					}
 				});
 
-		botonDuplicarBasico = new ToolStripButton("Duplicar Proceso",
-				"icons/16/document_plain_new.png");
+		botonDuplicarBasico = new ImgButton();
+		botonDuplicarBasico.setWidth(35);
+		botonDuplicarBasico.setHeight(35);
+		botonDuplicarBasico.setShowRollOver(true);
+		botonDuplicarBasico.setShowDown(true);
+		botonDuplicarBasico.setSrc("icons/duplicar.png");
+		botonDuplicarBasico.setDisabled(false);
+		botonDuplicarBasico.setTooltip("Duplicar proceso");
 
 		botonDuplicarBasico
 				.addClickHandler(new com.smartgwt.client.widgets.events.ClickHandler() {
@@ -297,76 +360,28 @@ public class PanelContenidoProcesos extends HLayout {
 					}
 				});
 
-		ToolStrip menuBarUsuarioBasico = new ToolStrip();
-		menuBarUsuarioBasico.setWidth100();
-		menuBarUsuarioBasico.addButton(botonRegresar);
-		menuBarUsuarioBasico.addButton(botonNuevoBasico);
-		menuBarUsuarioBasico.addFill();
-		menuBarUsuarioBasico.addButton(botonDuplicarBasico);
-		menuBarUsuarioBasico.addButton(botonEliminarBasico);
-		menuBarUsuarioBasico.addSeparator();
-		botonRegresar.setVisible(false);
+		HLayout hl1 = new HLayout();
+		hl1.setWidth100();
+		hl1.setHeight("40px");
 
-		searchItem = new TextItem("description", "Buscar Proceso");
-		searchItem.addKeyPressHandler(new KeyPressHandler() {
-			public void onKeyPress(KeyPressEvent event) {
-				if ("enter".equalsIgnoreCase(event.getKeyName())) {
-					String keyword = searchItem.getValueAsString();
-					if (keyword != "" && keyword != null) {
-						Maestro.consultarProcesosClave(keyword);
-					} else {
-						Maestro.setListaProcesos();
-					}
-				}
-			}
-		});
-		final PickerIcon findIcon = new PickerIcon(PickerIcon.SEARCH);
-		final PickerIcon cancelIcon = new PickerIcon(PickerIcon.CLEAR);
-		searchItem.setIcons(findIcon, cancelIcon);
+		HLayout hlRelleno = new HLayout();
+		hlRelleno.setWidth("*");
+		hlRelleno.setHeight("1px");
 
-		searchItem.addIconClickHandler(new IconClickHandler() {
-			public void onIconClick(IconClickEvent event) {
-				FormItemIcon icon = event.getIcon();
-				if (icon.getSrc().equals(cancelIcon.getSrc())) {
-					searchItem.setValue("");
-					Maestro.setListaProcesos();
-				} else if (icon.getSrc().equals(findIcon.getSrc())) {
-					String keyword = searchItem.getValueAsString();
-					if (keyword != "" && keyword != null) {
-						Maestro.consultarProcesosClave(keyword);
-					} else {
-						Maestro.setListaProcesos();
-					}
-				}
-			}
-		});
-
-		searchItem.addChangedHandler(new ChangedHandler() {
-
-			@Override
-			public void onChanged(ChangedEvent event) {
-				String valor = searchItem.getValueAsString();
-				if (valor == "" || valor == null) {
-					Maestro.setListaProcesos();
-				}
-			}
-		});
-
-		formBusqueda = new DynamicForm();
-		formBusqueda.setWidth100();
-		formBusqueda.setPadding(5);
-		formBusqueda.setLayoutAlign(Alignment.RIGHT);
-		formBusqueda.setAlign(Alignment.RIGHT);
-		formBusqueda.setFields(searchItem);
+		hl1.addMember(hlRelleno);
+		hl1.addMember(formBusqueda);
+		hl1.addMember(botonRegresar);
+		hl1.addMember(botonNuevoBasico);
+		hl1.addMember(botonEliminarBasico);
+		hl1.addMember(botonDuplicarBasico);
 
 		VLayout vl1 = new VLayout();
 		vl1.setWidth100();
 		vl1.setHeight100();
 
-		vl1.addMember(formBusqueda);
+		vl1.addMember(hl1);
 		vl1.addMember(listGridProcesos);
 		vl1.addMember(panelProcesoEspecifico);
-		vl1.addMember(menuBarUsuarioBasico);
 
 		addMember(vl1);
 
@@ -407,10 +422,13 @@ public class PanelContenidoProcesos extends HLayout {
 		textNombreProcesoNuevo = new TextItem();
 		textNombreProcesoNuevo.setTitle("Nombre");
 		textNombreProcesoNuevo.setRequired(true);
+		textNombreProcesoNuevo.setLength(Convencion.MAXIMA_LONGITUD_NOMBRE);
 
 		textAreaDescripcionProcesoNuevo = new TextAreaItem();
 		textAreaDescripcionProcesoNuevo.setTitle("Descripci\u00F3n");
 		textAreaDescripcionProcesoNuevo.setRequired(true);
+		textAreaDescripcionProcesoNuevo
+				.setLength(Convencion.MAXIMA_LONGITUD_DESCRIPCION_PROCESO);
 
 		dateTimeItemFechaInicioNuevo = new DateItem();
 		dateTimeItemFechaInicioNuevo.setUseTextField(false);
@@ -503,14 +521,28 @@ public class PanelContenidoProcesos extends HLayout {
 		panelProcesoEspecifico.actualizarResultados(result);
 	}
 
+	public void navegarAProcesoEspecifico(ProcesoUsuarioBO proceso) {
+		procesoSeleccionado = proceso;
+		Maestro.obtenerParticipantesProceso(procesoSeleccionado);
+		Maestro.obtenerPruebasProceso(procesoSeleccionado);
+		panelProcesoEspecifico.deseleccionarTodo();
+		panelProcesoEspecifico.actualizarDatosProceso(procesoSeleccionado);
+		listGridProcesos.setVisible(false);
+		panelProcesoEspecifico.setVisible(true);
+		botonNuevoBasico.setDisabled(true);
+		botonEliminarBasico.setDisabled(true);
+		botonDuplicarBasico.setDisabled(true);
+		formBusqueda.setVisible(false);
+	}
+
 	public void setEstadoInicial() {
 		Maestro.setListaProcesos();
-		botonRegresar.setVisible(false);
+		botonRegresar.setDisabled(true);
 		listGridProcesos.setVisible(true);
 		panelProcesoEspecifico.setVisible(false);
-		botonNuevoBasico.setVisible(true);
-		botonEliminarBasico.setVisible(true);
-		botonDuplicarBasico.setVisible(true);
+		botonNuevoBasico.setDisabled(false);
+		botonEliminarBasico.setDisabled(false);
+		botonDuplicarBasico.setDisabled(false);
 		formBusqueda.setVisible(true);
 	}
 
@@ -577,6 +609,10 @@ public class PanelContenidoProcesos extends HLayout {
 
 	public void desactivarDialogoNotificaciones() {
 		panelProcesoEspecifico.desactivarDialogoNotificaciones();
+	}
+
+	public void actualizarProcesoSeleccionado(ProcesoUsuarioBO proceso) {
+		panelProcesoEspecifico.actualizarDatosProceso(proceso);
 	}
 
 }

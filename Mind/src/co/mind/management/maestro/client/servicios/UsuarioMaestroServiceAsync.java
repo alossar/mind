@@ -220,4 +220,11 @@ public interface UsuarioMaestroServiceAsync {
 	void consultarProcesosParaRevisar(
 			AsyncCallback<List<ProcesoUsuarioBO>> asyncCallback);
 
+	void consultarParticipacionesEvaluado(UsuarioBO usuarioMaestro, EvaluadoBO bo,
+			AsyncCallback<List<ParticipacionEnProcesoBO>> asyncCallback);
+
+	void agregarPruebas(UsuarioBO usuarioSeleccionado,
+			List<PruebaUsuarioBO> pruebasBO,
+			AsyncCallback<Integer> asyncCallback);
+
 }

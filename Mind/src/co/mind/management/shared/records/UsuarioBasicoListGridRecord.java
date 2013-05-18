@@ -53,9 +53,9 @@ public class UsuarioBasicoListGridRecord extends ListGridRecord {
 				usuarioBasico.setCorreoElectronico(usuario
 						.getAttribute("correo"));
 				usuarioBasico.setEdad(usuario.getAttributeAsInt("edad"));
-				usuarioBasico.setIdentificador(usuario.getAttributeAsInt("identificador"));
-				usuarioBasico.setCedula(usuario
-						.getAttributeAsInt("id"));
+				usuarioBasico.setIdentificador(usuario
+						.getAttributeAsInt("identificador"));
+				usuarioBasico.setCedula(usuario.getAttributeAsInt("id"));
 				usuarioBasico.setNombres(usuario.getAttribute("nombre"));
 				usuarioBasico.setIdentificadorUsuarioAdministrador(usuario
 						.getAttributeAsInt("idUsuario"));
@@ -74,7 +74,9 @@ public class UsuarioBasicoListGridRecord extends ListGridRecord {
 			usuarioBasico.setApellidos(usuario.getAttribute("apellidos"));
 			usuarioBasico.setCorreoElectronico(usuario.getAttribute("correo"));
 			usuarioBasico.setEdad(usuario.getAttributeAsInt("edad"));
-			usuarioBasico.setIdentificador(usuario.getAttributeAsInt("id"));
+			usuarioBasico.setIdentificador(usuario
+					.getAttributeAsInt("identificador"));
+			usuarioBasico.setCedula(usuario.getAttributeAsInt("id"));
 			usuarioBasico.setNombres(usuario.getAttribute("nombre"));
 			usuarioBasico.setIdentificadorUsuarioAdministrador(usuario
 					.getAttributeAsInt("idUsuario"));

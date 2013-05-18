@@ -53,6 +53,8 @@ import com.smartgwt.client.widgets.grid.ListGridField;
 import com.smartgwt.client.widgets.grid.ListGridRecord;
 import com.smartgwt.client.widgets.grid.events.CellDoubleClickEvent;
 import com.smartgwt.client.widgets.grid.events.CellDoubleClickHandler;
+import com.smartgwt.client.widgets.grid.events.RecordDoubleClickEvent;
+import com.smartgwt.client.widgets.grid.events.RecordDoubleClickHandler;
 import com.smartgwt.client.widgets.layout.HLayout;
 import com.smartgwt.client.widgets.layout.VLayout;
 import com.smartgwt.client.widgets.tab.Tab;
@@ -110,7 +112,7 @@ public class PanelProcesoEspecifico extends HLayout {
 
 		panelInformacionProceso = new VLayout();
 		panelInformacionProceso.setHeight100();
-		panelInformacionProceso.setWidth("20%");
+		panelInformacionProceso.setWidth("250px");
 
 		DynamicForm formProceso = new DynamicForm();
 		formProceso.setWidth100();
@@ -120,11 +122,12 @@ public class PanelProcesoEspecifico extends HLayout {
 		textAreaDescripcionProceso = new TextAreaItem();
 		textAreaDescripcionProceso.setTitle("Descripci\u00F3n");
 		textAreaDescripcionProceso.setCanEdit(false);
+		textAreaDescripcionProceso
+				.setLength(Convencion.MAXIMA_LONGITUD_DESCRIPCION_PROCESO);
 
 		dateTimeItemFechaInicio = new DateTimeItem();
 		dateTimeItemFechaInicio.setTitle("Fecha Inicio");
 		dateTimeItemFechaInicio.setCanEdit(false);
-		dateTimeItemFechaInicio.setUseTextField(false);
 
 		checkBoxHabilitarFechaFinalizacion = new CheckboxItem();
 		checkBoxHabilitarFechaFinalizacion.setName("onOrder");
@@ -153,7 +156,6 @@ public class PanelProcesoEspecifico extends HLayout {
 		dateTimeItemFechaFinalizacion = new DateTimeItem();
 		dateTimeItemFechaFinalizacion.setTitle("Fecha Finalizaci\u00F3n");
 		dateTimeItemFechaFinalizacion.setCanEdit(false);
-		dateTimeItemFechaFinalizacion.setUseTextField(false);
 		dateTimeItemFechaFinalizacion
 				.setShowIfCondition(new FormItemIfFunction() {
 					@Override
@@ -250,6 +252,8 @@ public class PanelProcesoEspecifico extends HLayout {
 							textAreaDescripcionProceso.setCanEdit(false);
 							dateTimeItemFechaInicio.setCanEdit(false);
 							dateTimeItemFechaFinalizacion.setCanEdit(false);
+							checkBoxHabilitarFechaFinalizacion
+									.setCanEdit(false);
 							botonCancelar.setVisible(false);
 							enEdicion = false;
 							Maestro.editarProceso(proceso);
@@ -275,6 +279,7 @@ public class PanelProcesoEspecifico extends HLayout {
 						dateTimeItemFechaInicio.setCanEdit(false);
 						dateTimeItemFechaFinalizacion.setCanEdit(false);
 						botonCancelar.setVisible(false);
+						checkBoxHabilitarFechaFinalizacion.setCanEdit(false);
 						enEdicion = false;
 					}
 				});
@@ -354,11 +359,14 @@ public class PanelProcesoEspecifico extends HLayout {
 		ListGridField codigoField = new ListGridField("codigo",
 				"C\u00F3digo Acceso");
 		ListGridField estadoField = new ListGridField("estado", "Estado");
+		ListGridField notificacionField = new ListGridField("estaNotificado",
+				"Notificación de Correo");
 		listGridParticipaciones.setFields(idField, nombreField, apellidoField,
-				correoField, codigoField, estadoField);
+				correoField, codigoField, estadoField, notificacionField);
 		listGridParticipaciones.setCanResizeFields(true);
 		listGridParticipaciones
 				.setSelectionAppearance(SelectionAppearance.CHECKBOX);
+		listGridParticipaciones.setSelectionType(SelectionStyle.SIMPLE);
 
 		tabParticipaciones.setPane(listGridParticipaciones);
 
@@ -376,6 +384,7 @@ public class PanelProcesoEspecifico extends HLayout {
 				.setEmptyMessage("No hay resultados en este proceso.");
 
 		listGridResultados.setSelectionAppearance(SelectionAppearance.CHECKBOX);
+		listGridResultados.setSelectionType(SelectionStyle.SIMPLE);
 
 		tabResultados.setPane(listGridResultados);
 
@@ -406,16 +415,24 @@ public class PanelProcesoEspecifico extends HLayout {
 				.setSelectionAppearance(SelectionAppearance.CHECKBOX);
 
 		listGridPruebasDeProceso
-				.addCellDoubleClickHandler(new CellDoubleClickHandler() {
+				.addRecordDoubleClickHandler(new RecordDoubleClickHandler() {
+
 					@Override
-					public void onCellDoubleClick(CellDoubleClickEvent event) {
+					public void onRecordDoubleClick(RecordDoubleClickEvent event) {
+
 						PruebaListGridRecord record = (PruebaListGridRecord) event
 								.getRecord();
-						if(record!=null){
-							
+						if (record != null) {
+							PruebaUsuarioBO prueba = PruebaListGridRecord
+									.getBO(record);
+							Maestro.irAPruebaDesdeProceso();
+							Maestro.obtenerPreguntasPorPrueba(prueba
+									.getIdentificador());
+							Maestro.irAPruebaSeleccionada(prueba);
 						}
 					}
 				});
+		listGridPruebasDeProceso.setGenerateDoubleClickOnEnter(true);
 
 		tabPruebas.setPane(listGridPruebasDeProceso);
 
@@ -683,12 +700,13 @@ public class PanelProcesoEspecifico extends HLayout {
 		p.setSize("100%", "70px");
 
 		winModal.setWidth(350);
-		winModal.setHeight(300);
+		winModal.setHeight(225);
 		winModal.setTitle("Agregar Evaluados");
 		winModal.setShowMinimizeButton(false);
 		winModal.setIsModal(true);
 		winModal.setShowModalMask(true);
 		winModal.centerInPage();
+		// winModal.setBackgroundColor("#CECECE");
 		winModal.addCloseClickHandler(new CloseClickHandler() {
 			@Override
 			public void onCloseClick(CloseClickEvent event) {
@@ -701,20 +719,27 @@ public class PanelProcesoEspecifico extends HLayout {
 		formNuevaParticipacion.setHeight("40%");
 		formNuevaParticipacion.setWidth100();
 		formNuevaParticipacion.setPadding(5);
+		formNuevaParticipacion.setBackgroundColor("#CECECE");
 		formNuevaParticipacion.setLayoutAlign(VerticalAlignment.BOTTOM);
 
 		textIdentificadorUsuarioBasico = new IntegerItem();
 		textIdentificadorUsuarioBasico.setRequired(true);
 		textIdentificadorUsuarioBasico.setTitle("C\u00E9dula");
 		textIdentificadorUsuarioBasico.setAllowExpressions(false);
+		textIdentificadorUsuarioBasico
+				.setLength(Convencion.MAXIMA_LONGITUD_CEDULA);
 
 		textNombreUsuarioBasico = new TextItem();
 		textNombreUsuarioBasico.setTitle("Nombre");
 		textNombreUsuarioBasico.setRequired(true);
+		textNombreUsuarioBasico
+				.setLength(Convencion.MAXIMA_LONGITUD_NOMBRE_USUARIO);
 
 		textApellidosUsuarioBasico = new TextItem();
 		textApellidosUsuarioBasico.setRequired(true);
 		textApellidosUsuarioBasico.setTitle("Apellidos");
+		textApellidosUsuarioBasico
+				.setLength(Convencion.MAXIMA_LONGITUD_NOMBRE_USUARIO);
 
 		RegExpValidator regExpValidator = new RegExpValidator();
 		regExpValidator
@@ -768,13 +793,13 @@ public class PanelProcesoEspecifico extends HLayout {
 
 		final Canvas canvasMenuOpciones = new Canvas();
 		canvasMenuOpciones.setWidth100();
-		canvasMenuOpciones.setHeight(230);
+		canvasMenuOpciones.setHeight(150);
 
 		Img imagenOpcionNuevaParticipacion = new Img(
-				"insumos/evaluados/logoEvaluados.png");
+				"insumos/procesos/botCrear.png");
 		imagenOpcionNuevaParticipacion.setSize("105px", "105px");
 		imagenOpcionNuevaParticipacion.setTop(25);
-		imagenOpcionNuevaParticipacion.setLeft(63);
+		imagenOpcionNuevaParticipacion.setLeft(46);
 		imagenOpcionNuevaParticipacion.addClickHandler(new ClickHandler() {
 
 			@Override
@@ -784,14 +809,16 @@ public class PanelProcesoEspecifico extends HLayout {
 				canvasMenuOpciones.setVisible(false);
 				boton.setVisible(true);
 				nuevaParticipacion = true;
+				winModal.setSize("350", "300");
+				winModal.centerInPage();
 			}
 		});
 
 		Img imagenOpcionAgregarParticipaciones = new Img(
-				"insumos/evlauados/logoEvaluados.png");
+				"insumos/procesos/botAgregar.png");
 		imagenOpcionAgregarParticipaciones.setSize("105px", "105px");
 		imagenOpcionAgregarParticipaciones.setTop(25);
-		imagenOpcionAgregarParticipaciones.setLeft(231);
+		imagenOpcionAgregarParticipaciones.setLeft(197);
 		imagenOpcionAgregarParticipaciones.addClickHandler(new ClickHandler() {
 
 			@Override
@@ -802,17 +829,19 @@ public class PanelProcesoEspecifico extends HLayout {
 				boton.setVisible(true);
 				boton.setTitle("Agregar Evaluados");
 				nuevaParticipacion = false;
+				winModal.setSize("350", "300");
+				winModal.centerInPage();
 			}
 		});
 
 		HTMLFlow tituloNuevaParticipacion = new HTMLFlow("<h2>Crear Nuevo</h2>");
 		tituloNuevaParticipacion.setTop(140);
-		tituloNuevaParticipacion.setLeft(63);
+		tituloNuevaParticipacion.setLeft(46);
 		tituloNuevaParticipacion.setWidth(105);
 
 		HTMLFlow tituloAgregarParticipaciones = new HTMLFlow("<h2>Agregar</h2>");
 		tituloAgregarParticipaciones.setTop(140);
-		tituloAgregarParticipaciones.setLeft(231);
+		tituloAgregarParticipaciones.setLeft(200);
 		tituloAgregarParticipaciones.setWidth(105);
 
 		canvasMenuOpciones.addChild(imagenOpcionNuevaParticipacion);
@@ -860,13 +889,14 @@ public class PanelProcesoEspecifico extends HLayout {
 				"img/admin/bot1.png");
 		p.setSize("100%", "70px");
 
-		winModal.setWidth(400);
-		winModal.setHeight(300);
+		winModal.setWidth(350);
+		winModal.setHeight(225);
 		winModal.setTitle("Agregar Pruebas");
 		winModal.setShowMinimizeButton(false);
 		winModal.setIsModal(true);
 		winModal.setShowModalMask(true);
 		winModal.centerInPage();
+		// winModal.setBackgroundColor("#CECECE");
 		winModal.addCloseClickHandler(new CloseClickHandler() {
 			@Override
 			public void onCloseClick(CloseClickEvent event) {
@@ -878,17 +908,20 @@ public class PanelProcesoEspecifico extends HLayout {
 		formPruebas.setHeight("40%");
 		formPruebas.setWidth100();
 		formPruebas.setPadding(5);
+		formPruebas.setBackgroundColor("#CECECE");
 		formPruebas.setLayoutAlign(VerticalAlignment.BOTTOM);
 
 		textNombreCategoriaNueva = new TextItem();
 		textNombreCategoriaNueva.setTitle("Nombre");
 		textNombreCategoriaNueva.setRequired(true);
-		textNombreCategoriaNueva.setWidth("100%");
+		textNombreCategoriaNueva.setLength(Convencion.MAXIMA_LONGITUD_NOMBRE);
 
 		textAreaDescripcionCategoriaNueva = new TextAreaItem();
 		textAreaDescripcionCategoriaNueva.setTitle("Descripci\u00F3n");
 		textAreaDescripcionCategoriaNueva.setRequired(true);
-		textAreaDescripcionCategoriaNueva.setWidth("100%");
+		textAreaDescripcionCategoriaNueva
+				.setLength(Convencion.MAXIMA_LONGITUD_DESCRIPCION_PRUEBA);
+
 		final IButton boton = new IButton("Crear");
 		boton.addClickHandler(new ClickHandler() {
 
@@ -926,13 +959,13 @@ public class PanelProcesoEspecifico extends HLayout {
 
 		final Canvas canvasMenuOpciones = new Canvas();
 		canvasMenuOpciones.setWidth100();
-		canvasMenuOpciones.setHeight(230);
+		canvasMenuOpciones.setHeight(150);
 
 		Img imagenOpcionNuevaParticipacion = new Img(
-				"insumos/pruebas/logoPruebas.png");
+				"insumos/procesos/botCrear.png");
 		imagenOpcionNuevaParticipacion.setSize("105px", "105px");
 		imagenOpcionNuevaParticipacion.setTop(25);
-		imagenOpcionNuevaParticipacion.setLeft(63);
+		imagenOpcionNuevaParticipacion.setLeft(46);
 		imagenOpcionNuevaParticipacion.addClickHandler(new ClickHandler() {
 
 			@Override
@@ -942,14 +975,16 @@ public class PanelProcesoEspecifico extends HLayout {
 				canvasMenuOpciones.setVisible(false);
 				boton.setVisible(true);
 				nuevoPrueba = true;
+				winModal.setSize("350", "300");
+				winModal.centerInPage();
 			}
 		});
 
 		Img imagenOpcionAgregarParticipaciones = new Img(
-				"insumos/pruebas/logoPruebas.png");
+				"insumos/procesos/botAgregar.png");
 		imagenOpcionAgregarParticipaciones.setSize("105px", "105px");
 		imagenOpcionAgregarParticipaciones.setTop(25);
-		imagenOpcionAgregarParticipaciones.setLeft(231);
+		imagenOpcionAgregarParticipaciones.setLeft(197);
 		imagenOpcionAgregarParticipaciones.addClickHandler(new ClickHandler() {
 
 			@Override
@@ -960,17 +995,19 @@ public class PanelProcesoEspecifico extends HLayout {
 				boton.setVisible(true);
 				boton.setTitle("Agregar Pruebas");
 				nuevoPrueba = false;
+				winModal.setSize("350", "300");
+				winModal.centerInPage();
 			}
 		});
 
 		HTMLFlow tituloNuevaParticipacion = new HTMLFlow("<h2>Crear Nuevo</h2>");
 		tituloNuevaParticipacion.setTop(140);
-		tituloNuevaParticipacion.setLeft(63);
+		tituloNuevaParticipacion.setLeft(46);
 		tituloNuevaParticipacion.setWidth(105);
 
 		HTMLFlow tituloAgregarParticipaciones = new HTMLFlow("<h2>Agregar</h2>");
 		tituloAgregarParticipaciones.setTop(140);
-		tituloAgregarParticipaciones.setLeft(231);
+		tituloAgregarParticipaciones.setLeft(200);
 		tituloAgregarParticipaciones.setWidth(105);
 
 		canvasMenuOpciones.addChild(imagenOpcionNuevaParticipacion);
@@ -995,6 +1032,7 @@ public class PanelProcesoEspecifico extends HLayout {
 
 		listGridPruebas.setFields(nombreField, apellidosField);
 		listGridPruebas.setCanResizeFields(false);
+		listGridPruebas.setSelectionType(SelectionStyle.SIMPLE);
 		listGridPruebas.setSelectionAppearance(SelectionAppearance.CHECKBOX);
 		listGridPruebas.setData(PruebaListGridRecord
 				.getRecords(listaPruebasRestantes));
@@ -1011,13 +1049,9 @@ public class PanelProcesoEspecifico extends HLayout {
 	}
 
 	public void actualizarDatosProceso(ProcesoUsuarioBO proceso) {
-		if (procesoActual != null) {
-			if (proceso.getIdentificador() != procesoActual.getIdentificador()) {
-				this.procesoActual = proceso;
-			}
-		} else {
-			this.procesoActual = proceso;
-		}
+
+		this.procesoActual = proceso;
+
 		textAreaDescripcionProceso.setValue(proceso.getDescripcion());
 		dateTimeItemFechaInicio.setValue(proceso.getFechaInicio());
 		if (proceso.getFechaFinalizacion() != null) {
@@ -1029,8 +1063,7 @@ public class PanelProcesoEspecifico extends HLayout {
 		}
 		dateTimeItemFechaCreacion.setValue(proceso.getFechaCreacion());
 		panelEncabezadoProceso.actualizarEncabezado(proceso.getNombre(),
-				"Informaci\u00F3n General del Proceso",
-				"insumos/procesos/logoProcesos.png");
+				"Informaci\u00F3n General del Proceso", "img/admin/bot1.png");
 		if (botonSolicitarRevision != null) {
 			if (proceso.getEstadoValoracion().equalsIgnoreCase(
 					Convencion.ESTADO_SOLICITUD_PENDIENTE)) {
@@ -1120,6 +1153,7 @@ public class PanelProcesoEspecifico extends HLayout {
 			p.setFechaFinalizacion(procesoActual.getFechaFinalizacion());
 			p.setFechaInicio(procesoActual.getFechaInicio());
 			p.setProcesoID(procesoActual.getIdentificador());
+			p.setEstaNotificado(Convencion.ESTADO_NOTIFICACION_NO_ENVIADA);
 			participaciones.add(p);
 		}
 		return participaciones;
